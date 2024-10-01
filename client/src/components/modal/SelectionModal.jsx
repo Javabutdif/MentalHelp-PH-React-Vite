@@ -1,6 +1,6 @@
 import React from "react";
 
-function SelectionModal({ onCancel }) {
+function SelectionModal({ professionalClick, patientClick, onCancel }) {
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50">
 			<div
@@ -27,12 +27,14 @@ function SelectionModal({ onCancel }) {
 				<div className="flex items-center justify-end p-6 bg-white border-t border-gray-200 rounded-b-xl">
 					<button
 						type="button"
-						className="px-5 text-white py-2  hover:text-white-700 transition-all focus:outline-none rounded-md bg-green-500 border border-gray-300 hover:border-gray-400">
+						className="px-5 text-white py-2  hover:text-white-700 transition-all focus:outline-none rounded-md bg-green-500 border border-gray-300 hover:border-gray-400"
+						onClick={professionalClick}>
 						Psychologist/Psychiatrist?
 					</button>
 					<button
 						type="button"
-						className={`ml-3 px-6 py-2 text-white rounded bg-blue-500 `}>
+						className={`ml-3 px-6 py-2 text-white rounded bg-blue-500 `}
+						onClick={patientClick}>
 						Patient?
 					</button>
 				</div>

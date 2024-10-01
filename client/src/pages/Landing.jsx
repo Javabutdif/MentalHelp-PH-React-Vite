@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import SelectionModal from "../components/modal/SelectionModal";
+import ProfessionalRegister from "../components/modal/ProfessionalRegister";
 
 function Landing() {
 	const [showModal, setShowModal] = useState(false);
@@ -69,10 +70,13 @@ function Landing() {
 
 			{showModal && (
 				<SelectionModal
-					professinalClick={showProfessionalModal}
+					professionalClick={showProfessionalModal}
 					patientClick={showPatientModal}
 					onCancel={hideTriggerModal}
 				/>
+			)}
+			{professionalModal && (
+				<ProfessionalRegister onCancel={hideProfessionalModal} />
 			)}
 		</div>
 	);
