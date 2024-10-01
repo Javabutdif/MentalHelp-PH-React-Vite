@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import SelectionModal from "../components/modal/SelectionModal";
 import ProfessionalRegister from "../components/modal/ProfessionalRegister";
+import PatientRegister from "../components/modal/PatientRegister";
+import { Link } from "react-router-dom";
 
 function Landing() {
 	const [showModal, setShowModal] = useState(false);
@@ -43,9 +45,11 @@ function Landing() {
 							onClick={showTriggerModal}>
 							Get Started
 						</button>
-						<button className="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded">
+						<Link
+							to="/login"
+							className="bg-green-500 hover:bg-green-600 text-white py-2 px-6 rounded">
 							Login
-						</button>
+						</Link>
 					</div>
 				</div>
 				<div className="w-full md:w-1/2">
@@ -78,6 +82,7 @@ function Landing() {
 			{professionalModal && (
 				<ProfessionalRegister onCancel={hideProfessionalModal} />
 			)}
+			{patientModal && <PatientRegister onCancel={hidePatientModal} />}
 		</div>
 	);
 }

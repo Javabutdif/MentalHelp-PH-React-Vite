@@ -31,7 +31,7 @@ function ProfessionalRegister({ onCancel }) {
 		<div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-75">
 			<div className="bg-white rounded-lg shadow-lg max-w-2xl w-full ">
 				<div className="p-4 border-b flex justify-between items-center">
-					<h5 className="text-2xl font-bold text-blue-600">
+					<h5 className="text-2xl font-bold text-green-600">
 						Professionals Sign Up
 					</h5>
 					<button
@@ -43,7 +43,7 @@ function ProfessionalRegister({ onCancel }) {
 				</div>
 				<form
 					onSubmit={handleSubmit}
-					className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+					className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
 					<div>
 						<label htmlFor="firstname" className="block text-sm font-medium">
 							First Name
@@ -187,12 +187,12 @@ function ProfessionalRegister({ onCancel }) {
 					<div className="sm:col-span-2 flex justify-end space-x-2 mt-4">
 						<button
 							type="submit"
-							className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+							className="bg-green-600 rounded-full  text-white px-4 py-2  hover:bg-green-700">
 							Register
 						</button>
 						<button
 							type="button"
-							className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+							className="border-2 rounded-full  text-red-600 px-4 py-2  hover:bg-red-600 hover:text-white"
 							onClick={onCancel}>
 							Cancel
 						</button>

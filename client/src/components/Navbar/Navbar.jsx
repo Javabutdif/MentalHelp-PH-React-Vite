@@ -4,7 +4,7 @@ import { useLocation, Link } from "react-router-dom";
 function Navbar() {
 	const location = useLocation();
 	return (
-		<nav className="bg-white shadow fixed w-full top-0 flex items-center justify-between p-4">
+		<nav className="bg-white shadow fixed w-full top-0 flex items-center justify-between p-2">
 			<div className="flex items-center">
 				<img src="/logon.png" className="h-16 w-16 mx-3" alt="Logo" />
 				<Link to="/" className="font-bold text-xl">
@@ -23,17 +23,19 @@ function Navbar() {
 			<div className="hidden lg:flex space-x-8 pr-20 font-bold">
 				<ul className="flex space-x-8">
 					<li>
-						<Link to="/community" className="text-gray-700 hover:text-blue-500">
+						<Link
+							to="/community"
+							className="text-gray-700 hover:text-green-500">
 							Community
 						</Link>
 					</li>
 					<li>
-						<Link to="/about" className="text-gray-700 hover:text-blue-500">
+						<Link to="/about" className="text-gray-700 hover:text-green-500">
 							About Us
 						</Link>
 					</li>
 					<li>
-						<Link to="/contact" className="text-gray-700 hover:text-blue-500">
+						<Link to="/contact" className="text-gray-700 hover:text-green-500">
 							Contact Us
 						</Link>
 					</li>

@@ -33,8 +33,8 @@ const About = () => {
 						</div>
 					</div>
 
-					<div className="flex flex-wrap gap-4">
-						<div className="lg:w-1/3 w-full bg-green-600 p-6 text-white rounded-lg">
+					<div className="flex flex-row gap-4">
+						<div className="lg:w-1/3 w-full bg-white p-6 text-green-600 border-4 rounded-lg">
 							<h3 className="text-xl font-semibold mb-2">Our Mission</h3>
 							<p>
 								Our mission is to break down barriers to mental health care by
@@ -50,7 +50,7 @@ const About = () => {
 								clicks.
 							</p>
 						</div>
-						<div className="lg:w-1/3 w-full bg-green-600 p-6 text-white rounded-lg">
+						<div className="lg:w-1/3 w-full text-green-600 p-6 bg-white border-4 rounded-lg">
 							<h3 className="text-xl font-semibold mb-2">Our Values</h3>
 							<ul className="list-disc list-inside">
 								<li>Accessibility</li>
