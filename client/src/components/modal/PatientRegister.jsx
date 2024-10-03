@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import { patient_register } from "../../api/register";
+import RegistrationConfirmationModal from "./RegistrationConfirmationModal";
 
 const PatientRegister = ({ onCancel }) => {
+	const [showModal, setShowModal] = useState(false);
+
 	const [formData, setFormData] = useState({
 		firstName: "",
 		lastName: "",
@@ -8,7 +12,7 @@ const PatientRegister = ({ onCancel }) => {
 		userPassword: "",
 		userConfirmPassword: "",
 		userGender: "",
-		userAge: "",
+		userBirthDate: "",
 		userAddress: "",
 		userStatus: "Single",
 		userContact: "",
@@ -22,9 +26,11 @@ const PatientRegister = ({ onCancel }) => {
 		}));
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		console.log("Form submitted: ", formData);
+
+		await patient_register(formData);
 
 		setFormData({
 			firstName: "",
@@ -33,13 +39,21 @@ const PatientRegister = ({ onCancel }) => {
 			userPassword: "",
 			userConfirmPassword: "",
 			userGender: "",
-			userAge: "",
+			userBirthDate: "",
 			userAddress: "",
 			userStatus: "Single",
 			userContact: "",
 		});
 		onCancel();
 	};
+
+	const showDetails = () => {
+		setShowModal(true);
+	}
+	const hideDetails = () => {
+		setShowModal(false);
+	}
+
 
 	return (
 		<div
@@ -155,16 +169,16 @@ const PatientRegister = ({ onCancel }) => {
 								</div>
 
 								<div className="form-group my-2">
-									<label htmlFor="age" className="block">
-										Age
+									<label htmlFor="birth" className="block">
+										Birth Date
 									</label>
 									<input
-										type="number"
+										type="date"
 										className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
-										id="age"
-										placeholder="Enter your age..."
-										name="userAge"
-										value={formData.userAge}
+										id="birth"
+										placeholder="Enter your birthdate..."
+										name="userBirthDate"
+										value={formData.userBirthDate}
 										onChange={handleInputChange}
 									/>
 								</div>
@@ -218,7 +232,8 @@ const PatientRegister = ({ onCancel }) => {
 
 						<div className="modal-footer p-2 border-t flex justify-end">
 							<button
-								type="submit"
+								type="button"
+								onClick={showDetails}
 								className="bg-green-600 text-white rounded-full py-2 px-8 mr-2 hover:bg-green-700">
 								Register
 							</button>
@@ -232,6 +247,13 @@ const PatientRegister = ({ onCancel }) => {
 					</form>
 				</div>
 			</div>
+			{showModal && (
+				<RegistrationConfirmationModal
+					formData={formData}
+					onSubmit={handleSubmit}
+					onCancel={hideDetails}
+				/>
+			)}
 		</div>
 	);
 };

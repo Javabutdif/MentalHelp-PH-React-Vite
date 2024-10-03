@@ -4,6 +4,7 @@ import ProfessionalRegister from "../components/modal/ProfessionalRegister";
 import PatientRegister from "../components/modal/PatientRegister";
 import { Link } from "react-router-dom";
 
+
 function Landing() {
 	const [showModal, setShowModal] = useState(false);
 	const [professionalModal, setProfessionalModal] = useState(false);

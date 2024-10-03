@@ -1,14 +1,21 @@
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
+import { logout } from "../../api/login";
+import { showToast } from "../utils/alertHelper";
 
-function Navbar() {
-	const location = useLocation();
-	
+function AdminNavbar() {
+	const navigate = useNavigate();
+
+	const handleLogout = async () => {
+		await logout();
+		navigate("/login");
+	};
+
 	return (
 		<nav className="bg-white shadow fixed w-full top-0 flex items-center justify-between p-2">
 			<div className="flex items-center">
 				<img src="/logon.png" className="h-16 w-16 mx-3" alt="Logo" />
-				<Link to="/" className="font-bold text-xl">
+				<Link to="/admin/dashboard" className="font-bold text-xl">
 					MentalHelp PH
 				</Link>
 			</div>
@@ -25,20 +32,32 @@ function Navbar() {
 				<ul className="flex space-x-8">
 					<li>
 						<Link
-							to="/community"
+							to="/admin/dashboard"
 							className="text-gray-700 hover:text-green-500">
-							Community
+							Dashboard
 						</Link>
 					</li>
 					<li>
-						<Link to="/about" className="text-gray-700 hover:text-green-500">
-							About Us
+						<Link
+							to="/admin/patient"
+							className="text-gray-700 hover:text-green-500">
+							Patient
 						</Link>
 					</li>
 					<li>
-						<Link to="/contact" className="text-gray-700 hover:text-green-500">
-							Contact Us
+						<Link
+							to="/admin/professional"
+							className="text-gray-700 hover:text-green-500">
+							Professionals
 						</Link>
+					</li>
+					<li>
+						<button
+							type="button"
+							onClick={handleLogout}
+							className="text-red-500 hover:text-red-700">
+							Logout
+						</button>
 					</li>
 				</ul>
 			</div>
@@ -46,4 +65,4 @@ function Navbar() {
 	);
 }
 
-export default Navbar;
+export default AdminNavbar;
