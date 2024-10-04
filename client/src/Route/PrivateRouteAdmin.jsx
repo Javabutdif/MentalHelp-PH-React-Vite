@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import Server_Connection from "../connection/Server_Connection";
 import axios from "axios";
 import LoadingScreen from "../Loader/LoadingScreen";
@@ -37,7 +37,11 @@ const PrivateRouteAdmin = ({ element: Component }) => {
 	}, []);
 
 	if (loading) {
-		return <LoadingScreen />;
+		return (
+			<div className="relative min-h-screen flex justify-center items-center bg-gray-100 px-4">
+				<LoadingScreen />
+			</div>
+		);
 	}
 
 	return isAuthenticated ? <Component /> : <Navigate to="/" replace />;

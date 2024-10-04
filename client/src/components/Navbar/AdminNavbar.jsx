@@ -16,7 +16,7 @@ function AdminNavbar() {
 			<div className="flex items-center">
 				<img src="/logon.png" className="h-16 w-16 mx-3" alt="Logo" />
 				<Link to="/admin/dashboard" className="font-bold text-xl">
-					MentalHelp PH
+					MentalHelp PH | Admin
 				</Link>
 			</div>
 			<button className="block lg:hidden text-gray-500 focus:outline-none">

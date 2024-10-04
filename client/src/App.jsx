@@ -1,5 +1,6 @@
 import { useState } from "react";
 import LandingLayout from "./components/Layout/LandingLayout";
+import AdminLayout from "./components/Layout/AdminLayout";
 import "./App.css";
 import Home from "./pages/Home";
 import Community from "./pages/Community";
@@ -8,8 +9,10 @@ import Contact from "./pages/Contact";
 import Login from "./pages/Login";
 import AdminRegister from "./pages/Admin/AdminRegister";
 import PrivateRouteAdmin from "./Route/PrivateRouteAdmin";
-import AdminNavbar from "./components/Navbar/AdminNavbar";
 import Dashboard from "./pages/Admin/Dashboard";
+import Patient from "./pages/Admin/Patient";
+import Professional from "./pages/Admin/Professional";
+import NotFound from "./components/NotFound";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -26,12 +29,21 @@ function App() {
 				</Route>
 				<Route
 					path="/admin/"
-					element={<PrivateRouteAdmin element={AdminNavbar} />}>
+					element={<PrivateRouteAdmin element={AdminLayout} />}>
 					<Route
 						path="dashboard"
 						element={<PrivateRouteAdmin element={Dashboard} />}
 					/>
+					<Route
+						path="patient"
+						element={<PrivateRouteAdmin element={Patient} />}
+					/>
+					<Route
+						path="professional"
+						element={<PrivateRouteAdmin element={Professional} />}
+					/>
 				</Route>
+				<Route path="*" element={<NotFound />} />
 			</Routes>
 		</Router>
 	);

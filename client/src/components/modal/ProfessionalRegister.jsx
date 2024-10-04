@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import { professional_register } from "../../api/register";
+import RegistrationConfirmationModal from "./RegistrationConfirmationModal";
 
 function ProfessionalRegister({ onCancel }) {
+	const [showModal, setShowModal] = useState(false);
 	const [formData, setFormData] = useState({
 		firstname: "",
 		lastname: "",
@@ -22,9 +25,30 @@ function ProfessionalRegister({ onCancel }) {
 		});
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		console.log(formData);
+		await professional_register(formData);
+		setFormData({
+			firstName: "",
+			lastName: "",
+			userEmail: "",
+			userPassword: "",
+			userConfirmPassword: "",
+			userGender: "",
+			userBirthDate: "",
+			userAddress: "",
+			userStatus: "Single",
+			userContact: "",
+		});
+		onCancel();
+	};
+
+	const showDetails = () => {
+		setShowModal(true);
+	};
+	const hideDetails = () => {
+		setShowModal(false);
 	};
 
 	return (
@@ -187,6 +211,7 @@ function ProfessionalRegister({ onCancel }) {
 					<div className="sm:col-span-2 flex justify-end space-x-2 mt-4">
 						<button
 							type="submit"
+							onClick={showDetails}
 							className="bg-green-600 rounded-full  text-white px-4 py-2  hover:bg-green-700">
 							Register
 						</button>
@@ -199,6 +224,13 @@ function ProfessionalRegister({ onCancel }) {
 					</div>
 				</form>
 			</div>
+			{showModal && (
+				<RegistrationConfirmationModal
+					formData={formData}
+					onSubmit={handleSubmit}
+					onCancel={hideDetails}
+				/>
+			)}
 		</div>
 	);
 }

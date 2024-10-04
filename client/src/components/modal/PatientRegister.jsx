@@ -45,6 +45,7 @@ const PatientRegister = ({ onCancel }) => {
 			userContact: "",
 		});
 		onCancel();
+		hideDetails();
 	};
 
 	const showDetails = () => {
