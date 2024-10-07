@@ -5,9 +5,10 @@ import { MdOutlineMailOutline, MdPhone } from "react-icons/md";
 import { IoSchoolOutline, IoLocationOutline } from "react-icons/io5";
 
 function RegistrationConfirmationModal({ formData, onSubmit, onCancel, type }) {
+	console.log(formData);
 	return (
 		<>
-			{type === "Patient" ? (
+			{type === "Register" || type === "Edit" ? (
 				<div className="fixed inset-0 flex items-center justify-center z-50">
 					<div
 						className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"
@@ -65,18 +66,24 @@ function RegistrationConfirmationModal({ formData, onSubmit, onCancel, type }) {
 									{formData.userGender}
 								</span>
 							</div>
-
-							<div className="flex items-center justify-between gap-10">
-								<div className="flex items-center space-x-3">
-									<LiaCalendar className="text-xl text-gray-600" size={20} />
-									<span className="pt-1 font-medium font-secondary text-lg text-gray-600">
-										Birth Date
-									</span>
-								</div>
-								<span className="pt-1 text-gray-900 font-secondary text-lg">
-									{formData.userBirthDate}
-								</span>
-							</div>
+							{type === "Register" && (
+								<>
+									<div className="flex items-center justify-between gap-10">
+										<div className="flex items-center space-x-3">
+											<LiaCalendar
+												className="text-xl text-gray-600"
+												size={20}
+											/>
+											<span className="pt-1 font-medium font-secondary text-lg text-gray-600">
+												Birth Date
+											</span>
+										</div>
+										<span className="pt-1 text-gray-900 font-secondary text-lg">
+											{formData.userBirthDate}
+										</span>
+									</div>
+								</>
+							)}
 
 							<div className="flex items-center justify-between gap-10">
 								<div className="flex items-center space-x-3">

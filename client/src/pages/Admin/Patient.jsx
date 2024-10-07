@@ -2,23 +2,50 @@ import React, { useState, useEffect } from "react";
 import FormButton from "../../components/Forms/FormButton";
 import ButtonsComponent from "../../components/Custom/ButtonsComponent";
 import TableComponent from "../../components/Custom/TableComponent";
-import { motion } from "framer-motion";
-import UnderConstruction from "../../components/UnderConstruction/UnderConstruction";
-import { getAllPatients } from "../../api/patients";
+import PatientRegister from "../../components/modal/PatientRegister";
+import { getAllPatients, handleDeletePatient } from "../../api/patients";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import ConfirmationModal from "../../components/common/ConfirmationModal";
 
 function Patient() {
 	const [data, setData] = useState([]);
-	const [filteredData, setFilteredData] = useState([]);
+	const [editId, setEditId] = useState("");
+	const [showModal, setShowModal] = useState(false);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [deleteId, setDeleteId] = useState("");
+
+	const fetchData = async () => {
+		const result = await getAllPatients();
+
+		setData(result);
+	};
 
 	useEffect(() => {
-		const fetchData = async () => {
-			const result = await getAllPatients();
-
-			setData(result);
-		};
-
 		fetchData();
-	}, []);
+	});
+
+	const editPatient = (id) => {
+		console.log(id);
+		setEditId(id);
+		setShowModal(true);
+	};
+	const closeEditPatient = () => {
+		setEditId("");
+		setShowModal(false);
+		fetchData();
+	};
+
+	const handleDeleteModal = (id) => {
+		setShowDeleteModal(true);
+		setDeleteId(id);
+	};
+	const hideDeleteModal = () => {
+		setShowDeleteModal(false);
+	};
+	const handleDeletePatients = async () => {
+		await handleDeletePatient(deleteId);
+		hideDeleteModal();
+	};
 
 	const columns = [
 		{
@@ -91,20 +118,20 @@ function Patient() {
 					<FormButton
 						type="button"
 						text="Edit"
-						//onClick={() => handleEditButtonClick(row)}
-						icon={<i className="fas fa-edit" />} // Simple icon
+						onClick={() => editPatient(row.patient_id)}
+						icon={<FaEdit />}
 						styles="flex items-center space-x-2 bg-gray-200 text-gray-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
-						textClass="text-gray-800" // Elegant text color
+						textClass="text-gray-800"
 						whileHover={{ scale: 1.02, opacity: 0.95 }}
 						whileTap={{ scale: 0.98, opacity: 0.9 }}
 					/>
 					<FormButton
 						type="button"
 						text="Delete"
-						//onClick={() => showModal(row)}
-						icon={<i className="fas fa-trash" />} // Simple icon
+						onClick={() => handleDeleteModal(row.patient_id)}
+						icon={<FaTrash />}
 						styles="flex items-center space-x-2 bg-gray-200 text-red-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
-						textClass="text-red-800" // Elegant text color
+						textClass="text-red-800"
 						whileHover={{ scale: 1.02, opacity: 0.95 }}
 						whileTap={{ scale: 0.98, opacity: 0.9 }}
 					/>
@@ -115,6 +142,16 @@ function Patient() {
 	return (
 		<div className="pt-20">
 			<TableComponent columns={columns} data={data} />
+			{showModal && (
+				<PatientRegister onCancel={closeEditPatient} type="Edit" id={editId} />
+			)}
+			{showDeleteModal && (
+				<ConfirmationModal
+					type="Delete"
+					onSubmit={handleDeletePatients}
+					onCancel={hideDeleteModal}
+				/>
+			)}
 		</div>
 	);
 }

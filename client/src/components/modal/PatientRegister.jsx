@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { patient_register } from "../../api/register";
+import { retrieveSpecificPatient , editPatient } from "../../api/patients";
 import RegistrationConfirmationModal from "./RegistrationConfirmationModal";
 
-const PatientRegister = ({ onCancel }) => {
+const PatientRegister = ({ onCancel, type, id }) => {
 	const [showModal, setShowModal] = useState(false);
-
 	const [formData, setFormData] = useState({
 		firstName: "",
 		lastName: "",
@@ -18,6 +18,31 @@ const PatientRegister = ({ onCancel }) => {
 		userContact: "",
 	});
 
+
+	useEffect(() => {
+		if (type === "Edit" && id) {
+			const fetchPatient = async () => {
+				try {
+					const response = await retrieveSpecificPatient(id);
+
+					setFormData({
+						id: response[0].patient_id,
+						firstName: response[0].firstname,
+						lastName: response[0].lastname,
+						userEmail: response[0].email,
+						userGender: response[0].gender,
+						userAddress: response[0].addresses,
+						userStatus: response[0].patient_status || "Single",
+						userContact: response[0].contact_number,
+					});
+				} catch (error) {
+					console.error("Error fetching patient data: ", error);
+				}
+			};
+			fetchPatient();
+		}
+	}, [type, id]);
+
 	const handleInputChange = (e) => {
 		const { name, value } = e.target;
 		setFormData((prevData) => ({
@@ -30,7 +55,12 @@ const PatientRegister = ({ onCancel }) => {
 		e.preventDefault();
 		console.log("Form submitted: ", formData);
 
-		await patient_register(formData);
+		if (type === "Register") {
+			await patient_register(formData);
+		} else if (type === "Edit") {
+
+			await editPatient(formData);
+		}
 
 		setFormData({
 			firstName: "",
@@ -50,15 +80,14 @@ const PatientRegister = ({ onCancel }) => {
 
 	const showDetails = () => {
 		setShowModal(true);
-	}
+	};
 	const hideDetails = () => {
 		setShowModal(false);
-	}
-
+	};
 
 	return (
 		<div
-			className={`fixed inset-0 z-50 `}
+			className={`fixed inset-0 z-50`}
 			aria-labelledby="modal-title"
 			role="dialog"
 			aria-modal="true">
@@ -67,7 +96,7 @@ const PatientRegister = ({ onCancel }) => {
 				<div className="relative bg-white rounded-lg shadow-lg w-full max-w-lg mx-auto">
 					<div className="modal-header flex justify-between p-4 border-b">
 						<h5 className="text-lg font-bold text-green-600" id="modal-title">
-							Patient Sign Up
+							{type === "Register" ? "Patient Sign Up" : "Edit Patient"}
 						</h5>
 						<button
 							type="button"
@@ -124,35 +153,39 @@ const PatientRegister = ({ onCancel }) => {
 									/>
 								</div>
 
-								<div className="form-group my-2">
-									<label htmlFor="password" className="block">
-										Password
-									</label>
-									<input
-										type="password"
-										className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
-										id="password"
-										placeholder="Password"
-										name="userPassword"
-										value={formData.userPassword}
-										onChange={handleInputChange}
-									/>
-								</div>
+								{type === "Register" && (
+									<>
+										<div className="form-group my-2">
+											<label htmlFor="password" className="block">
+												Password
+											</label>
+											<input
+												type="password"
+												className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
+												id="password"
+												placeholder="Password"
+												name="userPassword"
+												value={formData.userPassword}
+												onChange={handleInputChange}
+											/>
+										</div>
 
-								<div className="form-group my-2">
-									<label htmlFor="confirm_password" className="block">
-										Confirm Password
-									</label>
-									<input
-										type="password"
-										className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
-										id="confirm_password"
-										placeholder="Confirm Password"
-										name="userConfirmPassword"
-										value={formData.userConfirmPassword}
-										onChange={handleInputChange}
-									/>
-								</div>
+										<div className="form-group my-2">
+											<label htmlFor="confirm_password" className="block">
+												Confirm Password
+											</label>
+											<input
+												type="password"
+												className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
+												id="confirm_password"
+												placeholder="Confirm Password"
+												name="userConfirmPassword"
+												value={formData.userConfirmPassword}
+												onChange={handleInputChange}
+											/>
+										</div>
+									</>
+								)}
 
 								<div className="form-group my-2">
 									<label htmlFor="gender" className="block">
@@ -168,21 +201,24 @@ const PatientRegister = ({ onCancel }) => {
 										onChange={handleInputChange}
 									/>
 								</div>
-
-								<div className="form-group my-2">
-									<label htmlFor="birth" className="block">
-										Birth Date
-									</label>
-									<input
-										type="date"
-										className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
-										id="birth"
-										placeholder="Enter your birthdate..."
-										name="userBirthDate"
-										value={formData.userBirthDate}
-										onChange={handleInputChange}
-									/>
-								</div>
+								{type === "Register" && (
+									<>
+										<div className="form-group my-2">
+											<label htmlFor="birth" className="block">
+												Birth Date
+											</label>
+											<input
+												type="date"
+												className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
+												id="birth"
+												placeholder="Enter your birthdate..."
+												name="userBirthDate"
+												value={formData.userBirthDate}
+												onChange={handleInputChange}
+											/>
+										</div>
+									</>
+								)}
 
 								<div className="form-group my-2">
 									<label htmlFor="address" className="block">
@@ -236,12 +272,12 @@ const PatientRegister = ({ onCancel }) => {
 								type="button"
 								onClick={showDetails}
 								className="bg-green-600 text-white rounded-full py-2 px-8 mr-2 hover:bg-green-700">
-								Register
+								{type === "Register" ? "Register" : "Save Changes"}
 							</button>
 							<button
 								type="button"
 								onClick={onCancel}
-								className="bg-white text-red-600 rounded-full py-2 px-8 hover:bg-red-700 hover:text-white">
+								className="bg-gray-400 text-white rounded-full py-2 px-6 hover:bg-gray-500">
 								Cancel
 							</button>
 						</div>
@@ -251,8 +287,10 @@ const PatientRegister = ({ onCancel }) => {
 			{showModal && (
 				<RegistrationConfirmationModal
 					formData={formData}
-					onSubmit={handleSubmit}
 					onCancel={hideDetails}
+					showModal={showModal}
+					type={type}
+					onSubmit={handleSubmit}
 				/>
 			)}
 		</div>

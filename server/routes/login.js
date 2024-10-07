@@ -56,8 +56,8 @@ router.post("/login", async (req, res) => {
 			} else {
 				//Patient Login
 				db.query(
-					"SELECT * FROM patient WHERE email = ?",
-					[email],
+					"SELECT * FROM patient WHERE email = ? AND account_status = ?",
+					[email, "Active"],
 					async (error, result) => {
 						if (error) {
 							console.error(error);

@@ -5,15 +5,21 @@ import {
 } from "../../api/professionals";
 import ButtonsComponent from "../../components/Custom/ButtonsComponent";
 import FormButton from "../../components/Forms/FormButton";
+import TableComponent from "../../components/Custom/TableComponent";
+import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 
 function Professional() {
 	const [activeData, setActiveData] = useState([]);
 	const [pendingData, setPendingData] = useState([]);
 	const [allTable, setAllTable] = useState(true);
 	const [pendingTable, setPendingTable] = useState(false);
+	const [data, setData] = useState([]);
 
 	const showAllTable = () => {
-		//Have a table component render when showing all the buttons
+		setData(activeData);
+	};
+	const showPendingTable = () => {
+		setData(pendingData);
 	};
 
 	useEffect(() => {
@@ -29,6 +35,130 @@ function Professional() {
 		fetchActiveData();
 		fetchPendingData();
 	}, []);
+	const columns = [
+		{
+			key: "professional_id",
+			label: "ID",
+			selector: (row) => row.professional_id, // Return value
+			sortable: true,
+			cell: (row) => (
+				<div className="text-xs">
+					<div>{row.professional_id}</div>
+				</div>
+			),
+		},
+		{
+			key: "firstname",
+			label: "First Name",
+			selector: (row) => row.firstname,
+			sortable: true,
+		},
+		{
+			key: "lastname",
+			label: "Last Name",
+			selector: (row) => row.lastname,
+			sortable: true,
+		},
+		{
+			key: "email",
+			label: "Email Account",
+			selector: (row) => row.email,
+			sortable: true,
+		},
+		{
+			key: "contact_number",
+			label: "Contact Number",
+			selector: (row) => row.contact_number,
+			sortable: true,
+		},
+		{
+			key: "type",
+			label: "Profession",
+			selector: (row) => row.type,
+			sortable: true,
+		},
+		{
+			key: "license",
+			label: "License",
+			selector: (row) => row.license,
+			sortable: true,
+		},
+		{
+			key: "experience",
+			label: "Experience",
+			selector: (row) => row.experience, // Fixed typo here
+		},
+		{
+			key: "actions",
+			label: "Actions",
+
+			cell: (row) => (
+				<ButtonsComponent>
+					{row.professional_status === "Accepted" ? (
+						<>
+							<FormButton
+								type="button"
+								text="View"
+								icon={<FaEye />}
+								styles="flex items-center space-x-2 bg-gray-200 text-gray-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+								textClass="text-gray-800"
+								whileHover={{ scale: 1.02, opacity: 0.95 }}
+								whileTap={{ scale: 0.98, opacity: 0.9 }}
+							/>
+							<FormButton
+								type="button"
+								text="Edit"
+								icon={<FaEdit />}
+								styles="flex items-center space-x-2 bg-gray-200 text-gray-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+								textClass="text-blue-800"
+								whileHover={{ scale: 1.02, opacity: 0.95 }}
+								whileTap={{ scale: 0.98, opacity: 0.9 }}
+							/>
+							<FormButton
+								type="button"
+								text="Delete"
+								icon={<FaTrash />}
+								styles="flex items-center space-x-2 bg-gray-200 text-red-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
+								textClass="text-red-800"
+								whileHover={{ scale: 1.02, opacity: 0.95 }}
+								whileTap={{ scale: 0.98, opacity: 0.9 }}
+							/>
+						</>
+					) : (
+						<>
+							<FormButton
+								type="button"
+								text="View"
+								icon={<FaEye />}
+								styles="flex items-center space-x-2 bg-gray-200 text-gray-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+								textClass="text-gray-800"
+								whileHover={{ scale: 1.02, opacity: 0.95 }}
+								whileTap={{ scale: 0.98, opacity: 0.9 }}
+							/>
+							<FormButton
+								type="button"
+								text="Accept"
+								icon={<FaEdit />}
+								styles="flex items-center space-x-2 bg-gray-200 text-gray-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+								textClass="text-gray-800"
+								whileHover={{ scale: 1.02, opacity: 0.95 }}
+								whileTap={{ scale: 0.98, opacity: 0.9 }}
+							/>
+							<FormButton
+								type="button"
+								text="Decline"
+								icon={<FaTrash />}
+								styles="flex items-center space-x-2 bg-gray-200 text-red-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
+								textClass="text-red-800"
+								whileHover={{ scale: 1.02, opacity: 0.95 }}
+								whileTap={{ scale: 0.98, opacity: 0.9 }}
+							/>
+						</>
+					)}
+				</ButtonsComponent>
+			),
+		},
+	];
 
 	return (
 		<div className="pt-20">
@@ -37,7 +167,7 @@ function Professional() {
 					<FormButton
 						type="button"
 						text="All Professionals"
-						//onClick={() => handleEditButtonClick(row)}
+						onClick={() => showAllTable()}
 						icon={<i className="fas fa-edit" />} // Simple icon
 						styles="flex items-center space-x-2 bg-green-600 text-white rounded-md px-3 py-1.5 transition duration-150 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-white-400"
 						textClass="text-white" // Elegant text color
@@ -47,7 +177,7 @@ function Professional() {
 					<FormButton
 						type="button"
 						text="Pending Professionals"
-						//onClick={() => handleEditButtonClick(row)}
+						onClick={() => showPendingTable()}
 						icon={<i className="fas fa-edit" />} // Simple icon
 						styles="flex items-center space-x-2 bg-green-600  text-white rounded-md px-3 py-1.5 transition duration-150 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-400"
 						textClass="text-white" // Elegant text color
@@ -56,6 +186,8 @@ function Professional() {
 					/>
 				</ButtonsComponent>
 			</div>
+
+			<TableComponent columns={columns} data={data} />
 		</div>
 	);
 }
