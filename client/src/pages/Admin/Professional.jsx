@@ -89,6 +89,23 @@ function Professional() {
 			selector: (row) => row.experience, // Fixed typo here
 		},
 		{
+			key: "professional_status",
+			label: "Status",
+			selector: (row) => row.professional_status,
+			cell: (row) => (
+				<div className="text-center">
+					<span
+						className={`px-2 py-1 rounded text-xs ${
+							row.professional_status === "Accepted"
+								? "bg-green-200 text-green-800"
+								: "bg-yellow-200 text-yellow-800"
+						}`}>
+						{row.professional_status}
+					</span>
+				</div>
+			),
+		},
+		{
 			key: "actions",
 			label: "Actions",
 

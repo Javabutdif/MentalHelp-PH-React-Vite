@@ -12,6 +12,7 @@ const admin = require("./routes/admin");
 const professional = require("./routes/professional");
 
 app.use(express.json());
+app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(

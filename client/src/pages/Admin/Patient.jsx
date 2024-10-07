@@ -104,6 +104,24 @@ function Patient() {
 			sortable: true,
 		},
 		{
+			key: "account_status",
+			label: "Account Status",
+			selector: (row) => row.account_status,
+			sortable: true,
+			cell: (row) => (
+				<div className="text-center">
+					<span
+						className={`px-2 py-1 rounded text-xs ${
+							row.account_status === "Active"
+								? "bg-green-200 text-green-800"
+								: "bg-red-200 text-red-800"
+						}`}>
+						{row.account_status}
+					</span>
+				</div>
+			),
+		},
+		{
 			key: "contact_number",
 			label: "Contact",
 			selector: (row) => row.contact_number,

@@ -51,13 +51,7 @@ function AdminNavbar() {
 							Professionals
 						</Link>
 					</li>
-					<li>
-						<Link
-							to="/admin/deleted"
-							className="text-gray-700 hover:text-green-500">
-							Deleted
-						</Link>
-					</li>
+
 					<li>
 						<button
 							type="button"

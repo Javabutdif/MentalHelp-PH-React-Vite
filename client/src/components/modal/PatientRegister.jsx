@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { patient_register } from "../../api/register";
-import { retrieveSpecificPatient , editPatient } from "../../api/patients";
+import {
+	retrieveSpecificPatient,
+	editPatient,
+	sendOtp,
+} from "../../api/patients";
 import RegistrationConfirmationModal from "./RegistrationConfirmationModal";
+import Otp from "./Otp";
+import { showToast } from "../utils/alertHelper";
 
 const PatientRegister = ({ onCancel, type, id }) => {
 	const [showModal, setShowModal] = useState(false);
+	const [showOtp, setShowOtp] = useState(false);
+	const [otp, setOtp] = useState("");
 	const [formData, setFormData] = useState({
 		firstName: "",
 		lastName: "",
@@ -17,7 +25,6 @@ const PatientRegister = ({ onCancel, type, id }) => {
 		userStatus: "Single",
 		userContact: "",
 	});
-
 
 	useEffect(() => {
 		if (type === "Edit" && id) {
@@ -51,14 +58,21 @@ const PatientRegister = ({ onCancel, type, id }) => {
 		}));
 	};
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		console.log("Form submitted: ", formData);
+	const handleOtp = async () => {
+		setShowOtp(true);
+		const data = await sendOtp(formData);
+		setOtp(data);
 
+		hideDetails();
+	};
+	const handleCloseOtp = () => {
+		setShowOtp(false);
+	};
+
+	const handleSubmit = async () => {
 		if (type === "Register") {
 			await patient_register(formData);
 		} else if (type === "Edit") {
-
 			await editPatient(formData);
 		}
 
@@ -83,6 +97,16 @@ const PatientRegister = ({ onCancel, type, id }) => {
 	};
 	const hideDetails = () => {
 		setShowModal(false);
+	};
+
+	const handleOtpValidation = async (userOtp) => {
+		console.log(userOtp);
+		console.log(otp);
+		if (String(userOtp) === String(otp)) {
+			await handleSubmit();
+		} else {
+			showToast("error", "Incorrect OTP. Please try again.");
+		}
 	};
 
 	return (
@@ -290,8 +314,11 @@ const PatientRegister = ({ onCancel, type, id }) => {
 					onCancel={hideDetails}
 					showModal={showModal}
 					type={type}
-					onSubmit={handleSubmit}
+					onSubmit={handleOtp}
 				/>
+			)}
+			{showOtp && (
+				<Otp onSubmit={handleOtpValidation} onClose={handleCloseOtp} />
 			)}
 		</div>
 	);
