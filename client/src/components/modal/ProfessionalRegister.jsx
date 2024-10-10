@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { professional_register } from "../../api/register";
 import RegistrationConfirmationModal from "./RegistrationConfirmationModal";
+import { sendOtp } from "../../api/professionals";
+import Otp from "./Otp";
 
-function ProfessionalRegister({ onCancel }) {
+function ProfessionalRegister({ onCancel, type, id }) {
 	const [showModal, setShowModal] = useState(false);
+	const [showOtp, setShowOtp] = useState(false);
+	const [otp, setOtp] = useState("");
 	const [formData, setFormData] = useState({
 		firstname: "",
 		lastname: "",
@@ -14,7 +18,7 @@ function ProfessionalRegister({ onCancel }) {
 		profession: "Psychologist",
 		experience: "",
 		license: "",
-		documents: null,
+		documents: "",
 	});
 
 	const handleChange = (e) => {
@@ -25,21 +29,20 @@ function ProfessionalRegister({ onCancel }) {
 		});
 	};
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
+	const handleSubmit = async () => {
 		console.log(formData);
 		await professional_register(formData);
 		setFormData({
-			firstName: "",
-			lastName: "",
-			userEmail: "",
-			userPassword: "",
-			userConfirmPassword: "",
-			userGender: "",
-			userBirthDate: "",
-			userAddress: "",
-			userStatus: "Single",
-			userContact: "",
+			firstname: "",
+			lastname: "",
+			contact: "",
+			email: "",
+			password: "",
+			confirmPassword: "",
+			profession: "",
+			experience: "",
+			license: "",
+			documents: "",
 		});
 		onCancel();
 	};
@@ -49,6 +52,39 @@ function ProfessionalRegister({ onCancel }) {
 	};
 	const hideDetails = () => {
 		setShowModal(false);
+	};
+
+	const handleOtp = async () => {
+		hideDetails();
+		const data = await sendOtp(formData);
+		console.log("Handle OTp");
+		if (data !== undefined) {
+			setOtp(data);
+			setShowOtp(true);
+		} else {
+			handleCloseOtp();
+		}
+	};
+	const handleCloseOtp = () => {
+		setShowOtp(false);
+	};
+
+	const handleRoute = async () => {
+		if (type === "Edit" && id) {
+			await handleSubmit();
+		} else {
+			await handleOtp();
+		}
+	};
+
+	const handleOtpValidation = async (userOtp) => {
+		console.log(userOtp);
+		console.log(otp);
+		if (String(userOtp) === String(otp)) {
+			await handleSubmit();
+		} else {
+			showToast("error", "Incorrect OTP. Please try again.");
+		}
 	};
 
 	return (
@@ -210,7 +246,7 @@ function ProfessionalRegister({ onCancel }) {
 					</div>
 					<div className="sm:col-span-2 flex justify-end space-x-2 mt-4">
 						<button
-							type="submit"
+							type="button"
 							onClick={showDetails}
 							className="bg-green-600 rounded-full  text-white px-4 py-2  hover:bg-green-700">
 							Register
@@ -224,11 +260,19 @@ function ProfessionalRegister({ onCancel }) {
 					</div>
 				</form>
 			</div>
+			{showOtp && (
+				<Otp
+					onSubmit={handleOtpValidation}
+					onClose={handleCloseOtp}
+					data={otp}
+				/>
+			)}
 			{showModal && (
 				<RegistrationConfirmationModal
 					formData={formData}
-					onSubmit={handleSubmit}
 					onCancel={hideDetails}
+					type={type}
+					onSubmit={handleRoute}
 				/>
 			)}
 		</div>

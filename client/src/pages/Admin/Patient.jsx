@@ -3,16 +3,22 @@ import FormButton from "../../components/Forms/FormButton";
 import ButtonsComponent from "../../components/Custom/ButtonsComponent";
 import TableComponent from "../../components/Custom/TableComponent";
 import PatientRegister from "../../components/modal/PatientRegister";
-import { getAllPatients, handleDeletePatient } from "../../api/patients";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import {
+	getAllPatients,
+	handleDeletePatient,
+	handleRecoverPatient,
+} from "../../api/patients";
+import { FaEdit, FaTrash, FaBriefcase } from "react-icons/fa";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
-
+//const names = ['name', 'names']
 function Patient() {
 	const [data, setData] = useState([]);
 	const [editId, setEditId] = useState("");
 	const [showModal, setShowModal] = useState(false);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [showRecoverModal, setShowRecoverModal] = useState(false);
 	const [deleteId, setDeleteId] = useState("");
+	const [recoverId, setRecoverId] = useState("");
 
 	const fetchData = async () => {
 		const result = await getAllPatients();
@@ -42,9 +48,23 @@ function Patient() {
 	const hideDeleteModal = () => {
 		setShowDeleteModal(false);
 	};
+
+	const handleRecoverModal = (id) => {
+		setRecoverId(id);
+		setShowRecoverModal(true);
+	};
+	const hideRecoverModal = () => {
+		setShowRecoverModal(false);
+	};
+
 	const handleDeletePatients = async () => {
 		await handleDeletePatient(deleteId);
 		hideDeleteModal();
+	};
+
+	const handleRecoverPatients = async () => {
+		await handleRecoverPatient(recoverId);
+		hideRecoverModal();
 	};
 
 	const columns = [
@@ -143,16 +163,33 @@ function Patient() {
 						whileHover={{ scale: 1.02, opacity: 0.95 }}
 						whileTap={{ scale: 0.98, opacity: 0.9 }}
 					/>
-					<FormButton
-						type="button"
-						text="Delete"
-						onClick={() => handleDeleteModal(row.patient_id)}
-						icon={<FaTrash />}
-						styles="flex items-center space-x-2 bg-gray-200 text-red-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
-						textClass="text-red-800"
-						whileHover={{ scale: 1.02, opacity: 0.95 }}
-						whileTap={{ scale: 0.98, opacity: 0.9 }}
-					/>
+					{row.account_status === "Active" ? (
+						<>
+							<FormButton
+								type="button"
+								text="Delete"
+								onClick={() => handleDeleteModal(row.patient_id)}
+								icon={<FaTrash />}
+								styles="flex items-center space-x-2 bg-gray-200 text-red-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
+								textClass="text-red-800"
+								whileHover={{ scale: 1.02, opacity: 0.95 }}
+								whileTap={{ scale: 0.98, opacity: 0.9 }}
+							/>
+						</>
+					) : (
+						<>
+							<FormButton
+								type="button"
+								text="Recover"
+								onClick={() => handleRecoverModal(row.patient_id)}
+								icon={<FaBriefcase />}
+								styles="flex items-center space-x-2 bg-gray-200 text-green-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
+								textClass="text-green-800"
+								whileHover={{ scale: 1.02, opacity: 0.95 }}
+								whileTap={{ scale: 0.98, opacity: 0.9 }}
+							/>
+						</>
+					)}
 				</ButtonsComponent>
 			),
 		},
@@ -169,6 +206,15 @@ function Patient() {
 					onSubmit={handleDeletePatients}
 					onCancel={hideDeleteModal}
 				/>
+			)}
+			{showRecoverModal && (
+				<>
+					<ConfirmationModal
+						type="Recover"
+						onSubmit={handleRecoverPatients}
+						onCancel={hideRecoverModal}
+					/>
+				</>
 			)}
 		</div>
 	);

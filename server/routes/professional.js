@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const router = express.Router();
 const db = require("../connection/db");
 require("dotenv").config();
+const sendMail = require("../mail/mailContents");
 
 //professional_id,firstname,lastname,email,contact_number,type,passwords,license,experience,photo,bio,comments,ratings,documents,professional_status
 
@@ -16,6 +17,27 @@ require("dotenv").config();
 // 	experience: "",
 // 	license: "",
 // 	documents: null,
+
+router.post("/professional-otp", async (req, res) => {
+	const { firstname, lastname, email } = req.body;
+
+	try {
+		let { emailInfo, otp } = await sendMail(email, firstname, lastname);
+
+		res.status(200).json({
+			message: "OTP sent successfully",
+			otp: otp,
+			emailInfo: emailInfo,
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: "Error sending OTP email",
+			error,
+		});
+	}
+});
+
+
 
 router.post("/professional-register", async (req, res) => {
 	const {

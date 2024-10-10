@@ -81,7 +81,11 @@ function Landing() {
 				/>
 			)}
 			{professionalModal && (
-				<ProfessionalRegister onCancel={hideProfessionalModal} />
+				<ProfessionalRegister
+					onCancel={hideProfessionalModal}
+					type="ProfessionalRegister"
+					id=""
+				/>
 			)}
 			{patientModal && (
 				<PatientRegister onCancel={hidePatientModal} type="Register" id="" />
