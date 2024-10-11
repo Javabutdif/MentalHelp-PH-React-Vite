@@ -2,9 +2,14 @@ import React from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import { logout } from "../../api/login";
 import { showToast } from "../utils/alertHelper";
+import { capitalizeFirstLetter } from "../utils/capitalizeLetter";
 
 function AdminNavbar() {
 	const navigate = useNavigate();
+	const location = useLocation();
+
+	const path = location.pathname.split("/");
+	const lastpath = path[path.length - 1];
 
 	const handleLogout = async () => {
 		await logout();
@@ -16,7 +21,7 @@ function AdminNavbar() {
 			<div className="flex items-center">
 				<img src="/logon.png" className="h-16 w-16 mx-3" alt="Logo" />
 				<Link to="/admin/dashboard" className="font-bold text-xl">
-					MentalHelp PH | Admin
+					MentalHelp PH | {capitalizeFirstLetter(lastpath)}
 				</Link>
 			</div>
 			<button className="block lg:hidden text-gray-500 focus:outline-none">
@@ -49,6 +54,14 @@ function AdminNavbar() {
 							to="/admin/professional"
 							className="text-gray-700 hover:text-green-500">
 							Professionals
+						</Link>
+					</li>
+
+					<li>
+						<Link
+							to="/admin/community"
+							className="text-gray-700 hover:text-green-500">
+							Community
 						</Link>
 					</li>
 

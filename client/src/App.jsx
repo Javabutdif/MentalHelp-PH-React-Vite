@@ -13,6 +13,7 @@ import Dashboard from "./pages/Admin/Dashboard";
 import Patient from "./pages/Admin/Patient";
 import Professional from "./pages/Admin/Professional";
 import NotFound from "./components/NotFound";
+import AdminCommunity from "./pages/Admin/Community";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -41,6 +42,10 @@ function App() {
 					<Route
 						path="professional"
 						element={<PrivateRouteAdmin element={Professional} />}
+					/>
+					<Route
+						path="community"
+						element={<PrivateRouteAdmin element={AdminCommunity} />}
 					/>
 				</Route>
 				<Route path="*" element={<NotFound />} />

@@ -103,7 +103,29 @@ export const getAllPendingProfessionals = async () => {
 		return null;
 	}
 };
+export const getAllDeclineProfessionals = async () => {
+	try {
+		const response = await axios.get(
+			`${Server_Connection()}/api/get-count-decline-professional`,
 
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			return response.data.data;
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};
 
 export const sendOtp = async (data) => {
 	try {
@@ -121,6 +143,102 @@ export const sendOtp = async (data) => {
 			showToast("success", response.data.message);
 			console.log(response.data);
 			return response.data.otp;
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};
+
+export const acceptProfessional = async (id) => {
+	try {
+		const response = await axios.post(
+			`${Server_Connection()}/api/accept-professional/${id}`,
+
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			showToast("success", response.data.message);
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};
+
+export const declineProfessional = async (data) => {
+	try {
+		const response = await axios.post(
+			`${Server_Connection()}/api/decline-professional`,
+			data,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			showToast("success", response.data.message);
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};
+
+export const deleteProfessional = async (id) => {
+	try {
+		const response = await axios.post(
+			`${Server_Connection()}/api/delete-professional/${id}`,
+
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			showToast("success", response.data.message);
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};
+
+export const recoverProfessional = async (id) => {
+	try {
+		const response = await axios.post(
+			`${Server_Connection()}/api/recover-professional/${id}`,
+
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			showToast("success", response.data.message);
 		} else {
 			showToast("error", response.data.message);
 		}

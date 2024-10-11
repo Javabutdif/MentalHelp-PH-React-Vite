@@ -14,162 +14,128 @@ const passwordMatch = async (data, password) => {
 router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
 
-	db.query(
-		"SELECT * FROM admin WHERE admin_email = ?",
-		[email],
-		async (error, results) => {
-			if (error) {
-				console.error(error);
-				return res.status(500).json({ error: "Internal Server Error" });
-			}
+	try {
+	
+		const adminQuery = "SELECT * FROM admin WHERE admin_email = ?";
+		const adminResults = await queryDatabase(adminQuery, [email]);
 
-			if (results.length > 0) {
-				const admin = results[0];
-
-				const isPasswordValid = await passwordMatch(
-					admin.admin_password,
-					password
-				);
-				if (!isPasswordValid) {
-					return res
-						.status(401)
-						.json({ message: "Invalid email or password." });
-				}
-
-				const data = {
+		console.log(adminResults);
+		if (adminResults.length > 0) {
+			const admin = adminResults[0];
+			if (await passwordMatch(admin.admin_password, password)) {
+				console.log("This is correct");
+				return loginSuccess(res, {
 					adminName: admin.admin_name,
 					adminEmail: admin.admin_email,
 					role: "Admin",
-				};
-				console.log(data);
-				const token = jwt.sign({ data }, token_key, {
-					expiresIn: "1h",
 				});
-
-				res.cookie("token", token, {
-					httpOnly: true,
-					secure: process.env.NODE_ENV === "production",
-					maxAge: 3600000,
-					sameSite: "None",
-				});
-				return res.json({ message: "Admin Login successful", data: data });
 			} else {
-				//Patient Login
-				db.query(
-					"SELECT * FROM patient WHERE email = ? AND account_status = ?",
-					[email, "Active"],
-					async (error, result) => {
-						if (error) {
-							console.error(error);
-							return res.status(500).json({ error: "Internal Server Error" });
-						}
-
-						if (result.length > 0) {
-							const patient = result[0];
-
-							const isPasswordValid = await passwordMatch(
-								patient.passwords,
-								password
-							);
-							if (isPasswordValid) {
-								const data = {
-									name: patient.firstname + " " + patient.lastname,
-									bio: patient.bio,
-									photo: patient.photo,
-									address: patient.addresses,
-									gender: patient.gender,
-									age: patient.age,
-									status: patient.patient_status,
-									contact: patient.contact_number,
-									role: "Patient",
-								};
-								console.log(data);
-								const token = jwt.sign({ data }, token_key, {
-									expiresIn: "1h",
-								});
-
-								res.cookie("token", token, {
-									httpOnly: true,
-									secure: process.env.NODE_ENV === "production",
-									maxAge: 3600000,
-									sameSite: "None",
-								});
-								return res.status(200).json({
-									message: "Patient Login Successful",
-									data: data,
-								});
-							} else {
-								return res
-									.status(401)
-									.json({ message: "Invalid email or password." });
-							}
-						} else {
-							//Professional Login
-							db.query(
-								"SELECT * FROM mental_health_professionals WHERE email = ?",
-								[email],
-								async (error, result1) => {
-									if (error) {
-										console.error(error);
-										return res
-											.status(500)
-											.json({ error: "Internal Server Error" });
-									}
-
-									if (result1.length > 0) {
-										const professionals = result1[0];
-
-										const isPasswordValid = await passwordMatch(
-											professionals.passwords,
-											password
-										);
-
-										if (isPasswordValid) {
-											const data = {
-												id: professionals.professional_id,
-												name:
-													professionals.firstname +
-													" " +
-													professionals.lastname,
-												bio: professionals.bio,
-												photo: professionals.photo,
-												type: professionals.type,
-												license: professionals.license,
-												experience: professionals.experience,
-												status: professionals.professional_status,
-												contact: professionals.contact_number,
-												role: "Professionals",
-											};
-											console.log(data);
-											const token = jwt.sign({ data }, token_key, {
-												expiresIn: "1h",
-											});
-
-											res.cookie("token", token, {
-												httpOnly: true,
-												secure: process.env.NODE_ENV === "production",
-												maxAge: 3600000,
-												sameSite: "None",
-											});
-											return res.status(200).json({
-												message: "Professional Login Successful",
-												data: data,
-											});
-										} else {
-											return res
-												.status(401)
-												.json({ message: "Invalid email or password." });
-										}
-									}
-								}
-							);
-						}
-					}
-				);
+				return res.status(401).json({ message: "Invalid email or password." });
 			}
 		}
-	);
+
+
+		const patientQuery =
+			"SELECT * FROM patient WHERE email = ? AND account_status = 'Active'";
+		const patientResults = await queryDatabase(patientQuery, [email]);
+
+		if (patientResults.length > 0) {
+			const patient = patientResults[0];
+			if (await passwordMatch(patient.passwords, password)) {
+				return loginSuccess(res, {
+					name: `${patient.firstname} ${patient.lastname}`,
+					bio: patient.bio,
+					photo: patient.photo,
+					address: patient.addresses,
+					gender: patient.gender,
+					age: patient.age,
+					status: patient.patient_status,
+					contact: patient.contact_number,
+					role: "Patient",
+				});
+			} else {
+				return res.status(401).json({ message: "Invalid email or password." });
+			}
+		} else {
+			
+			const deletedPatientQuery =
+				"SELECT * FROM patient WHERE email = ? AND account_status = 'Delete'";
+			const deletedPatientResults = await queryDatabase(deletedPatientQuery, [
+				email,
+			]);
+			if (deletedPatientResults.length > 0) {
+				return res.status(403).json({ message: "Account has been deleted." });
+			}
+		}
+
+	
+		const professionalQuery =
+			"SELECT * FROM mental_health_professionals WHERE email = ? AND professional_status = 'Accepted'";
+		const professionalResults = await queryDatabase(professionalQuery, [email]);
+
+		if (professionalResults.length > 0) {
+			const professional = professionalResults[0];
+			if (await passwordMatch(professional.passwords, password)) {
+				return loginSuccess(res, {
+					id: professional.professional_id,
+					name: `${professional.firstname} ${professional.lastname}`,
+					bio: professional.bio,
+					photo: professional.photo,
+					type: professional.type,
+					license: professional.license,
+					experience: professional.experience,
+					status: professional.professional_status,
+					contact: professional.contact_number,
+					role: "Professional",
+				});
+			} else {
+				return res.status(401).json({ message: "Invalid email or password." });
+			}
+		} else {
+			
+			const pendingProfessionalQuery =
+				"SELECT * FROM mental_health_professionals WHERE email = ? AND professional_status = 'Pending'";
+			const pendingProfessionalResults = await queryDatabase(
+				pendingProfessionalQuery,
+				[email]
+			);
+			if (pendingProfessionalResults.length > 0) {
+				return res
+					.status(403)
+					.json({ message: "Your account is still under review." });
+			}
+		}
+
+		return res.status(404).json({ message: "Account not found." });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json({ message: "Internal Server Error" });
+	}
 });
+
+
+async function queryDatabase(query, params) {
+	return new Promise((resolve, reject) => {
+		db.query(query, params, (error, results) => {
+			if (error) return reject(error);
+			resolve(results);
+		});
+	});
+}
+
+
+function loginSuccess(res, data) {
+	const token = jwt.sign({ data }, token_key, { expiresIn: "1h" });
+	res.cookie("token", token, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		maxAge: 3600000,
+		sameSite: "None",
+	});
+	return res
+		.status(200)
+		.json({ message: `${data.role} Login Successful`, data });
+}
 
 router.get("/protected-route", authenticateToken, (req, res) => {
 	return res.json({

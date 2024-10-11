@@ -203,6 +203,7 @@ function Patient() {
 			{showDeleteModal && (
 				<ConfirmationModal
 					type="Delete"
+					person="patient"
 					onSubmit={handleDeletePatients}
 					onCancel={hideDeleteModal}
 				/>
@@ -211,6 +212,7 @@ function Patient() {
 				<>
 					<ConfirmationModal
 						type="Recover"
+						person="patient"
 						onSubmit={handleRecoverPatients}
 						onCancel={hideRecoverModal}
 					/>

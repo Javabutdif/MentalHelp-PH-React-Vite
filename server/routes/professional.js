@@ -73,7 +73,10 @@ router.post("/professional-register", async (req, res) => {
 			if (error) {
 				return res.status(500).json({ error });
 			}
-			res.status(200).json({ message: "Professional Successfully Registered" });
+			res.status(200).json({
+				message:
+					"Professional registered successfully. Verification of your account will take a few days.",
+			});
 
 			console.log(error);
 		}

@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 
 const TableHeader = ({ columns, sortConfig, handleSort }) => (
-	<thead className="hidden md:table-header-group bg-neutral-light text-xs md:text-sm font-medium text-dark border-b border-neutral-medium">
+	<thead className="hidden md:table-header-group bg-green-800 text-white text-xs md:text-sm font-medium text-dark border-b border-neutral-medium">
 		<tr>
 			{columns.map((column, index) => (
 				<th

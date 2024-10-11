@@ -2,8 +2,8 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
 const db = require("../connection/db");
+const { sendDeclineMail } = require("../mail/mailContents");
 require("dotenv").config();
-
 
 //Admin Register
 router.post("/admin-register", async (req, res) => {
@@ -68,6 +68,21 @@ router.get("/get-count-pending-professional", async (req, res) => {
 	});
 });
 
+router.get("/get-count-decline-professional", async (req, res) => {
+	const query =
+		" SELECT count(professional_id) AS id FROM mental_health_professionals WHERE professional_status = 'Decline'";
+	db.query(query, (error, results) => {
+		if (error) {
+			return res
+				.status(500)
+				.json({ message: "Unable to retrieve professionals count" });
+		}
+
+		const count = results[0]?.id || 0;
+		res.status(200).json({ data: count });
+	});
+});
+
 //Get All Patient Data
 router.get("/get-all-patient", async (req, res) => {
 	const query =
@@ -83,7 +98,7 @@ router.get("/get-all-patient", async (req, res) => {
 //Get All Active Professinal Data
 router.get("/get-all-active-professional", async (req, res) => {
 	const query =
-		"SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname, mental_health_professionals.email, mental_health_professionals.type, mental_health_professionals.experience, mental_health_professionals.license,mental_health_professionals.professional_status, mental_health_professionals.contact_number ,mental_health_professionals.professional_status  FROM mental_health_professionals WHERE professional_status = 'Accepted'";
+		"SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname, mental_health_professionals.email, mental_health_professionals.type, mental_health_professionals.experience, mental_health_professionals.license,mental_health_professionals.professional_status, mental_health_professionals.contact_number ,mental_health_professionals.professional_status  FROM mental_health_professionals WHERE professional_status = 'Accepted' OR professional_status = 'Decline' OR professional_status = 'Delete'";
 	db.query(query, (error, results) => {
 		if (error) {
 			return res
@@ -111,5 +126,88 @@ router.get("/get-all-pending-professional", async (req, res) => {
 	});
 });
 
+//Accept request
+router.post("/accept-professional/:id", async (req, res) => {
+	const { id } = req.params;
+	const query =
+		"UPDATE mental_health_professionals SET professional_status = ? WHERE professional_id = ?";
+	db.query(query, ["Accepted", id], (error, result) => {
+		if (error) {
+			return res.status(500).json({ message: "Database error", error });
+		}
+		if (result.affectedRows === 0) {
+			return res.status(500).json({ message: "Professional not found" });
+		} else {
+			return res
+				.status(200)
+				.json({ message: "Professional  accepted successfully" });
+		}
+	});
+});
+
+//Delete Professional
+router.post("/delete-professional/:id", async (req, res) => {
+	const { id } = req.params;
+	const query =
+		"UPDATE mental_health_professionals SET professional_status = ? WHERE professional_id = ?";
+	db.query(query, ["Delete", id], (error, result) => {
+		if (error) {
+			return res.status(500).json({ message: "Database error", error });
+		}
+		if (result.affectedRows === 0) {
+			return res.status(500).json({ message: "Professional not found" });
+		} else {
+			return res
+				.status(200)
+				.json({ message: "Professional  deleted successfully" });
+		}
+	});
+});
+
+//Recover Professional
+router.post("/recover-professional/:id", async (req, res) => {
+	const { id } = req.params;
+	const query =
+		"UPDATE mental_health_professionals SET professional_status = ? WHERE professional_id = ?";
+	db.query(query, ["Accepted", id], (error, result) => {
+		if (error) {
+			return res.status(500).json({ message: "Database error", error });
+		}
+		if (result.affectedRows === 0) {
+			return res.status(500).json({ message: "Professional not found" });
+		} else {
+			return res
+				.status(200)
+				.json({ message: "Professional  recover successfully" });
+		}
+	});
+});
+
+//Decline Request
+
+router.post("/decline-professional", async (req, res) => {
+	const { professional_id, email, firstname, lastname } = req.body;
+
+	try {
+		let { emailInfo } = await sendDeclineMail(email, firstname, lastname);
+
+		const query =
+			"UPDATE mental_health_professionals SET professional_status = ? WHERE professional_id = ?";
+		db.query(query, ["Decline", professional_id], (error, result) => {
+			if (error) {
+				return res.status(500).json({ message: "Database error", error });
+			}
+			if (result.affectedRows === 0) {
+				return res.status(404).json({ message: "Professional not found" });
+			} else {
+				return res
+					.status(200)
+					.json({ message: "Professional declined successfully", emailInfo });
+			}
+		});
+	} catch (error) {
+		return res.status(500).json({ message: "Error sending email", error });
+	}
+});
 
 module.exports = router;

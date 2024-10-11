@@ -1,10 +1,16 @@
 import React from "react";
-import { FaUserMd, FaUserCheck, FaUserClock } from "react-icons/fa";
+import {
+	FaUserMd,
+	FaUserCheck,
+	FaUserClock,
+	FaUserMinus,
+} from "react-icons/fa";
 
 const DashboardCard = ({
 	patientsCount,
 	activeProfessionalsCount,
 	pendingProfessionalsCount,
+	declinePorfessionalsCount,
 }) => {
 	return (
 		<div className="bg-white shadow-lg rounded-lg p-6 flex flex-col space-y-4">
@@ -39,6 +45,17 @@ const DashboardCard = ({
 				</div>
 				<span className="text-2xl font-bold text-gray-800">
 					{pendingProfessionalsCount}
+				</span>
+			</div>
+			<div className="flex items-center justify-between bg-red-100 p-4 rounded-lg shadow">
+				<div className="flex items-center space-x-3">
+					<FaUserMinus className="text-red-500 text-2xl" />
+					<span className="text-gray-700 font-medium">
+						Declined Applications
+					</span>
+				</div>
+				<span className="text-2xl font-bold text-gray-800">
+					{declinePorfessionalsCount}
 				</span>
 			</div>
 		</div>
