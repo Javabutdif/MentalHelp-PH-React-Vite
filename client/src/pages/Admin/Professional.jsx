@@ -14,6 +14,7 @@ import { FaEdit, FaTrash, FaEye, FaBriefcase } from "react-icons/fa";
 import ViewModal from "../../components/modal/ViewModal";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import LoadingScreen from "../../Loader/LoadingScreen";
+import ProfessionalRegister from "../../components/modal/ProfessionalRegister";
 
 function Professional() {
 	const [activeData, setActiveData] = useState([]);
@@ -26,10 +27,12 @@ function Professional() {
 	const [declineModal, setDeclineModal] = useState(false);
 	const [deleteModal, setDeleteModal] = useState(false);
 	const [recoverModal, setRecoverModal] = useState(false);
+	const [editModal, setEditModal] = useState(false);
 	const [acceptId, setAcceptId] = useState("");
 	const [declineData, setDeclineData] = useState("");
 	const [deleteId, setDeleteId] = useState("");
 	const [recoverId, setRecoverId] = useState("");
+	const [editId, setEditId] = useState("");
 	const [loading, setLoading] = useState(false);
 
 	const showAllTable = () => {
@@ -123,6 +126,17 @@ function Professional() {
 	const handleRecoverProfessional = async () => {
 		await recoverProfessional(recoverId);
 		handleHideRecoverModal();
+		fetchActiveData();
+		fetchPendingData();
+	};
+
+	const handleEditModal = (id) => {
+		setEditModal(true);
+		setEditId(id);
+	};
+	const handleHideEditModal = () => {
+		setEditModal(false);
+		setEditId("");
 		fetchActiveData();
 		fetchPendingData();
 	};
@@ -221,6 +235,7 @@ function Professional() {
 								type="button"
 								text="Edit"
 								icon={<FaEdit />}
+								onClick={() => handleEditModal(row.professional_id)}
 								styles="flex items-center space-x-2 bg-gray-200 text-gray-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
 								textClass="text-blue-800"
 								whileHover={{ scale: 1.02, opacity: 0.95 }}
@@ -372,6 +387,15 @@ function Professional() {
 								onCancel={handleHideRecoverModal}
 								onSubmit={handleRecoverProfessional}
 							/>
+						)}
+						{editModal && (
+							<>
+								<ProfessionalRegister
+									onCancel={handleHideEditModal}
+									type="EditProfessional"
+									id={editId}
+								/>
+							</>
 						)}
 					</div>
 				</>

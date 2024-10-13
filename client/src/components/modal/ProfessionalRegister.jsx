@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { professional_register } from "../../api/register";
 import RegistrationConfirmationModal from "./RegistrationConfirmationModal";
-import { sendOtp } from "../../api/professionals";
+import {
+	sendOtp,
+	retrieveSpecificProfessional,
+	editProfessional,
+} from "../../api/professionals";
 import Otp from "./Otp";
 
 function ProfessionalRegister({ onCancel, type, id }) {
@@ -29,9 +33,40 @@ function ProfessionalRegister({ onCancel, type, id }) {
 		});
 	};
 
+	useEffect(() => {
+		if (type === "EditProfessional" && id) {
+			const fetchProfessional = async () => {
+				try {
+					const response = await retrieveSpecificProfessional(id);
+
+					setFormData({
+						id: response[0].professional_id,
+						firstname: response[0].firstname,
+						lastname: response[0].lastname,
+						email: response[0].email,
+						license: response[0].license,
+						experience: response[0].experience,
+						profession: response[0].type,
+						contact: response[0].contact_number,
+					});
+				} catch (error) {
+					console.error("Error fetching professional data: ", error);
+				}
+			};
+			fetchProfessional();
+		}
+	}, [type, id]);
+
 	const handleSubmit = async () => {
-		console.log(formData);
-		await professional_register(formData);
+		if (type === "Register") {
+			await professional_register(formData);
+
+			onCancel();
+		} else if (type === "EditProfessional") {
+			await editProfessional(formData);
+
+			onCancel();
+		}
 		setFormData({
 			firstname: "",
 			lastname: "",
@@ -70,7 +105,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
 	};
 
 	const handleRoute = async () => {
-		if (type === "Edit" && id) {
+		if (type === "EditProfessional" && id) {
 			await handleSubmit();
 		} else {
 			await handleOtp();
@@ -92,7 +127,9 @@ function ProfessionalRegister({ onCancel, type, id }) {
 			<div className="bg-white rounded-lg shadow-lg max-w-2xl w-full ">
 				<div className="p-4 border-b flex justify-between items-center">
 					<h5 className="text-2xl font-bold text-green-600">
-						Professionals Sign Up
+						{type === "EditProfessional"
+							? "Edit Information"
+							: "Professionals Sign Up"}
 					</h5>
 					<button
 						type="button"
@@ -160,36 +197,42 @@ function ProfessionalRegister({ onCancel, type, id }) {
 							onChange={handleChange}
 						/>
 					</div>
-					<div>
-						<label htmlFor="password" className="block text-sm font-medium">
-							Password
-						</label>
-						<input
-							type="password"
-							id="password"
-							name="password"
-							className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
-							placeholder="Enter Password"
-							value={formData.password}
-							onChange={handleChange}
-						/>
-					</div>
-					<div>
-						<label
-							htmlFor="confirmPassword"
-							className="block text-sm font-medium">
-							Confirm Password
-						</label>
-						<input
-							type="password"
-							id="confirmPassword"
-							name="confirmPassword"
-							className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
-							placeholder="Confirm Password"
-							value={formData.confirmPassword}
-							onChange={handleChange}
-						/>
-					</div>
+
+					{type !== "EditProfessional" && (
+						<>
+							<div>
+								<label htmlFor="password" className="block text-sm font-medium">
+									Password
+								</label>
+								<input
+									type="password"
+									id="password"
+									name="password"
+									className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
+									placeholder="Enter Password"
+									value={formData.password}
+									onChange={handleChange}
+								/>
+							</div>
+							<div>
+								<label
+									htmlFor="confirmPassword"
+									className="block text-sm font-medium">
+									Confirm Password
+								</label>
+								<input
+									type="password"
+									id="confirmPassword"
+									name="confirmPassword"
+									className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
+									placeholder="Confirm Password"
+									value={formData.confirmPassword}
+									onChange={handleChange}
+								/>
+							</div>
+						</>
+					)}
+
 					<div>
 						<label htmlFor="profession" className="block text-sm font-medium">
 							Profession Type
@@ -232,24 +275,32 @@ function ProfessionalRegister({ onCancel, type, id }) {
 							onChange={handleChange}
 						/>
 					</div>
-					<div className="sm:col-span-2">
-						<label htmlFor="documents" className="block text-sm font-medium">
-							Documents
-						</label>
-						<input
-							type="file"
-							id="documents"
-							name="documents"
-							className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
-							onChange={handleChange}
-						/>
-					</div>
+
+					{type !== "EditProfessional" && (
+						<>
+							<div className="sm:col-span-2">
+								<label
+									htmlFor="documents"
+									className="block text-sm font-medium">
+									Documents
+								</label>
+								<input
+									type="file"
+									id="documents"
+									name="documents"
+									className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
+									onChange={handleChange}
+								/>
+							</div>
+						</>
+					)}
+
 					<div className="sm:col-span-2 flex justify-end space-x-2 mt-4">
 						<button
 							type="button"
 							onClick={showDetails}
 							className="bg-green-600 rounded-full  text-white px-4 py-2  hover:bg-green-700">
-							Register
+							{type === "EditProfessional" ? "Save Changes" : "Register"}
 						</button>
 						<button
 							type="button"

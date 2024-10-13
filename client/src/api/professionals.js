@@ -249,3 +249,56 @@ export const recoverProfessional = async (id) => {
 		return null;
 	}
 };
+
+
+//For edit purpose
+export const retrieveSpecificProfessional = async (id) => {
+	try {
+		const response = await axios.get(
+			`${Server_Connection()}/api/get-specific-professional/${id}`,
+
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			return response.data.data;
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};
+
+
+//Edit Professionals
+
+export const editProfessional = async (professional_data) => {
+	try {
+		const response = await axios.post(
+			`${Server_Connection()}/api/update-professional`,
+			professional_data,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			showToast("success", response.data.message);
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};

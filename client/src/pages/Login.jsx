@@ -17,6 +17,9 @@ const Login = () => {
 		if (response === "Admin") {
 			setLoading(false);
 			navigate("/admin/dashboard");
+		} else if (response === "Patient") {
+			setLoading(false);
+			navigate("/patient/dashboard");
 		} else {
 			setLoading(false);
 		}

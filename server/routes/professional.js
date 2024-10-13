@@ -83,4 +83,63 @@ router.post("/professional-register", async (req, res) => {
 	);
 });
 
+
+
+router.get("/get-specific-professional/:id", async (req, res) => {
+	const { id } = req.params;
+
+	const query =
+		"SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname, mental_health_professionals.email, mental_health_professionals.license, mental_health_professionals.experience, mental_health_professionals.type, mental_health_professionals.professional_status, mental_health_professionals.contact_number FROM mental_health_professionals WHERE professional_id = ?";
+	db.query(query, [id], (error, results) => {
+		if (error) {
+			return res
+				.status(500)
+				.json({ message: "Unable to retrieve professional" });
+		}
+
+		res.status(200).json({ data: results });
+	});
+});
+// id: response[0].professional_id,
+// firstname: response[0].firstname,
+// lastname: response[0].lastname,
+// email: response[0].email,
+// license: response[0].license,
+// experience: response[0].experience,
+// profession: response[0].type,
+// contact: response[0].contact_number,
+
+router.post("/update-professional", async (req, res) => {
+	const {
+		id,
+		firstname,
+		lastname,
+		email,
+		license,
+		experience,
+		profession,
+		contact,
+	} = req.body;
+
+	const query =
+		"UPDATE mental_health_professionals SET firstname = ? , lastname = ? , email = ? , license = ? , experience = ? , type =  ? , contact_number = ? WHERE professional_id = ? ";
+
+	db.query(
+		query,
+		[firstname, lastname, email, license, experience, profession, contact, id],
+		(error, results) => {
+			if (error) {
+				return res
+					.status(500)
+					.json({ message: "Unable to update professional" });
+			}
+
+			res.status(200).json({ message: "Professional updated successful" });
+		}
+	);
+});
+
+
+
+
 module.exports = router;
