@@ -26,6 +26,7 @@ const PatientRegister = ({ onCancel, type, id }) => {
 		userAddress: "",
 		userStatus: "Single",
 		userContact: "",
+		bio: "",
 	});
 
 	useEffect(() => {
@@ -43,6 +44,7 @@ const PatientRegister = ({ onCancel, type, id }) => {
 						userAddress: response[0].addresses,
 						userStatus: response[0].patient_status || "Single",
 						userContact: response[0].contact_number,
+						bio: response[0].bio,
 					});
 				} catch (error) {
 					console.error("Error fetching patient data: ", error);
@@ -62,6 +64,7 @@ const PatientRegister = ({ onCancel, type, id }) => {
 
 	const handleOtp = async () => {
 		setLoading(true);
+		console.log(formData);
 		const data = await sendOtp(formData);
 		console.log(data);
 		if (data !== undefined) {
@@ -91,6 +94,7 @@ const PatientRegister = ({ onCancel, type, id }) => {
 		if (type === "Register") {
 			await patient_register(formData);
 			setLoading(false);
+
 			hideDetails();
 		} else if (type === "Edit") {
 			await editPatient(formData);
@@ -109,6 +113,7 @@ const PatientRegister = ({ onCancel, type, id }) => {
 			userAddress: "",
 			userStatus: "Single",
 			userContact: "",
+			bio: "",
 		});
 		onCancel();
 
@@ -185,6 +190,24 @@ const PatientRegister = ({ onCancel, type, id }) => {
 											onChange={handleInputChange}
 										/>
 									</div>
+									{type === "Edit" && (
+										<>
+											<div className="form-group my-2">
+												<label htmlFor="bio" className="block">
+													Bio
+												</label>
+												<input
+													type="text"
+													className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
+													id="bio"
+													placeholder="Enter Bio"
+													name="bio"
+													value={formData.bio}
+													onChange={handleInputChange}
+												/>
+											</div>
+										</>
+									)}
 
 									<div className="form-group my-2">
 										<label htmlFor="email" className="block">

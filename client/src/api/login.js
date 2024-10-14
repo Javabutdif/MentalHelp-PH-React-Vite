@@ -1,7 +1,7 @@
 import axios from "axios";
 import { showToast } from "../components/utils/alertHelper";
 import Server_Connection from "../connection/Server_Connection";
-
+import { setData } from "../authentication/authentication";
 
 export const login = async (email, password) => {
 	try {
@@ -17,13 +17,12 @@ export const login = async (email, password) => {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				withCredentials: true,
 			}
 		);
 		if (response.status === 200) {
 			showToast("success", response.data.message || "Signed in successfully");
-
-			return response.data.data.role;
+			setData(response.data.token);
+			return response.data.role;
 		} else return false;
 	} catch (error) {
 		if (error.response && error.response.data) {

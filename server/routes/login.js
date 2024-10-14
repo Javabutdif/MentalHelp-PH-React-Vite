@@ -15,7 +15,6 @@ router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
 
 	try {
-	
 		const adminQuery = "SELECT * FROM admin WHERE admin_email = ?";
 		const adminResults = await queryDatabase(adminQuery, [email]);
 
@@ -34,7 +33,6 @@ router.post("/login", async (req, res) => {
 			}
 		}
 
-
 		const patientQuery =
 			"SELECT * FROM patient WHERE email = ? AND account_status = 'Active'";
 		const patientResults = await queryDatabase(patientQuery, [email]);
@@ -43,6 +41,7 @@ router.post("/login", async (req, res) => {
 			const patient = patientResults[0];
 			if (await passwordMatch(patient.passwords, password)) {
 				return loginSuccess(res, {
+					id: patient.patient_id,
 					name: `${patient.firstname} ${patient.lastname}`,
 					bio: patient.bio,
 					photo: patient.photo,
@@ -51,13 +50,13 @@ router.post("/login", async (req, res) => {
 					age: patient.age,
 					status: patient.patient_status,
 					contact: patient.contact_number,
+					email: patient.email,
 					role: "Patient",
 				});
 			} else {
 				return res.status(401).json({ message: "Invalid email or password." });
 			}
 		} else {
-			
 			const deletedPatientQuery =
 				"SELECT * FROM patient WHERE email = ? AND account_status = 'Delete'";
 			const deletedPatientResults = await queryDatabase(deletedPatientQuery, [
@@ -68,7 +67,6 @@ router.post("/login", async (req, res) => {
 			}
 		}
 
-	
 		const professionalQuery =
 			"SELECT * FROM mental_health_professionals WHERE email = ? AND professional_status = 'Accepted'";
 		const professionalResults = await queryDatabase(professionalQuery, [email]);
@@ -92,7 +90,6 @@ router.post("/login", async (req, res) => {
 				return res.status(401).json({ message: "Invalid email or password." });
 			}
 		} else {
-			
 			const pendingProfessionalQuery =
 				"SELECT * FROM mental_health_professionals WHERE email = ? AND professional_status = 'Pending'";
 			const pendingProfessionalResults = await queryDatabase(
@@ -113,7 +110,6 @@ router.post("/login", async (req, res) => {
 	}
 });
 
-
 async function queryDatabase(query, params) {
 	return new Promise((resolve, reject) => {
 		db.query(query, params, (error, results) => {
@@ -123,25 +119,19 @@ async function queryDatabase(query, params) {
 	});
 }
 
-
 function loginSuccess(res, data) {
 	const token = jwt.sign({ data }, token_key, { expiresIn: "1h" });
-	res.cookie("token", token, {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
-		maxAge: 3600000,
-		sameSite: "None",
-	});
+
 	return res
 		.status(200)
-		.json({ message: `${data.role} Login Successful`, data });
+		.json({ message: `${data.role} Login Successful`, token, role: data.role });
 }
 
 router.get("/protected-route", authenticateToken, (req, res) => {
 	return res.json({
 		message: "Access granted",
 		data: req.data,
-		key: true,
+		role: req.data.role,
 	});
 });
 

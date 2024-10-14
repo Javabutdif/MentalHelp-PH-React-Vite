@@ -64,6 +64,13 @@ function AdminNavbar() {
 							Community
 						</Link>
 					</li>
+					<li>
+						<Link
+							to="/admin/reports"
+							className="text-gray-700 hover:text-green-500">
+							Reports
+						</Link>
+					</li>
 
 					<li>
 						<button

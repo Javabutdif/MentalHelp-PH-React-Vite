@@ -31,7 +31,7 @@ const sendMail = async (email, firstName, lastName) => {
 		html: htmlContent,
 	};
 
-	// Return both the mail info and the otp
+
 	const emailInfo = await transporter.sendMail(mailOptions);
 	return { emailInfo, otp };
 };

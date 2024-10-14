@@ -23,6 +23,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
 		experience: "",
 		license: "",
 		documents: "",
+		bio: "",
 	});
 
 	const handleChange = (e) => {
@@ -48,6 +49,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
 						experience: response[0].experience,
 						profession: response[0].type,
 						contact: response[0].contact_number,
+						bio: response[0].bio,
 					});
 				} catch (error) {
 					console.error("Error fetching professional data: ", error);
@@ -78,6 +80,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
 			experience: "",
 			license: "",
 			documents: "",
+			bio: "",
 		});
 		onCancel();
 	};
@@ -169,6 +172,25 @@ function ProfessionalRegister({ onCancel, type, id }) {
 							onChange={handleChange}
 						/>
 					</div>
+
+					{type === "EditProfessional" && (
+						<>
+							<div className="form-group my-2">
+								<label htmlFor="bio" className="block">
+									Bio
+								</label>
+								<input
+									type="text"
+									className="form-control w-full rounded-lg px-4 py-2 border border-gray-300"
+									id="bio"
+									placeholder="Enter Bio"
+									name="bio"
+									value={formData.bio}
+									onChange={handleChange}
+								/>
+							</div>
+						</>
+					)}
 					<div>
 						<label htmlFor="contact" className="block text-sm font-medium">
 							Contact Number
