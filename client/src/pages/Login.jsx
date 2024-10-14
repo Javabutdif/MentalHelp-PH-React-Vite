@@ -20,6 +20,9 @@ const Login = () => {
 		} else if (response === "Patient") {
 			setLoading(false);
 			navigate("/patient/dashboard");
+		} else if (response === "Professional") {
+			setLoading(false);
+			navigate("/professional/dashboard");
 		} else {
 			setLoading(false);
 		}
@@ -32,7 +35,7 @@ const Login = () => {
 					<LoadingScreen />
 				</div>
 			) : (
-				<div className="container mx-auto max-w-md mt-12 h-screen shadow-lg py-20 px-6">
+				<div className="container mx-auto max-w-md mt-12 min-h-screen shadow-2xl border py-20 px-6">
 					<div className="flex justify-center">
 						<div className="w-full">
 							<div className="text-center mb-6">
@@ -77,7 +80,7 @@ const Login = () => {
 								<div className="text-center">
 									<button
 										type="submit"
-										className="bg-green-600 text-white rounded-full py-2 px-8 mt-6 hover:bg-green-700"
+										className="bg-green-700 text-white rounded-full py-2 px-8 mt-6 hover:bg-green-700"
 										name="submitLogin">
 										Login
 									</button>

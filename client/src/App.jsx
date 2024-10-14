@@ -1,6 +1,8 @@
 //Layout
 import LandingLayout from "./components/Layout/LandingLayout";
 import AdminLayout from "./components/Layout/AdminLayout";
+import PatientLayout from "./components/Layout/PatientLayout";
+import ProfessionalLayout from "./components/Layout/ProfessionalLayout";
 
 //CSS
 import "./App.css";
@@ -14,6 +16,7 @@ import Contact from "./pages/Contact";
 //Routing
 import PrivateRouteAdmin from "./Route/PrivateRouteAdmin";
 import PrivateRoutePatient from "./Route/PrivateRoutePatient";
+import PrivateRouteProfessional from "./Route/PrivateRouteProfessional";
 
 //Authentication
 import Login from "./pages/Login";
@@ -25,10 +28,15 @@ import Patient from "./pages/Admin/Patient";
 import Professional from "./pages/Admin/Professional";
 import NotFound from "./components/NotFound";
 import AdminCommunity from "./pages/Admin/Community";
+import AdminReport from "./pages/Admin/Reports";
 
 //Patient
-import PatientLayout from "./components/Layout/PatientLayout";
 import PatientDashboard from "./pages/Patient/Dashboard";
+import PatientSettings from "./pages/Patient/Settings";
+import PatientProfile from "./pages/Patient/Profile";
+//Professional
+import ProfessionalDashboard from "./pages/Professional/Dashboard";
+import ProfessionalProfile from "./pages/Professional/Profile";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
@@ -63,6 +71,10 @@ function App() {
 						path="community"
 						element={<PrivateRouteAdmin element={AdminCommunity} />}
 					/>
+					<Route
+						path="reports"
+						element={<PrivateRouteAdmin element={AdminReport} />}
+					/>
 				</Route>
 				<Route
 					path="/patient/"
@@ -70,6 +82,28 @@ function App() {
 					<Route
 						path="dashboard"
 						element={<PrivateRoutePatient element={PatientDashboard} />}
+					/>
+					<Route
+						path="settings"
+						element={<PrivateRoutePatient element={PatientSettings} />}
+					/>
+					<Route
+						path="profile"
+						element={<PrivateRoutePatient element={PatientProfile} />}
+					/>
+				</Route>
+				<Route
+					path="/professional/"
+					element={<PrivateRouteProfessional element={ProfessionalLayout} />}>
+					<Route
+						path="dashboard"
+						element={
+							<PrivateRouteProfessional element={ProfessionalDashboard} />
+						}
+					/>
+					<Route
+						path="profile"
+						element={<PrivateRouteProfessional element={ProfessionalProfile} />}
 					/>
 				</Route>
 

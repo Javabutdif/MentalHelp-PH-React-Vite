@@ -4,15 +4,15 @@ const router = express.Router();
 const db = require("../connection/db");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
-const sendMail = require("../mail/mailContents");
+const { sendMail } = require("../mail/mailContents");
 
 //email,firstname,lastname,passwords,bio,photo,addresses,gender,age,patient_status,contact_number
 router.post("/patient-otp", async (req, res) => {
 	const { firstName, lastName, userEmail } = req.body;
-
+	console.log(firstName + " " + lastName + " " + userEmail);
 	try {
 		let { emailInfo, otp } = await sendMail(userEmail, firstName, lastName);
-
+		console.log(emailInfo + " " + otp);
 		res.status(200).json({
 			message: "OTP sent successfully",
 			otp: otp,
@@ -81,7 +81,7 @@ router.get("/get-specific-patient/:id", async (req, res) => {
 	const { id } = req.params;
 
 	const query =
-		"SELECT patient.patient_id, patient.firstname, patient.lastname, patient.email, patient.addresses, patient.gender, patient.age, patient.patient_status, patient.contact_number FROM patient WHERE patient_id = ?";
+		"SELECT patient.patient_id, patient.firstname, patient.lastname, patient.email, patient.addresses, patient.gender, patient.bio, patient.age, patient.patient_status, patient.contact_number FROM patient WHERE patient_id = ?";
 	db.query(query, [id], (error, results) => {
 		if (error) {
 			return res.status(500).json({ message: "Unable to retrieve patients" });
@@ -109,10 +109,11 @@ router.post("/update-patient", async (req, res) => {
 		userAddress,
 		userStatus,
 		userContact,
+		bio,
 	} = req.body;
 
 	const query =
-		"UPDATE patient SET firstname = ? , lastname = ? , email = ? , gender = ? , addresses = ? , patient_status =  ? , contact_number = ? WHERE patient_id = ? ";
+		"UPDATE patient SET firstname = ? , lastname = ? , email = ? , gender = ? , addresses = ? , patient_status =  ? , contact_number = ? , bio = ?  WHERE patient_id = ? ";
 
 	db.query(
 		query,
@@ -124,6 +125,7 @@ router.post("/update-patient", async (req, res) => {
 			userAddress,
 			userStatus,
 			userContact,
+			bio,
 			id,
 		],
 		(error, results) => {

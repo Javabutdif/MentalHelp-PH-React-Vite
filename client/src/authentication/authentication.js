@@ -1,44 +1,40 @@
-import Server_Connection from "../connection/Server_Connection";
+let storedData;
+let storedRole;
 
-export const setAuthentication = async () => {
-	let user;
-	try {
-		const response = await axios.get(
-			`${Server_Connection()}/api/protected-route`,
-			{
-				withCredentials: true,
-			}
-		);
+export const setData = (token) => {
+	sessionStorage.setItem("Token", token);
+};
 
-		if (response.data.data.role === "Admin") {
-			user = {
-				name: response.data.data.adminName,
-				email: response.data.data.adminEmail,
-				role: response.data.data.role,
-			};
-			sessionStorage.setItem("Data", JSON.stringify(user));
-		} else if (response.data.data.role === "Student") {
-			user = {
-				id: response.data.user.id_number,
-				course: response.data.user.course,
-				name:
-					response.data.user.first_name +
-					" " +
-					response.data.user.middle_name +
-					" " +
-					response.data.user.last_name,
+export const getRoute = () => {
+	return storedRole || null;
+};
 
-				position: response.data.user.position,
-				year: response.data.user.year,
-				rfid: response.data.user.rfid,
-				role: response.data.role,
-				email: response.data.user.email,
-			};
+export const setInformationData = (data, role) => {
+	storedData = data;
+	storedRole = role;
+};
 
-			sessionStorage.setItem("Data", JSON.stringify(user));
-		}
-	} catch (err) {
-		console.log("Authentication");
-		console.error("Not authorized:", err);
-	}
+export const getInformationData = () => {
+	return {
+		id: storedData?.id || null,
+		name: storedData?.name || null,
+		email: storedData?.email || null,
+		bio: storedData?.bio || null,
+		address: storedData?.address || null,
+		gender: storedData.gender || null,
+		age: storedData?.age || null,
+		status: storedData?.status || null,
+		contact: storedData?.contact || null,
+		role: storedRole || null,
+		photo: storedData?.photo || null,
+		type: storedData?.type || null,
+		license: storedData?.license || null,
+		experience: storedData?.experience || null,
+	};
+};
+export const removeAuthentication = () => {
+	sessionStorage.removeItem("Token");
+	sessionStorage.removeItem("Data");
+	storedData = null;
+	storedRole = null;
 };

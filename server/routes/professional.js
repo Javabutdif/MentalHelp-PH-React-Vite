@@ -89,7 +89,7 @@ router.get("/get-specific-professional/:id", async (req, res) => {
 	const { id } = req.params;
 
 	const query =
-		"SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname, mental_health_professionals.email, mental_health_professionals.license, mental_health_professionals.experience, mental_health_professionals.type, mental_health_professionals.professional_status, mental_health_professionals.contact_number FROM mental_health_professionals WHERE professional_id = ?";
+		"SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname, mental_health_professionals.email, mental_health_professionals.license, mental_health_professionals.experience, mental_health_professionals.type, mental_health_professionals.professional_status,mental_health_professionals.bio, mental_health_professionals.contact_number FROM mental_health_professionals WHERE professional_id = ?";
 	db.query(query, [id], (error, results) => {
 		if (error) {
 			return res
@@ -119,14 +119,25 @@ router.post("/update-professional", async (req, res) => {
 		experience,
 		profession,
 		contact,
+		bio,
 	} = req.body;
 
 	const query =
-		"UPDATE mental_health_professionals SET firstname = ? , lastname = ? , email = ? , license = ? , experience = ? , type =  ? , contact_number = ? WHERE professional_id = ? ";
+		"UPDATE mental_health_professionals SET firstname = ? , lastname = ? , email = ? , license = ? , experience = ? , type =  ? , contact_number = ? , bio = ? WHERE professional_id = ? ";
 
 	db.query(
 		query,
-		[firstname, lastname, email, license, experience, profession, contact, id],
+		[
+			firstname,
+			lastname,
+			email,
+			license,
+			experience,
+			profession,
+			contact,
+			bio,
+			id,
+		],
 		(error, results) => {
 			if (error) {
 				return res

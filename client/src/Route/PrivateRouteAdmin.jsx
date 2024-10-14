@@ -3,10 +3,12 @@ import { Navigate, Outlet } from "react-router-dom";
 import Server_Connection from "../connection/Server_Connection";
 import axios from "axios";
 import LoadingScreen from "../Loader/LoadingScreen";
+import { setInformationData } from "../authentication/authentication";
 
 const PrivateRouteAdmin = ({ element: Component }) => {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [loading, setLoading] = useState(true);
+	const token = sessionStorage.getItem("Token");
 
 	useEffect(() => {
 		const checkAuthentication = async () => {
@@ -14,14 +16,15 @@ const PrivateRouteAdmin = ({ element: Component }) => {
 				const response = await axios.get(
 					`${Server_Connection()}/api/protected-route`,
 					{
-						withCredentials: true,
+						headers: {
+							Authorization: `Bearer ${token}`,
+						},
 					}
 				);
 
-				if (response.data.key && response.data.data.role === "Admin") {
-					console.log(response.data.data.role);
+				if (response.data.role === "Admin") {
+					setInformationData(response.data.data, response.data.role);
 					setIsAuthenticated(true);
-					console.log(response.data.data);
 				} else {
 					setIsAuthenticated(false);
 				}

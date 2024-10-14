@@ -12,7 +12,7 @@ import {
 import { IoPersonSharp } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
 
-function PatientNavbar() {
+function ProfessionalNavbar() {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -39,7 +39,7 @@ function PatientNavbar() {
 		<nav className="bg-white shadow fixed w-full top-0 flex items-center justify-between p-2">
 			<div className="flex items-center">
 				<img src="/logon.png" className="h-16 w-16 mx-3" alt="Logo" />
-				<Link to="/patient/dashboard" className="font-bold text-xl">
+				<Link to="/professional/dashboard" className="font-bold text-xl">
 					MentalHelp PH | {capitalizeFirstLetter(lastpath)}
 				</Link>
 			</div>
@@ -56,7 +56,7 @@ function PatientNavbar() {
 				<ul className="flex space-x-8 items-center">
 					<li>
 						<Link
-							to="/patient/messages"
+							to="/professional/messages"
 							className="text-gray-700 hover:text-green-500"
 							onMouseEnter={() => setIsHovered(true)}
 							onMouseLeave={() => setIsHovered(false)}>
@@ -69,14 +69,14 @@ function PatientNavbar() {
 					</li>
 					<li>
 						<Link
-							to="/patient/notification"
+							to="/professional/notification"
 							className="text-gray-700 hover:text-green-500">
 							<FaBell className="text-2xl" />
 						</Link>
 					</li>
 					<li className="relative">
 						<button
-							className="text-gray-700 focus:outline-none  hover:text-green-500"
+							className="text-gray-700 focus:outline-none"
 							onClick={toggleDropdown}>
 							<FaBars className="text-2xl pt-1" />
 						</button>
@@ -84,9 +84,8 @@ function PatientNavbar() {
 							<ul className="absolute right-0 mt-2 w-48 bg-white border rounded shadow-lg">
 								<li className="border-b">
 									<Link
-										to="/patient/profile"
-										className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-										onClick={toggleDropdown}>
+										to="/professional/profile"
+										className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
 										<div className="flex flex-row gap-3">
 											<IoPersonSharp className="text-2xl" />
 											Profile
@@ -95,9 +94,8 @@ function PatientNavbar() {
 								</li>
 								<li className="border-b">
 									<Link
-										to="/patient/settings"
-										className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-										onClick={toggleDropdown}>
+										to="/professional/settings"
+										className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
 										<div className="flex flex-row gap-3">
 											<IoMdSettings className="text-2xl" />
 											Settings
@@ -123,4 +121,4 @@ function PatientNavbar() {
 	);
 }
 
-export default PatientNavbar;
+export default ProfessionalNavbar;
