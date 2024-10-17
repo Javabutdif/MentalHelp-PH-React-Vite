@@ -45,14 +45,14 @@ function MatchType({ onClose }) {
 
 		try {
 			const response = await matchProfessional(formData);
+            console.log(response);
+						if (response !== null) {
+							setData(response);
+							setDisplayResult(true);
+							console.log(data);
+						}
+			
 
-			setData(response);
-			setDisplayResult(true);
-			console.log(data);
-
-			if (response.success) {
-				onClose();
-			}
 		} catch (error) {
 			console.error("Error matching professional:", error);
 		} finally {

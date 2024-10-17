@@ -173,63 +173,70 @@ router.post("/match-professional", async (req, res) => {
 		}
 
 		if (results.length > 0) {
-			// Get the professional IDs found
 			const professionalIds = results.map((row) => row.professional_id);
 
 			// Initialize query for searching preferences
 			let query =
 				"SELECT * FROM mental_health_professional_preference WHERE professional_id IN (?)";
 
-			// Add dynamic conditions for mental issues
-			if (issues && issues.length > 0) {
-				const issueConditions = issues
-					.map((issue) => `mental_issue LIKE '%${issue}%'`)
+			// Convert issues object to an array of issue strings
+			const issueKeys = Object.keys(issues).filter((key) => issues[key]);
+			if (issueKeys.length > 0) {
+				const issueConditions = issueKeys
+					.map((issue) => `mental_issue LIKE ?`)
 					.join(" OR ");
 				query += ` AND (${issueConditions})`;
 			}
 
 			// Add dynamic age range condition
 			if (age) {
-				query += ` AND ${age} BETWEEN start_age AND end_age`;
+				query += ` AND ? BETWEEN start_age AND end_age`;
 			}
 
 			// Execute the dynamically built query
-			db.query(query, [professionalIds], (error, preferenceResults) => {
-				if (error) {
-					return res
-						.status(500)
-						.json({ message: "Error finding professional preferences." });
-				}
+			db.query(
+				query,
+				[professionalIds, ...issueKeys.map((issue) => `%${issue}%`), age],
+				(error, preferenceResults) => {
+					if (error) {
+						return res
+							.status(500)
+							.json({ message: "Error finding professional preferences." });
+					}
 
-				if (preferenceResults.length > 0) {
-					// If there are multiple matching professionals, randomly select one
-					const randomProfessional =
-						preferenceResults[
-							Math.floor(Math.random() * preferenceResults.length)
-						];
+					if (preferenceResults.length > 0) {
+						// If there are multiple matching professionals, randomly select one
+						const randomProfessional =
+							preferenceResults[
+								Math.floor(Math.random() * preferenceResults.length)
+							];
 
-					const query1 =
-						"SELECT * FROM mental_health_professionals WHERE professional_id = ?";
-					db.query(
-						query1,
-						[randomProfessional.professional_id],
-						(error, professionalResult) => {
-							if (error) {
-								return res
-									.status(500)
-									.json({ message: "Error finding professional." });
+						const query1 =
+							"SELECT * FROM mental_health_professionals WHERE professional_id = ?";
+						db.query(
+							query1,
+							[randomProfessional.professional_id],
+							(error, professionalResult) => {
+								if (error) {
+									return res
+										.status(500)
+										.json({ message: "Error finding professional." });
+								}
+								if (professionalResult.length > 0) {
+									return res.status(200).json({
+										data: professionalResult[0],
+										message: "Search successful",
+									});
+								}
 							}
-							if (professionalResult.length > 0) {
-								return res.status(200).json({ data: professionalResult[0] });
-							}
-						}
-					);
-				} else {
-					return res
-						.status(404)
-						.json({ message: "No matching professionals found." });
+						);
+					} else {
+						return res
+							.status(404)
+							.json({ message: "No matching professionals found." });
+					}
 				}
-			});
+			);
 		} else {
 			return res
 				.status(404)
@@ -237,6 +244,7 @@ router.post("/match-professional", async (req, res) => {
 		}
 	});
 });
+
 
 
 
