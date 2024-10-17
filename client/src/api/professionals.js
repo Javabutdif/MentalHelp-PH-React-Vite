@@ -353,3 +353,44 @@ export const updateProfessionalPreferences = async (professional_data) => {
 		return null;
 	}
 };
+///download/:filename
+export const downloadFile = async (filename) => {
+	console.log(filename);
+	try {
+		const response = await axios.get(
+			`${Server_Connection()}/api/download/${filename}`,
+			{
+				responseType: "blob", 
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+
+			 const url = window.URL.createObjectURL(new Blob([response.data]));
+
+				
+				const link = document.createElement("a");
+				link.href = url;
+				link.setAttribute("download", filename); 
+
+				
+				document.body.appendChild(link);
+				link.click();
+
+		
+				link.parentNode.removeChild(link);
+				window.URL.revokeObjectURL(url);
+			showToast("success", "Downloading File...");
+		
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+}

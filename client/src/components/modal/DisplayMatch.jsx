@@ -10,12 +10,18 @@ const DisplayMatch = ({  onRequestMatch, onSearch , data, onClose }) => {
 					<p className="text-xl font-bold">YOU ARE MATCHED WITH</p>
 					<div className="flex justify-center my-4">
 						<img
-							src="https://via.placeholder.com/100"
+							src={
+								data.professional_id !== 22
+									? "https://via.placeholder.com/100"
+									: "/ayla.jpg"
+							}
 							alt="Profile"
-							className="rounded-full w-24 h-24"
+							className="rounded-full w-24 h-24 object-cover"
 						/>
 					</div>
-                    <p className="text-xl font-semibold">{ data.firstname + " " +data.lastname}</p>
+					<p className="text-xl font-semibold">
+						Dr. {data.firstname + " " + data.lastname}
+					</p>
 					<a href="#" className="text-blue-500 hover:underline">
 						View Background
 					</a>

@@ -165,7 +165,7 @@ router.post("/match-professional", async (req, res) => {
 	const { profession, issues, age } = req.body;
 
 	const find_professional =
-		"SELECT professional_id FROM mental_health_professionals WHERE type = ?";
+		"SELECT professional_id FROM mental_health_professionals WHERE type = ? AND professional_status = 'Accepted'";
 
 	db.query(find_professional, [profession], (error, results) => {
 		if (error) {
@@ -188,12 +188,10 @@ router.post("/match-professional", async (req, res) => {
 				query += ` AND (${issueConditions})`;
 			}
 
-			// Add dynamic age range condition
 			if (age) {
 				query += ` AND ? BETWEEN start_age AND end_age`;
 			}
 
-			// Execute the dynamically built query
 			db.query(
 				query,
 				[professionalIds, ...issueKeys.map((issue) => `%${issue}%`), age],
@@ -205,7 +203,6 @@ router.post("/match-professional", async (req, res) => {
 					}
 
 					if (preferenceResults.length > 0) {
-						// If there are multiple matching professionals, randomly select one
 						const randomProfessional =
 							preferenceResults[
 								Math.floor(Math.random() * preferenceResults.length)
