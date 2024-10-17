@@ -1,4 +1,15 @@
+import React from "react";
+import { downloadFile } from "../../api/professionals";
+
 function ViewModal({ data, onCancel }) {
+	const getFileName = (path) => {
+		return path.split("\\").pop();
+	};
+
+	const handleDownloadFile = async () => {
+		await downloadFile(getFileName(data.documents));
+	};
+
 	return (
 		<div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900 bg-opacity-75">
 			<div className="bg-white rounded-lg shadow-lg max-w-2xl w-full">
@@ -22,7 +33,7 @@ function ViewModal({ data, onCancel }) {
 					</div>
 					<div>
 						<label className="block text-sm font-medium">Contact Number</label>
-						<p className="mt-1">{data.contact}</p>
+						<p className="mt-1">{data.contact_number}</p>
 					</div>
 					<div>
 						<label className="block text-sm font-medium">Email Address</label>
@@ -30,7 +41,7 @@ function ViewModal({ data, onCancel }) {
 					</div>
 					<div>
 						<label className="block text-sm font-medium">Profession Type</label>
-						<p className="mt-1">{data.profession}</p>
+						<p className="mt-1">{data.type}</p>
 					</div>
 					<div>
 						<label className="block text-sm font-medium">
@@ -45,7 +56,11 @@ function ViewModal({ data, onCancel }) {
 					<div className="sm:col-span-2">
 						<label className="block text-sm font-medium">Documents</label>
 						<p className="mt-1">
-							{data.documents ? data.documents.name : "No document uploaded"}
+							<button
+								onClick={handleDownloadFile}
+								className="p-2 bg-green-700 hover:bg-green-500 text-white rounded">
+								Download Documents
+							</button>
 						</p>
 					</div>
 					<div className="sm:col-span-2 flex justify-end space-x-2 mt-4">

@@ -60,6 +60,7 @@ export const professional_register = async (professional_data) => {
 			{
 				headers: {
 					"Content-Type": "application/json",
+					"Content-Type": "multipart/form-data",
 				},
 			}
 		);

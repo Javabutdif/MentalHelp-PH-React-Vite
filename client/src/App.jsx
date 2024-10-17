@@ -34,6 +34,7 @@ import AdminReport from "./pages/Admin/Reports";
 import PatientDashboard from "./pages/Patient/Dashboard";
 import PatientSettings from "./pages/Patient/Settings";
 import PatientProfile from "./pages/Patient/Profile";
+import PatientCommunity from "./pages/Patient/Community";
 //Professional
 import ProfessionalDashboard from "./pages/Professional/Dashboard";
 import ProfessionalProfile from "./pages/Professional/Profile";
@@ -90,6 +91,10 @@ function App() {
 					<Route
 						path="profile"
 						element={<PrivateRoutePatient element={PatientProfile} />}
+					/>
+					<Route
+						path="community"
+						element={<PrivateRoutePatient element={PatientCommunity} />}
 					/>
 				</Route>
 				<Route

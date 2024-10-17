@@ -4,19 +4,19 @@ const router = express.Router();
 const db = require("../connection/db");
 require("dotenv").config();
 const { sendMail } = require("../mail/mailContents");
+const multer = require("multer");
+const path = require("path");
 
-//professional_id,firstname,lastname,email,contact_number,type,passwords,license,experience,photo,bio,comments,ratings,documents,professional_status
+const storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, "uploads/");
+	},
+	filename: (req, file, cb) => {
+		cb(null, Date.now() + path.extname(file.originalname));
+	},
+});
 
-// firstname: "",
-// 	lastname: "",
-// 	contact: "",
-// 	email: "",
-// 	password: "",
-// 	confirmPassword: "",
-// 	profession: "Psychologist",
-// 	experience: "",
-// 	license: "",
-// 	documents: null,
+const upload = multer({ storage });
 
 router.post("/professional-otp", async (req, res) => {
 	const { firstname, lastname, email } = req.body;
@@ -37,50 +37,77 @@ router.post("/professional-otp", async (req, res) => {
 	}
 });
 
-router.post("/professional-register", async (req, res) => {
-	const {
-		firstname,
-		lastname,
-		contact,
-		email,
-		password,
-		profession,
-		experience,
-		license,
-		documents,
-	} = req.body;
-	console.log(firstname);
-	const hashedPassword = await bcrypt.hash(password, 10);
+router.get("/download/:filename", (req, res) => {
+	const filename = req.params.filename;
 
-	const query =
-		"INSERT INTO mental_health_professionals (email, firstname,lastname,passwords,type,license,experience,professional_status,contact_number) VALUES (?, ?,?,?,?,?,?,?,?)";
-	db.query(
-		query,
-		[
-			email,
+	
+	const filePath = path.join(__dirname, "..", "uploads", filename);
+
+
+
+
+
+	
+
+	
+	res.download(filePath, (err) => {
+		if (err) {
+			console.error("Error downloading file:", err);
+			return res.status(500).send("Could not download the file.");
+		}
+	});
+});
+router.post(
+	"/professional-register",
+	upload.array("documents"),
+	async (req, res) => {
+		const {
 			firstname,
 			lastname,
-			hashedPassword,
-			profession,
-			license,
-			experience,
-			"Pending",
 			contact,
-		],
-		(error, results) => {
-			if (error) {
-				return res.status(500).json({ error });
+			email,
+			password,
+			profession,
+			experience,
+			license,
+		} = req.body;
+
+		
+		const documentPaths = req.files.map((file) => file.path);
+		const documentPathsString = documentPaths.join(","); 
+
+		const hashedPassword = await bcrypt.hash(password, 10);
+
+	
+		const query =
+			"INSERT INTO mental_health_professionals (email, firstname, lastname, passwords, type, license, experience, professional_status, contact_number, documents) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		db.query(
+			query,
+			[
+				email,
+				firstname,
+				lastname,
+				hashedPassword,
+				profession,
+				license,
+				experience,
+				"Pending",
+				contact,
+				documentPathsString, // Insert document paths string into the database
+			],
+			(error, results) => {
+				if (error) {
+					return res.status(500).json({ error });
+				}
+				res.status(200).json({
+					message:
+						"Professional registered successfully. Verification of your account will take a few days.",
+				});
 			}
-			res.status(200).json({
-				message:
-					"Professional registered successfully. Verification of your account will take a few days.",
-			});
-
-			console.log(error);
-		}
-	);
-});
-
+		);
+	}
+);
 router.get("/get-specific-professional/:id", async (req, res) => {
 	const { id } = req.params;
 
@@ -146,7 +173,7 @@ router.post("/update-professional", async (req, res) => {
 	);
 });
 
-//check-professional-preferences
+
 router.get("/check-professional-preferences/:id", async (req, res) => {
 	const { id } = req.params;
 

@@ -1,9 +1,11 @@
 import { React, useState, useEffect } from "react";
 import { IoPersonSharp } from "react-icons/io5";
+import { IoIosPeople } from "react-icons/io";
 import { GrConnect } from "react-icons/gr";
 import { FaPeoplePulling } from "react-icons/fa6";
 import { getInformationData } from "../../authentication/authentication";
 import MatchType from "../../components/modal/MatchType";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
 	const data = getInformationData();
@@ -50,10 +52,12 @@ const Dashboard = () => {
 							<p>Match</p>
 						</button>
 
-						<div className="bg-green-600 hover:bg-green-400 text-white p-4 rounded-lg text-center flex flex-col items-center justify-center">
-							<FaPeoplePulling className="text-2xl mb-2" />
+						<Link
+							to="/patient/community"
+							className="bg-green-600 hover:bg-green-400 text-white p-4 rounded-lg text-center flex flex-col items-center justify-center">
+							<IoIosPeople className="text-3xl mb-2" />
 							<p>Community Forum</p>
-						</div>
+						</Link>
 					</div>
 				</div>
 

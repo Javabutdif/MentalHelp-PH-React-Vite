@@ -12,8 +12,8 @@ function RegistrationConfirmationModal({ formData, onSubmit, onCancel, type }) {
 				<div className="fixed inset-0 flex items-center justify-center z-50">
 					<div
 						className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm"
-						onClick={onCancel}></div>.
-
+						onClick={onCancel}></div>
+					.
 					<div className="bg-white rounded-xl shadow-xl min-w-96 md:min-w-[450px] w-fit z-10 overflow-hidden transform transition-all duration-300 scale-95">
 						<div className="flex justify-between items-center p-6 bg-navy text-white rounded-t-xl shadow-md">
 							<h5 className="text-xl font-primary font-bold">
@@ -242,7 +242,13 @@ function RegistrationConfirmationModal({ formData, onSubmit, onCancel, type }) {
 									</span>
 								</div>
 								<span className="pt-1 text-gray-900 font-secondary text-lg">
-									{formData.documents}
+									{formData.documents.length > 0 && (
+										<ul>
+											{Array.from(formData.documents).map((file) => (
+												<li key={file.name}>{file.name}</li>
+											))}
+										</ul>
+									)}
 								</span>
 							</div>
 

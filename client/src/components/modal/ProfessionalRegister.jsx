@@ -22,7 +22,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
 		profession: "Psychologist",
 		experience: "",
 		license: "",
-		documents: "",
+		documents: [],
 		bio: "",
 	});
 
@@ -79,7 +79,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
 			profession: "",
 			experience: "",
 			license: "",
-			documents: "",
+			documents: [],
 			bio: "",
 		});
 		onCancel();
