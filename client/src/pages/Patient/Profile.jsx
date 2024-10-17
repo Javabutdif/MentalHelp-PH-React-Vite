@@ -34,7 +34,7 @@ const Profile = () => {
 					{/* Left Column: Profile Picture */}
 					<div className="flex flex-col items-center w-1/2">
 						<img
-							src={data.patient_id === 13 ? "/dione.jpg" : "/ayla.jpg"}
+							src="/dione.jpg"
 							className="rounded-full object-cover h-36 w-36"
 							alt="Profile"
 						/>

@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const router = express.Router();
 const db = require("../connection/db");
 require("dotenv").config();
-const sendMail = require("../mail/mailContents");
+const { sendMail } = require("../mail/mailContents");
 
 //professional_id,firstname,lastname,email,contact_number,type,passwords,license,experience,photo,bio,comments,ratings,documents,professional_status
 
@@ -36,8 +36,6 @@ router.post("/professional-otp", async (req, res) => {
 		});
 	}
 });
-
-
 
 router.post("/professional-register", async (req, res) => {
 	const {
@@ -82,8 +80,6 @@ router.post("/professional-register", async (req, res) => {
 		}
 	);
 });
-
-
 
 router.get("/get-specific-professional/:id", async (req, res) => {
 	const { id } = req.params;
@@ -150,7 +146,66 @@ router.post("/update-professional", async (req, res) => {
 	);
 });
 
+//check-professional-preferences
+router.get("/check-professional-preferences/:id", async (req, res) => {
+	const { id } = req.params;
 
+	const query = `
+		SELECT 
+			professional_id, 
+			start_age, 
+			end_age, 
+			mental_issue, 
+			gender 
+		FROM mental_health_professional_preference 
+		WHERE professional_id = ?
+	`;
+
+	db.query(query, [id], (error, results) => {
+		if (error) {
+			return res
+				.status(500)
+				.json({ message: "Unable to retrieve professional preferences" });
+		}
+
+		if (results.length > 0) {
+			return res.status(200).json({ data: results[0] });
+		} else {
+			return res
+				.status(404)
+				.json({ message: "No preferences found for this professional" });
+		}
+	});
+});
+
+router.post("/update-professional-preferences", async (req, res) => {
+	const { id, startAge, endAge, issues } = req.body;
+
+	console.log(issues);
+
+	let result = Object.keys(issues)
+		.filter((key) => issues[key])
+		.join(", ");
+	console.log(id + " " + startAge + " " + endAge + " " + result);
+	const query =
+		"INSERT INTO mental_health_professional_preference (professional_id, start_age, end_age, mental_issue) VALUES (?, ?, ?, ?)";
+
+	db.query(query, [id, startAge, endAge, result], (error, results) => {
+		if (error) {
+			return res.status(500).json({ message: "Unable to set preferences" });
+		}
+
+		if (results.affectedRows > 0) {
+			return res
+				.status(200)
+				.json({ message: "Preferences updated successfully" });
+		} else {
+			return res
+				.status(404)
+				.json({ message: "No preferences found for this professional" });
+		}
+	});
+});
 
 
 module.exports = router;

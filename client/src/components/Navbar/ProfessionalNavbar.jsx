@@ -85,7 +85,8 @@ function ProfessionalNavbar() {
 								<li className="border-b">
 									<Link
 										to="/professional/profile"
-										className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+										className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+										onClick={toggleDropdown}>
 										<div className="flex flex-row gap-3">
 											<IoPersonSharp className="text-2xl" />
 											Profile
@@ -95,7 +96,8 @@ function ProfessionalNavbar() {
 								<li className="border-b">
 									<Link
 										to="/professional/settings"
-										className="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+										className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+										onClick={toggleDropdown}>
 										<div className="flex flex-row gap-3">
 											<IoMdSettings className="text-2xl" />
 											Settings

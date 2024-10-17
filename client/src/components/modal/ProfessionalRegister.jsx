@@ -60,7 +60,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
 	}, [type, id]);
 
 	const handleSubmit = async () => {
-		if (type === "Register") {
+		if (type === "ProfessionalRegister") {
 			await professional_register(formData);
 
 			onCancel();
