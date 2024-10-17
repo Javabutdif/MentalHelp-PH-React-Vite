@@ -1,6 +1,7 @@
 import axios from "axios";
 import { showToast } from "../components/utils/alertHelper";
 import Server_Connection from "../connection/Server_Connection";
+import { CgWindows } from "react-icons/cg";
 
 //get-count-pending-professional
 
@@ -250,7 +251,6 @@ export const recoverProfessional = async (id) => {
 	}
 };
 
-
 //For edit purpose
 export const retrieveSpecificProfessional = async (id) => {
 	try {
@@ -276,7 +276,6 @@ export const retrieveSpecificProfessional = async (id) => {
 	}
 };
 
-
 //Edit Professionals
 
 export const editProfessional = async (professional_data) => {
@@ -292,6 +291,58 @@ export const editProfessional = async (professional_data) => {
 		);
 		if (response.status === 200) {
 			showToast("success", response.data.message);
+		} else {
+			showToast("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};
+
+//Retrive Professional Prefenrences and check if it is available or not
+
+export const checkProfessionalPreferences = async (id) => {
+	try {
+		const response = await axios.get(
+			`${Server_Connection()}/api/check-professional-preferences/${id}`,
+
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			return true;
+		} else {
+			console.log("error", response.data.message);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+
+		return null;
+	}
+};
+
+//Update Professional Preferences
+export const updateProfessionalPreferences = async (professional_data) => {
+	try {
+		const response = await axios.post(
+			`${Server_Connection()}/api/update-professional-preferences`,
+			professional_data,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			showToast("success", response.data.message);
+			window.location.reload();
 		} else {
 			showToast("error", response.data.message);
 		}

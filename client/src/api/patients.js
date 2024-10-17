@@ -181,3 +181,33 @@ export const sendOtp = async (data) => {
 	}
 };
 
+
+export const matchProfessional = async (data) => {
+	try {
+		const response = await axios.post(
+			`${Server_Connection()}/api/match-professional`,
+			data,
+
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			showToast("success", response.data.message);
+			console.log(response.data.data);
+			return response.data.data;
+		} else {
+			showToast("error", response.data.data);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		showToast("error", error.response.data.message);
+		return null;
+	}
+};
+
+
+
