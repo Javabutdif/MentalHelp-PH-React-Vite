@@ -1,13 +1,15 @@
 export const confirmationType = Object.freeze({
-	DELETE: "Delete",
-	ACCEPT: "Accept",
-	RECOVER: "Recover",
-	DECLINE: "Decline",
+  DELETE: "Delete",
+  ACCEPT: "Accept",
+  RECOVER: "Recover",
+  DECLINE: "Decline",
+  REQUEST: "Request",
 });
 
 export const confirmationWords = Object.freeze({
-	Delete: "delete",
-	Accept: "accept",
-	Recover: "recover",
-	Decline: "decline",
+  Delete: "delete",
+  Accept: "accept",
+  Recover: "recover",
+  Decline: "decline",
+  Request: "request",
 });
