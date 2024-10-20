@@ -416,3 +416,78 @@ export const upload_picture_professional = async (data, id) => {
     return null;
   }
 };
+
+//RetrieveRequest
+export const retrievePatientRequest = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/retrieve-match-status-professional/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      console.log("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    console.error("Error:", error.response.data.message);
+    return null;
+  }
+};
+
+//Cancel Request
+
+export const cancelRequest = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${Server_Connection()}/api/cancel-match-request/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+
+export const acceptRequest = async (id) => {
+  try {
+    const response = await axios.put(
+      `${Server_Connection()}/api/accept-match-request/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};

@@ -247,12 +247,12 @@ export const retrieveStatus = async (id) => {
     if (response.status === 200) {
       return response.data.data;
     } else {
-      showToast("error", response.data.error);
+      console.log("error", response.data.error);
     }
     console.log(response.data.message);
   } catch (error) {
     console.error("Error:", error.response.data.message);
-    showToast("error", error.response.data.message);
+    console.error("Error:", error.response.data.message);
     return null;
   }
 };

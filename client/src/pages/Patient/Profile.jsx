@@ -9,12 +9,11 @@ const Profile = () => {
   const [data, setData] = useState([]);
   const [editModal, setEditModal] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
-
+  const fetchData = async () => {
+    const data = await retrieveSpecificPatient(user.id);
+    setData(data[0]);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await retrieveSpecificPatient(user.id);
-      setData(data[0]);
-    };
     fetchData();
   }, []);
   const handleEditModal = () => {
@@ -44,7 +43,7 @@ const Profile = () => {
           <div className="flex flex-col items-center w-1/2">
             {data.photo ? (
               <img
-                src={ data.photo}
+                src={data.photo}
                 className="rounded-full object-cover h-36 w-36"
                 alt="Profile"
               />

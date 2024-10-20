@@ -293,4 +293,98 @@ router.post(
   }
 );
 
+//retrieve-match-status-professional
+router.get("/retrieve-match-status-professional/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+    SELECT 
+      matching.match_id, 
+      matching.match_date, 
+      matching.match_status,
+      patient.firstname, 
+      patient.lastname,
+      patient.age,
+      patient.gender,
+      patient_details.mental_issues
+    FROM matching 
+    JOIN mental_health_professionals 
+      ON mental_health_professionals.professional_id = matching.professional_id  
+    JOIN patient_details 
+      ON patient_details.patient_id = matching.patient_id
+    JOIN patient 
+      ON patient.patient_id = matching.patient_id
+    WHERE matching.match_status = 'Pending' 
+    AND matching.professional_id = ?`;
+
+  db.query(query, [id], (error, result) => {
+    if (error) {
+      return res.status(500).json({
+        message: "Cannot retrieve the details",
+        error: error.message,
+      });
+    }
+    console.log(result);
+    if (result.length > 0) {
+      return res.status(200).json({ data: result });
+    } else {
+      return res.status(404).json({
+        message: "No pending matches found for the patient",
+      });
+    }
+  });
+});
+
+//accept-match-request
+//cancel-match-request
+
+router.put("/accept-match-request/:id", async (req, res) => {
+  const { id } = req.params;
+
+  const query = "UPDATE matching SET match_status = ? WHERE match_id = ? ";
+
+  db.query(query, [id], (error, results) => {
+    if (error) {
+      return res.status(500).json({ message: "Unable to accept the request" });
+    }
+
+    if (results.affectedRows > 0) {
+      return res.status(200).json({
+        message: "The patient's request has been successfully accepted.",
+      });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No requests were found to accept." });
+    }
+  });
+});
+
+router.delete("/cancel-match-request/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+   DELETE FROM matching WHERE match_id = ?`;
+
+  db.query(query, [id], (error, result) => {
+    if (error) {
+      console.error("Error cancelling match:", error); // Added server-side logging
+      return res.status(500).json({
+        message: "Cannot cancel the matching",
+        error: error.message,
+      });
+    }
+
+    if (result.affectedRows > 0) {
+      return res
+        .status(200)
+        .json({ message: "Successfully cancelled the request" });
+    } else {
+      return res.status(404).json({
+        message: "No pending matches found for the patient",
+      });
+    }
+  });
+});
+
 module.exports = router;
