@@ -256,3 +256,54 @@ export const retrieveStatus = async (id) => {
     return null;
   }
 };
+
+export const cancelMatch = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${Server_Connection()}/api/cancel-match-status/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+
+export const upload_picture = async (data, id) => {
+  const formData = new FormData();
+  formData.append("profileImage", data);
+
+  try {
+    const response = await axios.post(
+      `${Server_Connection()}/api/upload-picture-patient/${id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};

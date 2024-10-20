@@ -18,11 +18,7 @@ const DisplayMatch = ({ onRequestMatch, onSearch, data, onClose }) => {
           <p className="text-xl font-bold">YOU ARE MATCHED WITH</p>
           <div className="flex justify-center my-4">
             <img
-              src={
-                data.professional_id !== 22
-                  ? "https://via.placeholder.com/100"
-                  : "/ayla.jpg"
-              }
+              src={!data.photo ? "https://via.placeholder.com/100" : data.photo}
               alt="Profile"
               className="rounded-full w-24 h-24 object-cover"
             />
