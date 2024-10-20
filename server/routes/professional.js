@@ -19,12 +19,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-//Upload Photos
-
-const multer = require("multer");
-const path = require("path");
-
-// Configure multer for file storage
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "profile/");
@@ -34,16 +28,13 @@ const profileStorage = multer.diskStorage({
   },
 });
 
-
 const uploadProfile = multer({ storage: profileStorage });
-
 
 router.post(
   "/upload-profile",
   uploadProfile.single("profilePicture"),
   async (req, res) => {
     try {
-   
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded." });
       }
@@ -143,7 +134,7 @@ router.get("/get-specific-professional/:id", async (req, res) => {
   const { id } = req.params;
 
   const query =
-    "SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname, mental_health_professionals.email, mental_health_professionals.license, mental_health_professionals.experience, mental_health_professionals.type, mental_health_professionals.professional_status,mental_health_professionals.bio, mental_health_professionals.contact_number FROM mental_health_professionals WHERE professional_id = ?";
+    "SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname, mental_health_professionals.email, mental_health_professionals.license, mental_health_professionals.experience, mental_health_professionals.type, mental_health_professionals.professional_status,mental_health_professionals.bio, mental_health_professionals.contact_number , mental_health_professionals.photo FROM mental_health_professionals WHERE professional_id = ?";
   db.query(query, [id], (error, results) => {
     if (error) {
       return res
@@ -263,5 +254,43 @@ router.post("/update-professional-preferences", async (req, res) => {
     }
   });
 });
+
+router.post(
+  "/upload-picture-professional/:id",
+  uploadProfile.single("profileImage"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const profileImage = req.file;
+
+      if (!profileImage) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const filePath = `http://localhost:3000/profile/${profileImage.filename}`;
+
+      const query =
+        "UPDATE mental_health_professionals SET photo = ? WHERE professional_id = ?";
+
+      db.query(query, [filePath, id], async (error, result) => {
+        if (error) {
+          res.status(500).json({
+            message: "Error uploading image path into the database",
+          });
+        }
+        if (result.affectedRows > 0) {
+          res.status(200).json({
+            message: "Profile image uploaded successfully",
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res
+        .status(500)
+        .json({ message: "Server error. Could not upload image." });
+    }
+  }
+);
 
 module.exports = router;

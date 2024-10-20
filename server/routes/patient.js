@@ -5,6 +5,19 @@ const db = require("../connection/db");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 const { sendMail } = require("../mail/mailContents");
+const multer = require("multer");
+const path = require("path");
+
+const profileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "profile/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const uploadProfile = multer({ storage: profileStorage });
 
 //email,firstname,lastname,passwords,bio,photo,addresses,gender,age,patient_status,contact_number
 router.post("/patient-otp", async (req, res) => {
@@ -81,7 +94,7 @@ router.get("/get-specific-patient/:id", async (req, res) => {
   const { id } = req.params;
 
   const query =
-    "SELECT patient.patient_id, patient.firstname, patient.lastname, patient.email, patient.addresses, patient.gender, patient.bio, patient.age, patient.patient_status, patient.contact_number FROM patient WHERE patient_id = ?";
+    "SELECT patient.patient_id, patient.firstname, patient.lastname, patient.email, patient.addresses, patient.gender, patient.bio, patient.age, patient.patient_status, patient.contact_number , patient.photo FROM patient WHERE patient_id = ?";
   db.query(query, [id], (error, results) => {
     if (error) {
       return res.status(500).json({ message: "Unable to retrieve patients" });
@@ -349,5 +362,44 @@ router.delete("/cancel-match-status/:id", (req, res) => {
     }
   });
 });
+
+//upload-picture-patient/
+
+router.post(
+  "/upload-picture-patient/:id",
+  uploadProfile.single("profileImage"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const profileImage = req.file;
+
+      if (!profileImage) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const filePath = `http://localhost:3000/profile/${profileImage.filename}`;
+
+      const query = "UPDATE patient SET photo = ? WHERE patient_id = ?";
+
+      db.query(query, [filePath, id], async (error, result) => {
+        if (error) {
+          res.status(500).json({
+            message: "Error uploading image path into the database",
+          });
+        }
+        if (result.affectedRows > 0) {
+          res.status(200).json({
+            message: "Profile image uploaded successfully"
+          });
+        }
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res
+        .status(500)
+        .json({ message: "Server error. Could not upload image." });
+    }
+  }
+);
 
 module.exports = router;
