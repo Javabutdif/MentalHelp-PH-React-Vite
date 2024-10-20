@@ -322,5 +322,32 @@ router.get("/retrieve-match-status/:id", (req, res) => {
     }
   });
 });
+//cancel-match-status
+router.delete("/cancel-match-status/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+   DELETE FROM matching WHERE match_id = ?`;
+
+  db.query(query, [id], (error, result) => {
+    if (error) {
+      console.error("Error cancelling match:", error); // Added server-side logging
+      return res.status(500).json({
+        message: "Cannot cancel the matching",
+        error: error.message,
+      });
+    }
+
+    if (result.affectedRows > 0) {
+      return res
+        .status(200)
+        .json({ message: "Successfully cancelled the request" });
+    } else {
+      return res.status(404).json({
+        message: "No pending matches found for the patient",
+      });
+    }
+  });
+});
 
 module.exports = router;

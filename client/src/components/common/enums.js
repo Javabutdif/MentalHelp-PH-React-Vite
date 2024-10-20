@@ -4,6 +4,7 @@ export const confirmationType = Object.freeze({
   RECOVER: "Recover",
   DECLINE: "Decline",
   REQUEST: "Request",
+  CANCEL: "Cancel",
 });
 
 export const confirmationWords = Object.freeze({
@@ -12,4 +13,5 @@ export const confirmationWords = Object.freeze({
   Recover: "recover",
   Decline: "decline",
   Request: "request",
+  Cancel: "cancel",
 });

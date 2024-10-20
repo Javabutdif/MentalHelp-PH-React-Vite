@@ -256,3 +256,27 @@ export const retrieveStatus = async (id) => {
     return null;
   }
 };
+
+export const cancelMatch = async (id) => {
+  try {
+    const response = await axios.delete(
+      `${Server_Connection()}/api/cancel-match-status/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};

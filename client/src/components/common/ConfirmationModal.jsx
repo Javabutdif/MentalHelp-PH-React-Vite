@@ -51,7 +51,7 @@ function ConfirmationModal({ type, person, onSubmit, onCancel }) {
             className={`ml-3 px-6 py-2 text-white rounded bg-gray-500 `}
             onClick={onCancel}
           >
-            Cancel
+            Close
           </button>
         </div>
       </div>
