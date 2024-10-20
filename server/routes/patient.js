@@ -257,50 +257,76 @@ router.post("/match-professional", async (req, res) => {
 router.post("/request-match", async (req, res) => {
   const { id, issues, age, professional_id } = req.body;
 
-  console.log(id + " " + age + " " + professional_id);
-  const query =
+  const getMatchingDataQuery =
+    "SELECT match_id FROM matching WHERE professional_id = ?";
+  const insertPatientDetailsQuery =
     "INSERT INTO patient_details (patient_id, mental_issues, age) VALUES (?, ?, ?)";
-  const matchQuery =
+  const insertMatchingQuery =
     "INSERT INTO matching (patient_id, professional_id, match_date, match_status) VALUES (?, ?, ?, ?)";
 
-  let result = Object.keys(issues)
-    .filter((key) => issues[key])
-    .join(", ");
-
-  db.query(query, [id, result, age], (error, result) => {
+  db.query(getMatchingDataQuery, [professional_id], (error, result) => {
     if (error) {
       return res.status(500).json({
-        message: "Cannot add the patient's details into the database",
+        message: "Cannot retrieve the data from the matching table",
       });
     }
 
-    if (result.affectedRows > 0) {
-      const date = new Date();
-
-      db.query(
-        matchQuery,
-        [id, professional_id, date, "Pending"],
-        (error, results) => {
-          if (error) {
-            return res.status(500).json({
-              message: "Cannot add the match details into the database",
-            });
-          }
-
-          if (results.affectedRows > 0) {
-            return res.status(200).json({
-              message: "Request match successful",
-            });
-          } else {
-            return res.status(500).json({
-              message: "Failed to create the match request",
-            });
-          }
-        }
-      );
+    if (result.length > 0) {
+      return res.status(400).json({
+        message:
+          "You've already reached out to this professional; please wait for their response.",
+      });
     }
+
+    let issuesString = Object.keys(issues)
+      .filter((key) => issues[key])
+      .join(", ");
+
+    db.query(
+      insertPatientDetailsQuery,
+      [id, issuesString, age],
+      (error, result) => {
+        if (error) {
+          return res.status(500).json({
+            message: "Cannot add the patient's details into the database",
+          });
+        }
+
+        if (result.affectedRows > 0) {
+          const date = new Date();
+
+          // Insert matching request
+          db.query(
+            insertMatchingQuery,
+            [id, professional_id, date, "Pending"],
+            (error, results) => {
+              if (error) {
+                return res.status(500).json({
+                  message: "Cannot add the match details into the database",
+                });
+              }
+
+              if (results.affectedRows > 0) {
+                return res.status(200).json({
+                  message: "Request match successful",
+                });
+              } else {
+                return res.status(500).json({
+                  message: "Failed to create the match request",
+                });
+              }
+            }
+          );
+        } else {
+          return res.status(500).json({
+            message: "Failed to add the patient's details",
+          });
+        }
+      }
+    );
   });
 });
+
 router.get("/retrieve-match-status/:id", (req, res) => {
   const { id } = req.params;
 
@@ -389,7 +415,7 @@ router.post(
         }
         if (result.affectedRows > 0) {
           res.status(200).json({
-            message: "Profile image uploaded successfully"
+            message: "Profile image uploaded successfully",
           });
         }
       });

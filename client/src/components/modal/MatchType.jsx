@@ -81,6 +81,8 @@ function MatchType({ onClose }) {
     if (await requestMatch(matchRequstForm)) {
       handleHideDisplayResult();
       onClose();
+    } else {
+      handleHideDisplayResult();
     }
   };
 

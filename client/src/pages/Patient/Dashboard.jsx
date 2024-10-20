@@ -81,7 +81,7 @@ const Dashboard = () => {
                   className="space-y-2 overflow-y-auto"
                   style={{ maxHeight: "12rem" }}
                 >
-                  {showStatus.length > 0 ? (
+                  {showStatus ? (
                     showStatus.map((match, index) => (
                       <MatchStatus
                         key={index}

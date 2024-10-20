@@ -10,12 +10,11 @@ const Profile = () => {
   const [data, setData] = useState([]);
   const [editModal, setEditModal] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
-
+  const fetchData = async () => {
+    const data = await retrieveSpecificProfessional(user.id);
+    setData(data[0]);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await retrieveSpecificProfessional(user.id);
-      setData(data[0]);
-    };
     fetchData();
   }, []);
   const handleEditModal = () => {
@@ -88,8 +87,8 @@ const Profile = () => {
           <>
             <ProfilePicture
               onSubmit={handleHideEditProfile}
-						  onCancel={handleHideEditProfile}
-						  type="Professional"
+              onCancel={handleHideEditProfile}
+              type="Professional"
             />
           </>
         )}
