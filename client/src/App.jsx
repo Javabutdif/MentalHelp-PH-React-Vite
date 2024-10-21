@@ -35,9 +35,11 @@ import PatientDashboard from "./pages/Patient/Dashboard";
 import PatientSettings from "./pages/Patient/Settings";
 import PatientProfile from "./pages/Patient/Profile";
 import PatientCommunity from "./pages/Patient/Community";
+import PatientNotification from "./pages/Patient/Notification";
 //Professional
 import ProfessionalDashboard from "./pages/Professional/Dashboard";
 import ProfessionalProfile from "./pages/Professional/Profile";
+import ProfessionalNotification from "./pages/Professional/Notification";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
@@ -96,6 +98,10 @@ function App() {
 						path="community"
 						element={<PrivateRoutePatient element={PatientCommunity} />}
 					/>
+					<Route
+						path="notification"
+						element={<PrivateRoutePatient element={PatientNotification} />}
+					/>
 				</Route>
 				<Route
 					path="/professional/"
@@ -109,6 +115,12 @@ function App() {
 					<Route
 						path="profile"
 						element={<PrivateRouteProfessional element={ProfessionalProfile} />}
+					/>
+					<Route
+						path="notification"
+						element={
+							<PrivateRouteProfessional element={ProfessionalNotification} />
+						}
 					/>
 				</Route>
 

@@ -40,7 +40,7 @@ function ProfessionalNavbar() {
 			<div className="flex items-center">
 				<img src="/logon.png" className="h-16 w-16 mx-3" alt="Logo" />
 				<Link to="/professional/dashboard" className="font-bold text-xl">
-					MentalHelp PH | {capitalizeFirstLetter(lastpath)}
+					MentalHelp PH Professional | {capitalizeFirstLetter(lastpath)}
 				</Link>
 			</div>
 			<button

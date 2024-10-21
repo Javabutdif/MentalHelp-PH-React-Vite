@@ -55,177 +55,167 @@ const Dashboard = () => {
   };
 
   const acceptRequestApi = async () => {
-    await acceptRequest(matchId);
-  };
-  const cancelRequestApi = async () => {
-    await cancelRequest(matchId);
-  };
+		await acceptRequest(matchId);
+		handleHideAcceptRequest();
+	};
+	const cancelRequestApi = async () => {
+		await cancelRequest(matchId);
+		handleHideCancelRequest();
+	};
 
-  const onRouteSubmit = () => {
-    if (type === "Cancel") {
-      acceptRequestApi();
-    }
-    if (type === "Accept") {
-      cancelRequestApi();
-    }
-  };
-  const onRouteCancel = () => {
-    if (type === "Cancel") {
-      handleHideCancelRequest();
-    }
-    if (type === "Accept") {
-      handleHideAcceptRequest();
-    }
-  };
+	return (
+		<div className="container mx-auto p-4 pt-28">
+			{!dataRetrieve && <ProfessionalPreferences />}
 
-  return (
-    <div className="container mx-auto p-4 pt-28">
-      {!dataRetrieve && <ProfessionalPreferences />}
+			<div className="flex items-center justify-between mb-8">
+				<div className="flex items-center space-x-4">
+					<img
+						src={data.photo}
+						alt="Doctor"
+						className="w-16 h-16 rounded-full object-cover"
+					/>
+					<div>
+						<h1 className="text-2xl font-bold">{user.name}</h1>
+						<p className="text-gray-500">{user.type}</p>
+					</div>
+				</div>
+				<div className="flex space-x-4">
+					{/* Statistic Cards */}
+					<div className="bg-white shadow-md rounded-md p-4">
+						<h2 className="text-lg font-semibold">Successful Consultation</h2>
+						<p className="text-2xl font-bold">85</p>
+						<p className="text-sm text-gray-500">by 5 months</p>
+					</div>
+					<div className="bg-white shadow-md rounded-md p-4">
+						<h2 className="text-lg font-semibold">Earnings</h2>
+						<p className="text-2xl font-bold">140K</p>
+						<p className="text-sm text-gray-500">by 5 months</p>
+					</div>
+					<div className="bg-white shadow-md rounded-md p-4">
+						<h2 className="text-lg font-semibold">Total Consultation</h2>
+						<p className="text-2xl font-bold">116</p>
+						<p className="text-sm text-gray-500">by 5 months</p>
+					</div>
+				</div>
+			</div>
 
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center space-x-4">
-          <img
-            src={data.photo}
-            alt="Doctor"
-            className="w-16 h-16 rounded-full"
-          />
-          <div>
-            <h1 className="text-2xl font-bold">{user.name}</h1>
-            <p className="text-gray-500">{user.type}</p>
-          </div>
-        </div>
-        <div className="flex space-x-4">
-          {/* Statistic Cards */}
-          <div className="bg-white shadow-md rounded-md p-4">
-            <h2 className="text-lg font-semibold">Successful Consultation</h2>
-            <p className="text-2xl font-bold">85</p>
-            <p className="text-sm text-gray-500">by 5 months</p>
-          </div>
-          <div className="bg-white shadow-md rounded-md p-4">
-            <h2 className="text-lg font-semibold">Earnings</h2>
-            <p className="text-2xl font-bold">140K</p>
-            <p className="text-sm text-gray-500">by 5 months</p>
-          </div>
-          <div className="bg-white shadow-md rounded-md p-4">
-            <h2 className="text-lg font-semibold">Total Consultation</h2>
-            <p className="text-2xl font-bold">116</p>
-            <p className="text-sm text-gray-500">by 5 months</p>
-          </div>
-        </div>
-      </div>
+			{/* Main Content */}
+			<div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+				{/* Appointments Section */}
+				<div className="col-span-1">
+					<h3 className="font-semibold mb-2">Appointments</h3>
+					<div className="space-y-4">
+						{["04 July", "04 July", "04 July"].map((date, index) => (
+							<div
+								key={index}
+								className={`bg-${
+									index === 0 ? "orange" : index === 1 ? "blue" : "green"
+								}-100 p-4 rounded-md shadow-md`}>
+								<p className="font-bold">{date}</p>
+								<p>{`1:00 - 2:00`}</p>
+								<p>{`Monica, 20, Female, Depression`}</p>
+							</div>
+						))}
+					</div>
+				</div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-        {/* Appointments Section */}
-        <div className="col-span-1">
-          <h3 className="font-semibold mb-2">Appointments</h3>
-          <div className="space-y-4">
-            {["04 July", "04 July", "04 July"].map((date, index) => (
-              <div
-                key={index}
-                className={`bg-${
-                  index === 0 ? "orange" : index === 1 ? "blue" : "green"
-                }-100 p-4 rounded-md shadow-md`}
-              >
-                <p className="font-bold">{date}</p>
-                <p>{`1:00 - 2:00`}</p>
-                <p>{`Monica, 20, Female, Depression`}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+				{/* Match Request Section */}
+				<div className="mt-8">
+					<h3 className="font-semibold mb-2">Match Request</h3>
+					<div
+						className="bg-white shadow-md rounded-md p-4 space-y-4 overflow-y-auto"
+						style={{ maxHeight: "12rem" }}>
+						{showStatus ? (
+							showStatus.map((request, index) => (
+								<MatchStatus
+									key={index}
+									type={request.mental_issues}
+									name={`${request.firstname + " " + request.lastname}, ${
+										request.age
+									}, ${request.gender}`}
+									status={request.match_status}
+									onCancel={() => handleCancelRequest(request.match_id)}
+									onSubmit={() => handleAcceptRequest(request.match_id)}
+								/>
+							))
+						) : (
+							<p>No match requests found.</p>
+						)}
+					</div>
+				</div>
 
-        {/* Match Request Section */}
-        <div className="mt-8">
-          <h3 className="font-semibold mb-2">Match Request</h3>
-          <div
-            className="bg-white shadow-md rounded-md p-4 space-y-4 overflow-y-auto"
-            style={{ maxHeight: "12rem" }}
-          >
-            {showStatus ? (
-              showStatus.map((request, index) => (
-                <MatchStatus
-                  key={index}
-                  type={request.mental_issues}
-                  name={`${request.firstname + " " + request.lastname}, ${
-                    request.age
-                  }, ${request.gender}`}
-                  status={request.match_status}
-                  onCancel={() => handleCancelRequest(request.match_id)}
-                  onSubmit={() => handleAcceptRequest(request.match_id)}
-                />
-              ))
-            ) : (
-              <p>No match requests found.</p>
-            )}
-          </div>
-        </div>
+				{/* Patient History Section */}
+				<div className="col-span-1 md:col-span-2">
+					<h3 className="font-semibold mb-2">Patient History</h3>
+					<table className="min-w-full bg-white shadow-md rounded-md">
+						<thead>
+							<tr className="text-left border-b">
+								<th className="py-2 px-4">Name</th>
+								<th className="py-2 px-4">Age</th>
+								<th className="py-2 px-4">Gender</th>
+								<th className="py-2 px-4">Condition</th>
+								<th className="py-2 px-4">Date</th>
+							</tr>
+						</thead>
+						<tbody>
+							{[
+								{
+									name: "Naomi",
+									age: 21,
+									gender: "Female",
+									condition: "Anxiety",
+									date: "02-07-24",
+								},
+								{
+									name: "Randy",
+									age: 33,
+									gender: "Male",
+									condition: "Anxiety",
+									date: "02-07-24",
+								},
+								{
+									name: "Krisha",
+									age: 18,
+									gender: "Female",
+									condition: "Depression",
+									date: "02-07-24",
+								},
+							].map((patient, index) => (
+								<tr key={index} className="border-b">
+									<td className="py-2 px-4">{patient.name}</td>
+									<td className="py-2 px-4">{patient.age}</td>
+									<td className="py-2 px-4">{patient.gender}</td>
+									<td className="py-2 px-4">{patient.condition}</td>
+									<td className="py-2 px-4">{patient.date}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			{confirmationModal && type === "Accept" && (
+				<>
+					<ConfirmationModal
+						type={type}
+						person="request"
+						onSubmit={() => acceptRequestApi(matchId)}
+						onCancel={handleHideAcceptRequest}
+					/>
+				</>
+			)}
 
-        {/* Patient History Section */}
-        <div className="col-span-1 md:col-span-2">
-          <h3 className="font-semibold mb-2">Patient History</h3>
-          <table className="min-w-full bg-white shadow-md rounded-md">
-            <thead>
-              <tr className="text-left border-b">
-                <th className="py-2 px-4">Name</th>
-                <th className="py-2 px-4">Age</th>
-                <th className="py-2 px-4">Gender</th>
-                <th className="py-2 px-4">Condition</th>
-                <th className="py-2 px-4">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                {
-                  name: "Naomi",
-                  age: 21,
-                  gender: "Female",
-                  condition: "Anxiety",
-                  date: "02-07-24",
-                },
-                {
-                  name: "Randy",
-                  age: 33,
-                  gender: "Male",
-                  condition: "Anxiety",
-                  date: "02-07-24",
-                },
-                {
-                  name: "Krisha",
-                  age: 18,
-                  gender: "Female",
-                  condition: "Depression",
-                  date: "02-07-24",
-                },
-              ].map((patient, index) => (
-                <tr key={index} className="border-b">
-                  <td className="py-2 px-4">{patient.name}</td>
-                  <td className="py-2 px-4">{patient.age}</td>
-                  <td className="py-2 px-4">{patient.gender}</td>
-                  <td className="py-2 px-4">{patient.condition}</td>
-                  <td className="py-2 px-4">{patient.date}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      {confirmationModal && (
-        <>
-          <ConfirmationModal
-            type={type}
-            person="request"
-            onSubmit={
-              type === "Accept"
-                ? acceptRequest(matchId)
-                : cancelRequest(matchId)
-            }
-            onCancel={onRouteCancel}
-          />
-        </>
-      )}
-    </div>
-  );
+			{confirmationModal && type === "Cancel" && (
+				<>
+					<ConfirmationModal
+						type={type}
+						person="request"
+						onSubmit={() => cancelRequestApi(matchId)}
+						onCancel={handleHideCancelRequest}
+					/>
+				</>
+			)}
+		</div>
+	);
 };
 
 const MatchStatus = ({ type, name, status, onCancel, onSubmit }) => {

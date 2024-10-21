@@ -491,3 +491,29 @@ export const acceptRequest = async (id) => {
     return null;
   }
 };
+
+
+export const getNotification = async (id) => {
+	try {
+		const response = await axios.get(
+			`${Server_Connection()}/api/get-notification-professional/${id}`,
+
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			return response.data.data;
+		} else {
+			console.log("error", response.data.error);
+		}
+		console.log(response.data.message);
+	} catch (error) {
+		console.error("Error:", error.response.data.message);
+		console.error("Error:", error.response.data.message);
+		return null;
+	}
+};
+

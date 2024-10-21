@@ -341,7 +341,8 @@ router.get("/retrieve-match-status-professional/:id", (req, res) => {
 router.put("/accept-match-request/:id", async (req, res) => {
   const { id } = req.params;
 
-  const query = "UPDATE matching SET match_status = ? WHERE match_id = ? ";
+  const query =
+		"UPDATE matching SET match_status = 'Accept' WHERE match_id = ? ";
 
   db.query(query, [id], (error, results) => {
     if (error) {
@@ -385,6 +386,22 @@ router.delete("/cancel-match-request/:id", (req, res) => {
       });
     }
   });
+});
+
+
+
+router.get("/get-notification-professional/:id", (req, res) => {
+	const { id } = req.params;
+
+	const query =
+		"SELECT * FROM notification_professional WHERE professional_id = ? ORDER BY notification_id desc ";
+
+	db.query(query, [id], async (error, result) => {
+		if (error) {
+			res.status(500).json({ message: "Error retrieving notification" });
+		}
+		res.status(200).json({ data: result });
+	});
 });
 
 module.exports = router;
