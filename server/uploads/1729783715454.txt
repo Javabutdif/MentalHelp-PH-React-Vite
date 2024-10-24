@@ -1,0 +1,53 @@
+Sure! Here is an example of how you can structure a relational database with tables for customers, products, cart, orders, and order_details. I'll also explain the foreign keys and the relationships between the tables.
+
+Database Schema
+Customers Table
+
+customer_id (Primary Key)
+first_name
+last_name
+email
+password
+phone
+address
+city
+state
+zip_code
+Products Table
+
+product_id (Primary Key)
+name
+description
+price
+stock_quantity
+Cart Table
+
+cart_id (Primary Key)
+customer_id (Foreign Key referencing customers.customer_id)
+created_at
+updated_at
+Orders Table
+
+order_id (Primary Key)
+customer_id (Foreign Key referencing customers.customer_id)
+order_date
+status
+total_amount
+Order Details Table
+
+order_detail_id (Primary Key)
+order_id (Foreign Key referencing orders.order_id)
+product_id (Foreign Key referencing products.product_id)
+quantity
+price
+Explanation of Foreign Keys
+Cart Table
+
+customer_id is a foreign key that references the customer_id in the customers table. This establishes a relationship between a cart and a customer, indicating which customer the cart belongs to.
+Orders Table
+
+customer_id is a foreign key that references the customer_id in the customers table. This establishes a relationship between an order and a customer, indicating which customer placed the order.
+Order Details Table
+
+order_id is a foreign key that references the order_id in the orders table. This establishes a relationship between order details and an order, indicating which order the details belong to.
+product_id is a foreign key that references the product_id in the products table. This establishes a relationship between order details and a product, indicating which product is included in the order.
