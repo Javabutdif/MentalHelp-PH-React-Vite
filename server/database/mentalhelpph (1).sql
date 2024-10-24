@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 20, 2024 at 09:10 PM
+-- Generation Time: Oct 24, 2024 at 05:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -62,9 +62,7 @@ CREATE TABLE `matching` (
 --
 
 INSERT INTO `matching` (`match_id`, `patient_id`, `professional_id`, `match_date`, `match_status`) VALUES
-(1, 12, 1, '2024-10-20', 'Pending'),
-(3, 12, 1, '2024-10-20', 'Pending'),
-(5, 12, 1, '2024-10-21', 'Pending');
+(16, 12, 22, '2024-10-24', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -96,7 +94,9 @@ CREATE TABLE `mental_health_professionals` (
 
 INSERT INTO `mental_health_professionals` (`professional_id`, `firstname`, `lastname`, `email`, `contact_number`, `type`, `passwords`, `license`, `experience`, `photo`, `bio`, `comments`, `ratings`, `documents`, `professional_status`) VALUES
 (1, 'Anton James', 'Genabio', 'jamesgenabio31@gmail.com', '090830958900', 'Psychologist', '$2y$10$KL4H5mBihZsgSryOErH.RO9mAh0YT8q9FmMVZcS8mLJ0hr7clxNpq', '900900', 2, 'http://localhost:3000/profile/1729451256002.png', 'I love ice creams', '', 0, '', 'Accepted'),
-(22, 'Ayla', 'Berds', 'jamesgenabio90@gmail.com', '09083095890', 'Psychiatrist', '$2a$10$InERmO1GAGi3EJJ4fod71eNRWz/ukBZ2Nb4d/B43MVlUjsFkTxmXS', '123', 3, '', '', '', 0, 'uploads\\1729152393101.pdf', 'Accepted');
+(22, 'Ayla', 'Berds', 'jamesgenabio90@gmail.com', '09083095890', 'Psychologist', '$2a$10$InERmO1GAGi3EJJ4fod71eNRWz/ukBZ2Nb4d/B43MVlUjsFkTxmXS', '123', 3, 'http://localhost:3000/profile/1729452377862.jpg', '', '', 0, 'uploads\\1729152393101.pdf', 'Accepted'),
+(24, 'Ayala', 'Berdida', 'ailah.berdida34@gmail.com', '123123', 'Psychiatrist', '$2a$10$elCOuwvIqk90G2LfBN4XFuBCpwvVmZ3drevZLtENzKQzs7h6LCZy.', '123123', 1, '', '', '', 0, 'uploads\\1729783389117.txt', 'Decline'),
+(25, 'Dione', 'Nipaya', 'louisnipaya2@gmail.com', '12312312', 'Psychologist', '$2a$10$Z1WPjAAmMLFmlnTO3rQ7u.A7ADQx6aat5rRJsq8q4b21BC8L4q78S', '123123', 2, '', '', '', 0, 'uploads\\1729783715454.txt', 'Accepted');
 
 -- --------------------------------------------------------
 
@@ -119,6 +119,52 @@ CREATE TABLE `mental_health_professional_preference` (
 INSERT INTO `mental_health_professional_preference` (`professional_id`, `start_age`, `end_age`, `mental_issue`, `gender`) VALUES
 (1, 22, 40, 'depression, anxiety', ''),
 (22, 20, 25, 'depression, anxiety', '');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification`
+--
+
+CREATE TABLE `notification` (
+  `notification_id` int(11) NOT NULL,
+  `notification_title` varchar(100) NOT NULL,
+  `patient_id` int(11) NOT NULL,
+  `message` varchar(255) NOT NULL,
+  `notification_date` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notification`
+--
+
+INSERT INTO `notification` (`notification_id`, `notification_title`, `patient_id`, `message`, `notification_date`) VALUES
+(1, 'Match Notice', 12, 'Request match successful ', '0000-00-00 00:00:00'),
+(2, 'Match Notice', 12, 'Request match successful ', '2024-10-24 22:45:15'),
+(3, 'Match Notice', 12, 'Request match successful ', '2024-10-24 23:07:12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notification_professional`
+--
+
+CREATE TABLE `notification_professional` (
+  `notification_id` int(11) NOT NULL,
+  `notification_title` varchar(100) NOT NULL,
+  `professional_id` int(11) NOT NULL,
+  `message` varchar(255) NOT NULL,
+  `notification_date` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notification_professional`
+--
+
+INSERT INTO `notification_professional` (`notification_id`, `notification_title`, `professional_id`, `message`, `notification_date`) VALUES
+(1, 'Matching Alert', 1, 'A patient has submitted a request', '2024-10-24 22:24:06'),
+(2, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-24 22:45:15'),
+(3, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-24 23:07:12');
 
 -- --------------------------------------------------------
 
@@ -148,9 +194,8 @@ CREATE TABLE `patient` (
 
 INSERT INTO `patient` (`patient_id`, `email`, `passwords`, `firstname`, `lastname`, `bio`, `photo`, `addresses`, `gender`, `age`, `patient_status`, `contact_number`, `account_status`) VALUES
 (12, 'jims@gmail.com', '$2a$10$tDXW2toIoMlHA64wLnDr/OsFIeXXZyoia5ZIEwfUDvf.07b3ebyLq', 'James', 'Genabio', '', 'http://localhost:3000/profile/1729451195051.jfif', 'Purok', 'Male', 24, 'Married', '09083095890', 'Active'),
-(13, 'dione31@gmail.com', '$2a$10$nNPOzkbs3CUwxhkoZ3YILuBl3Z1BwdnSez02XcoqfPiuBbMwB5hvO', 'Dione', 'Louis', '', '', 'Purok Day Care', 'Male', 0, 'Married', '2312313', 'Delete'),
-(17, 'ayla@gmail.com', '$2a$10$Y31dqqi.EBoMxSXKq72SqORzWsgGIWnzWv7kLEhypHEaD8KezVPbm', 'Ailah', 'Berdida', 'I lodfdfsdfsdf', '', 'Lapu - Lapu Cebu City', 'Female', 22, 'Single', '09083095890', 'Active'),
-(18, 'ailah.berdida34@gmail.com', '$2a$10$rRo0cr0uA5XZzgkhzCWRzujmo3K3G6T4ZsWKsj.31v6emzRT/fUL.', 'ailah', 'berdidas', '', '', 'taga amo ra', 'gey', -1, 'Prefer not to say', '12345', 'Active');
+(13, 'dione31@gmail.com', '$2a$10$nNPOzkbs3CUwxhkoZ3YILuBl3Z1BwdnSez02XcoqfPiuBbMwB5hvO', 'Dione', 'Louis', '', '', 'Purok Day Care', 'Male', 0, 'Married', '2312313', 'Active'),
+(17, 'ayla@gmail.com', '$2a$10$Y31dqqi.EBoMxSXKq72SqORzWsgGIWnzWv7kLEhypHEaD8KezVPbm', 'Ailah', 'Berdida', 'I lodfdfsdfsdf', '', 'Lapu - Lapu Cebu City', 'Female', 22, 'Single', '09083095890', 'Active');
 
 -- --------------------------------------------------------
 
@@ -171,16 +216,10 @@ CREATE TABLE `patient_details` (
 
 INSERT INTO `patient_details` (`patient_id`, `mental_issues`, `age`, `gender`) VALUES
 (12, 'depression, anxiety', 24, ''),
-(12, 'depression, anxiety', 24, ''),
-(12, 'depression, anxiety', 24, ''),
-(12, 'depression, anxiety', 24, ''),
-(12, 'depression, anxiety', 24, ''),
-(12, 'depression, anxiety', 24, ''),
-(12, 'depression, anxiety', 24, ''),
-(12, 'depression, anxiety', 24, ''),
 (12, 'depression', 24, ''),
-(12, 'anxiety', 24, ''),
 (12, 'depression', 24, ''),
+(12, 'depression, anxiety', 24, ''),
+(12, 'anxiety, stress', 24, ''),
 (12, 'depression', 24, '');
 
 --
@@ -214,6 +253,20 @@ ALTER TABLE `mental_health_professional_preference`
   ADD PRIMARY KEY (`professional_id`);
 
 --
+-- Indexes for table `notification`
+--
+ALTER TABLE `notification`
+  ADD PRIMARY KEY (`notification_id`),
+  ADD KEY `patient_id` (`patient_id`);
+
+--
+-- Indexes for table `notification_professional`
+--
+ALTER TABLE `notification_professional`
+  ADD PRIMARY KEY (`notification_id`),
+  ADD KEY `professional_id` (`professional_id`);
+
+--
 -- Indexes for table `patient`
 --
 ALTER TABLE `patient`
@@ -239,13 +292,25 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `matching`
 --
 ALTER TABLE `matching`
-  MODIFY `match_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `match_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `mental_health_professionals`
 --
 ALTER TABLE `mental_health_professionals`
-  MODIFY `professional_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `professional_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `notification`
+--
+ALTER TABLE `notification`
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `notification_professional`
+--
+ALTER TABLE `notification_professional`
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `patient`
@@ -269,6 +334,18 @@ ALTER TABLE `matching`
 --
 ALTER TABLE `mental_health_professional_preference`
   ADD CONSTRAINT `mental_health_professional_preference_ibfk_1` FOREIGN KEY (`professional_id`) REFERENCES `mental_health_professionals` (`professional_id`);
+
+--
+-- Constraints for table `notification`
+--
+ALTER TABLE `notification`
+  ADD CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`);
+
+--
+-- Constraints for table `notification_professional`
+--
+ALTER TABLE `notification_professional`
+  ADD CONSTRAINT `notification_professional_ibfk_1` FOREIGN KEY (`professional_id`) REFERENCES `mental_health_professionals` (`professional_id`);
 
 --
 -- Constraints for table `patient_details`

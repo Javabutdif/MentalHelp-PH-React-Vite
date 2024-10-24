@@ -14,7 +14,7 @@ const notification = async (title, patient_id, message) => {
 			patient_id,
 
 			message,
-			notifDate.toLocaleString(),
+			notifDate,
 		]);
 
 		if (result.affectedRows > 0) {
