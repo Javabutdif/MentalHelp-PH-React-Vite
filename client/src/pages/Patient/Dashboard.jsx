@@ -88,7 +88,9 @@ const Dashboard = () => {
                         type={match.type}
                         name={"Dr. " + match.firstname + " " + match.lastname}
                         status={match.match_status}
-                        onCancel={() => handleCancelModal(match.match_id)}
+                        onCancel={() =>
+                          handleCancelModal(match.patient_details_id)
+                        }
                       />
                     ))
                   ) : (

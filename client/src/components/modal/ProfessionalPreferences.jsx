@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { getInformationData } from "../../authentication/authentication";
-import { updateProfessionalPreferences } from "../../api/professionals";
+import { updateProfessionalPreferences, getProfessionalPreferences } from "../../api/professionals";
 
 const ProfessionalPreferences = () => {
 	const user = getInformationData();

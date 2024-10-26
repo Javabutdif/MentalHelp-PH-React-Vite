@@ -492,28 +492,77 @@ export const acceptRequest = async (id) => {
   }
 };
 
-
 export const getNotification = async (id) => {
-	try {
-		const response = await axios.get(
-			`${Server_Connection()}/api/get-notification-professional/${id}`,
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-notification-professional/${id}`,
 
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		);
-		if (response.status === 200) {
-			return response.data.data;
-		} else {
-			console.log("error", response.data.error);
-		}
-		console.log(response.data.message);
-	} catch (error) {
-		console.error("Error:", error.response.data.message);
-		console.error("Error:", error.response.data.message);
-		return null;
-	}
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      console.log("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    console.error("Error:", error.response.data.message);
+    return null;
+  }
 };
 
+//getProfessionalPreferences
+
+export const getProfessionalPreferences = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-professional-preferences/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      console.log("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    console.error("Error:", error.response.data.message);
+    return null;
+  }
+};
+
+export const setUpdateProfessionalPreferences = async (professional_data) => {
+  try {
+    const response = await axios.post(
+      `${Server_Connection()}/api/updated-professional-preferences`,
+      professional_data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+      window.location.reload();
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};

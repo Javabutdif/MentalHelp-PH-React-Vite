@@ -10,6 +10,7 @@ const login = require("./routes/login");
 const patient = require("./routes/patient");
 const admin = require("./routes/admin");
 const professional = require("./routes/professional");
+const community = require("./routes/community");
 const path = require("path");
 
 app.use("/profile", express.static(path.join(__dirname, "profile")));
@@ -30,6 +31,7 @@ app.use("/api", login);
 app.use("/api", patient);
 app.use("/api", admin);
 app.use("/api", professional);
+app.use("/api", community);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
