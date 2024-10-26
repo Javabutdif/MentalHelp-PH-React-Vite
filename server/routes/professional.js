@@ -299,7 +299,8 @@ router.get("/retrieve-match-status-professional/:id", (req, res) => {
 
   const query = `
     SELECT 
-      matching.match_id, 
+      matching.match_id,
+      matching.patient_details_id,
       matching.match_date, 
       matching.match_status,
       patient.firstname, 
@@ -342,7 +343,7 @@ router.put("/accept-match-request/:id", async (req, res) => {
   const { id } = req.params;
 
   const query =
-		"UPDATE matching SET match_status = 'Accept' WHERE match_id = ? ";
+    "UPDATE matching SET match_status = 'Accept' WHERE match_id = ? ";
 
   db.query(query, [id], (error, results) => {
     if (error) {
@@ -363,23 +364,37 @@ router.put("/accept-match-request/:id", async (req, res) => {
 
 router.delete("/cancel-match-request/:id", (req, res) => {
   const { id } = req.params;
+  const matchQuery = `DELETE FROM matching WHERE patient_details_id = ?`;
+  const patientDetailsQuery = `DELETE FROM patient_details WHERE patient_details_id = ?`;
 
-  const query = `
-   DELETE FROM matching WHERE match_id = ?`;
-
-  db.query(query, [id], (error, result) => {
+  db.query(matchQuery, [id], (error, matchResult) => {
     if (error) {
-      console.error("Error cancelling match:", error); // Added server-side logging
       return res.status(500).json({
         message: "Cannot cancel the matching",
         error: error.message,
       });
     }
 
-    if (result.affectedRows > 0) {
-      return res
-        .status(200)
-        .json({ message: "Successfully cancelled the request" });
+    if (matchResult.affectedRows > 0) {
+      db.query(patientDetailsQuery, [id], (error, detailsResult) => {
+        if (error) {
+          return res.status(500).json({
+            message: "Cancelled match but failed to delete patient details",
+            error: error.message,
+          });
+        }
+
+        if (detailsResult.affectedRows > 0) {
+          return res.status(200).json({
+            message:
+              "Successfully cancelled the request and deleted patient details",
+          });
+        } else {
+          return res.status(404).json({
+            message: "Match cancelled, but no patient details found to delete",
+          });
+        }
+      });
     } else {
       return res.status(404).json({
         message: "No pending matches found for the patient",
@@ -388,20 +403,62 @@ router.delete("/cancel-match-request/:id", (req, res) => {
   });
 });
 
-
-
 router.get("/get-notification-professional/:id", (req, res) => {
-	const { id } = req.params;
+  const { id } = req.params;
 
-	const query =
-		"SELECT * FROM notification_professional WHERE professional_id = ? ORDER BY notification_id desc ";
+  const query =
+    "SELECT * FROM notification_professional WHERE professional_id = ? ORDER BY notification_id desc ";
 
-	db.query(query, [id], async (error, result) => {
-		if (error) {
-			res.status(500).json({ message: "Error retrieving notification" });
-		}
-		res.status(200).json({ data: result });
-	});
+  db.query(query, [id], async (error, result) => {
+    if (error) {
+      res.status(500).json({ message: "Error retrieving notification" });
+    }
+    res.status(200).json({ data: result });
+  });
+});
+
+router.get("/get-professional-preferences/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query =
+    "SELECT * FROM mental_health_professional_preference WHERE professional_id = ? ";
+
+  db.query(query, [id], async (error, result) => {
+    if (error) {
+      res.status(500).json({ message: "Error retrieving preferences" });
+    }
+    res.status(200).json({ data: result });
+  });
+});
+
+//Professional Edited their Preferences
+router.post("/updated-professional-preferences", async (req, res) => {
+  const { id, startAge, endAge, issues } = req.body;
+
+  console.log(issues);
+
+  let result = Object.keys(issues)
+    .filter((key) => issues[key])
+    .join(", ");
+  console.log(id + " " + startAge + " " + endAge + " " + result);
+  const query =
+    "UPDATE mental_health_professional_preference SET start_age = ?, end_age = ?, mental_issue = ? WHERE professional_id = ?";
+
+  db.query(query, [startAge, endAge, result, id], (error, results) => {
+    if (error) {
+      return res.status(500).json({ message: "Unable to set preferences" });
+    }
+
+    if (results.affectedRows > 0) {
+      return res
+        .status(200)
+        .json({ message: "Preferences updated successfully" });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No preferences found for this professional" });
+    }
+  });
 });
 
 module.exports = router;

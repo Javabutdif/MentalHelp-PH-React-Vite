@@ -1,14 +1,23 @@
 import React, { useState } from "react";
 import ConfirmationModal from "../common/ConfirmationModal";
+import ViewBackground from "./ViewBackground";
 
 const DisplayMatch = ({ onRequestMatch, onSearch, data, onClose }) => {
   const [viewConfirm, setConfirm] = useState(false);
+  const [viewBackground, setViewBackground] = useState(false);
 
   const handleConfirmModal = () => {
     setConfirm(true);
   };
   const handleHideConfirmModal = () => {
     setConfirm(false);
+  };
+
+  const handleViewBackground = () => {
+    setViewBackground(true);
+  };
+  const handleHideViewBackground = () => {
+    setViewBackground(false);
   };
 
   return (
@@ -26,9 +35,13 @@ const DisplayMatch = ({ onRequestMatch, onSearch, data, onClose }) => {
           <p className="text-xl font-semibold">
             Dr. {data.firstname + " " + data.lastname}
           </p>
-          <a href="#" className="text-blue-500 hover:underline">
+          <a
+            onClick={handleViewBackground} // Call the function directly
+            className="text-blue-500 hover:underline"
+          >
             View Background
           </a>
+
           <div className="flex justify-center items-center my-2">
             <span className="text-yellow-500">★★★★★</span>
             <span className="ml-2 text-gray-500">4.5 out of 5</span>
@@ -67,6 +80,11 @@ const DisplayMatch = ({ onRequestMatch, onSearch, data, onClose }) => {
             onSubmit={onRequestMatch}
             onCancel={handleHideConfirmModal}
           />
+        </>
+      )}
+      {viewBackground && (
+        <>
+          <ViewBackground data={data} onClose={handleHideViewBackground} />
         </>
       )}
     </div>
