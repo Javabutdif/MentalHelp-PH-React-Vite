@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 24, 2024 at 05:31 PM
+-- Generation Time: Oct 27, 2024 at 06:33 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,23 +46,38 @@ INSERT INTO `admin` (`admin_id`, `admin_name`, `admin_email`, `admin_password`) 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `forum`
+--
+
+CREATE TABLE `forum` (
+  `forum_id` int(11) NOT NULL,
+  `title` varchar(100) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `created_date` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `forum`
+--
+
+INSERT INTO `forum` (`forum_id`, `title`, `description`, `created_date`) VALUES
+(1, 'Black Lives Matter', 'Where black lives matter', '2024-10-27 02:08:32'),
+(2, 'Ayla Matter', 'Ayla berds', '2024-10-27 02:11:33');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `matching`
 --
 
 CREATE TABLE `matching` (
   `match_id` int(11) NOT NULL,
+  `patient_details_id` int(11) NOT NULL,
   `patient_id` int(11) NOT NULL,
   `professional_id` int(11) NOT NULL,
   `match_date` date NOT NULL,
   `match_status` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `matching`
---
-
-INSERT INTO `matching` (`match_id`, `patient_id`, `professional_id`, `match_date`, `match_status`) VALUES
-(16, 12, 22, '2024-10-24', 'Pending');
 
 -- --------------------------------------------------------
 
@@ -117,8 +132,8 @@ CREATE TABLE `mental_health_professional_preference` (
 --
 
 INSERT INTO `mental_health_professional_preference` (`professional_id`, `start_age`, `end_age`, `mental_issue`, `gender`) VALUES
-(1, 22, 40, 'depression, anxiety', ''),
-(22, 20, 25, 'depression, anxiety', '');
+(1, 10, 40, 'depression, anxiety, stress', ''),
+(22, 20, 25, 'depression, anxiety, stress', '');
 
 -- --------------------------------------------------------
 
@@ -141,7 +156,10 @@ CREATE TABLE `notification` (
 INSERT INTO `notification` (`notification_id`, `notification_title`, `patient_id`, `message`, `notification_date`) VALUES
 (1, 'Match Notice', 12, 'Request match successful ', '0000-00-00 00:00:00'),
 (2, 'Match Notice', 12, 'Request match successful ', '2024-10-24 22:45:15'),
-(3, 'Match Notice', 12, 'Request match successful ', '2024-10-24 23:07:12');
+(3, 'Match Notice', 12, 'Request match successful ', '2024-10-24 23:07:12'),
+(4, 'Match Notice', 12, 'Request match successful', '2024-10-26 23:08:06'),
+(5, 'Match Notice', 12, 'Request match successful', '2024-10-26 23:10:34'),
+(6, 'Match Notice', 12, 'Request match successful', '2024-10-27 00:16:44');
 
 -- --------------------------------------------------------
 
@@ -164,7 +182,10 @@ CREATE TABLE `notification_professional` (
 INSERT INTO `notification_professional` (`notification_id`, `notification_title`, `professional_id`, `message`, `notification_date`) VALUES
 (1, 'Matching Alert', 1, 'A patient has submitted a request', '2024-10-24 22:24:06'),
 (2, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-24 22:45:15'),
-(3, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-24 23:07:12');
+(3, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-24 23:07:12'),
+(4, 'Matching Alert', 1, 'A patient has submitted a request', '2024-10-26 23:08:06'),
+(5, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-26 23:10:34'),
+(6, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-27 00:16:44');
 
 -- --------------------------------------------------------
 
@@ -204,23 +225,12 @@ INSERT INTO `patient` (`patient_id`, `email`, `passwords`, `firstname`, `lastnam
 --
 
 CREATE TABLE `patient_details` (
+  `patient_details_id` int(11) NOT NULL,
   `patient_id` int(11) NOT NULL,
   `mental_issues` varchar(100) NOT NULL,
   `age` int(11) NOT NULL,
   `gender` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `patient_details`
---
-
-INSERT INTO `patient_details` (`patient_id`, `mental_issues`, `age`, `gender`) VALUES
-(12, 'depression, anxiety', 24, ''),
-(12, 'depression', 24, ''),
-(12, 'depression', 24, ''),
-(12, 'depression, anxiety', 24, ''),
-(12, 'anxiety, stress', 24, ''),
-(12, 'depression', 24, '');
 
 --
 -- Indexes for dumped tables
@@ -233,12 +243,19 @@ ALTER TABLE `admin`
   ADD PRIMARY KEY (`admin_id`);
 
 --
+-- Indexes for table `forum`
+--
+ALTER TABLE `forum`
+  ADD PRIMARY KEY (`forum_id`);
+
+--
 -- Indexes for table `matching`
 --
 ALTER TABLE `matching`
   ADD PRIMARY KEY (`match_id`),
   ADD KEY `patient_id` (`patient_id`),
-  ADD KEY `professional_id` (`professional_id`);
+  ADD KEY `professional_id` (`professional_id`),
+  ADD KEY `patient_details_id` (`patient_details_id`);
 
 --
 -- Indexes for table `mental_health_professionals`
@@ -276,6 +293,7 @@ ALTER TABLE `patient`
 -- Indexes for table `patient_details`
 --
 ALTER TABLE `patient_details`
+  ADD PRIMARY KEY (`patient_details_id`),
   ADD KEY `patient_id` (`patient_id`);
 
 --
@@ -289,10 +307,16 @@ ALTER TABLE `admin`
   MODIFY `admin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
+-- AUTO_INCREMENT for table `forum`
+--
+ALTER TABLE `forum`
+  MODIFY `forum_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `matching`
 --
 ALTER TABLE `matching`
-  MODIFY `match_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `match_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `mental_health_professionals`
@@ -304,19 +328,25 @@ ALTER TABLE `mental_health_professionals`
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `notification_professional`
 --
 ALTER TABLE `notification_professional`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `patient`
 --
 ALTER TABLE `patient`
   MODIFY `patient_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+--
+-- AUTO_INCREMENT for table `patient_details`
+--
+ALTER TABLE `patient_details`
+  MODIFY `patient_details_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables
@@ -327,7 +357,8 @@ ALTER TABLE `patient`
 --
 ALTER TABLE `matching`
   ADD CONSTRAINT `matching_ibfk_1` FOREIGN KEY (`patient_id`) REFERENCES `patient` (`patient_id`),
-  ADD CONSTRAINT `matching_ibfk_2` FOREIGN KEY (`professional_id`) REFERENCES `mental_health_professionals` (`professional_id`);
+  ADD CONSTRAINT `matching_ibfk_2` FOREIGN KEY (`professional_id`) REFERENCES `mental_health_professionals` (`professional_id`),
+  ADD CONSTRAINT `matching_ibfk_3` FOREIGN KEY (`patient_details_id`) REFERENCES `patient_details` (`patient_details_id`);
 
 --
 -- Constraints for table `mental_health_professional_preference`

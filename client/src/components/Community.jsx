@@ -3,10 +3,11 @@ import ForumForm from "./Forum/ForumForm";
 import ForumList from "./Forum/ForumList";
 import ForumModal from "./Forum/ForumModal";
 import { createForum, getForum } from "../api/community";
+import ForumPage from "./Forum/ForumPage";
 
 const Community = () => {
   const [forums, setForums] = useState([]);
-  const [selectedForum, setSelectedForum] = useState(null);
+  const [selectedForum, setSelectedForum] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [error, setError] = useState(null);
 
@@ -33,7 +34,7 @@ const Community = () => {
 
   const handleCreateForum = async (title) => {
     await createForum(title);
-    fetchCommunity(); 
+    fetchCommunity();
   };
 
   const handleForumClick = (title) => {
@@ -50,11 +51,10 @@ const Community = () => {
     <div className="container mx-auto p-4 pt-28">
       <ForumForm onCreateForum={handleCreateForum} />
       {error && <div className="text-red-500">{error}</div>}{" "}
-   
       <div>
         <ForumList forums={forums} onForumClick={handleForumClick} />
       </div>
-      {isModalOpen && <ForumModal title={selectedForum} onClose={closeModal} />}
+      {isModalOpen && <ForumPage data={selectedForum} onClose={closeModal} />}
     </div>
   );
 };

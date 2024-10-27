@@ -1,1 +1,41 @@
+.forum-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-top: 4rem;
+}
 
+.forum-header {
+  padding: 10px;
+  background-color: #f1f1f1;
+}
+
+.forum-conversation {
+  flex-grow: 1;
+  padding: 10px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.forum-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+  position: sticky;
+  bottom: 0;
+}
+
+.message {
+  margin-bottom: 10px;
+}
+
+.sender {
+  font-weight: bold;
+}
+
+.timestamp {
+  font-size: 0.8em;
+  color: #999;
+}
