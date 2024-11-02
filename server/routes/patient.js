@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const router = express.Router();
 const db = require("../connection/db");
 require("dotenv").config();
-const { sendMail } = require("../mail/mailContents");
+const { sendMail, sendDeletedMail } = require("../mail/mailContents");
 const multer = require("multer");
 const path = require("path");
 const {
@@ -156,13 +156,52 @@ router.post("/update-patient", async (req, res) => {
 
 router.post("/delete-patient/:id", async (req, res) => {
   const { id } = req.params;
-  const query = "UPDATE patient SET account_status = ? WHERE patient_id = ?";
-  db.query(query, ["Delete", id], (error, results) => {
-    if (error) {
-      res.status(500).json({ message: "Unable to delete patients." });
-    }
-    res.status(200).json({ message: "Patient successfully deleted" });
-  });
+
+  try {
+    const getPatient = "SELECT * FROM patient WHERE patient_id = ?";
+    db.query(getPatient, [id], async (error, result) => {
+      if (error) {
+        return res.status(500).json({ message: "Database error", error });
+      }
+
+      if (result.length === 0) {
+        return res.status(404).json({ message: "Patient not found" });
+      }
+
+      const { email, firstname, lastname } = result[0];
+
+      const updateQuery =
+        "UPDATE patient SET account_status = ? WHERE patient_id = ?";
+      db.query(
+        updateQuery,
+        ["Delete", id],
+        async (updateError, updateResult) => {
+          if (updateError) {
+            return res
+              .status(500)
+              .json({ message: "Database error", error: updateError });
+          }
+
+          if (updateResult.affectedRows === 0) {
+            return res.status(404).json({ message: "Patient not found" });
+          } else {
+            try {
+              let emailInfo = await sendDeletedMail(email, firstname, lastname);
+              return res
+                .status(200)
+                .json({ message: "Patient deleted successfully" });
+            } catch (mailError) {
+              return res
+                .status(500)
+                .json({ message: "Error sending email", error: mailError });
+            }
+          }
+        }
+      );
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error });
+  }
 });
 
 router.post("/recover-patient/:id", async (req, res) => {

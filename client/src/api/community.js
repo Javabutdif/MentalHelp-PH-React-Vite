@@ -53,3 +53,52 @@ export const getForum = async () => {
     return null;
   }
 };
+
+export const getConversation = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-discussion/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log(response.data.data);
+      return response.data.data;
+    } else {
+      console.log("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    console.log("error", error.response.data.message);
+    return null;
+  }
+};
+
+export const sendDiscussion = async (data) => {
+  try {
+    const response = await axios.post(
+      `${Server_Connection()}/api/send-discussion`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log("success", response.data.message);
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};

@@ -14,6 +14,7 @@ import Contact from "./pages/Contact";
 
 //All
 import Community from "./components/Community";
+import CommunityForum from "./components/Forum/CommunityForum";
 
 //Routing
 import PrivateRouteAdmin from "./Route/PrivateRouteAdmin";
@@ -77,6 +78,11 @@ function App() {
             element={<PrivateRouteAdmin element={Community} />}
           />
           <Route
+            path="community/discussion/:forum_id"
+            element={<PrivateRouteAdmin element={CommunityForum} />}
+          />
+
+          <Route
             path="reports"
             element={<PrivateRouteAdmin element={AdminReport} />}
           />
@@ -100,6 +106,10 @@ function App() {
           <Route
             path="community"
             element={<PrivateRoutePatient element={Community} />}
+          />
+          <Route
+            path="community/discussion/:forum_id"
+            element={<PrivateRoutePatient element={CommunityForum} />}
           />
           <Route
             path="notification"

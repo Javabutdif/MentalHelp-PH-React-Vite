@@ -20,7 +20,10 @@ function PatientNavbar() {
   const [isHovered, setIsHovered] = useState(false);
 
   const path = location.pathname.split("/");
-  const lastpath = path[path.length - 1];
+  const lastpath =
+    path[path.length - 2] === "discussion"
+      ? path[path.length - 2]
+      : path[path.length - 1];
 
   const handleLogout = async () => {
     await logout();

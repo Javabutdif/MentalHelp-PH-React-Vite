@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import ForumForm from "./Forum/ForumForm";
 import ForumList from "./Forum/ForumList";
-import ForumModal from "./Forum/ForumModal";
+import CommunityForum from "./Forum/CommunityForum";
 import { createForum, getForum } from "../api/community";
 
 const Community = () => {
@@ -33,7 +33,7 @@ const Community = () => {
 
   const handleCreateForum = async (title) => {
     await createForum(title);
-    fetchCommunity(); 
+    fetchCommunity();
   };
 
   const handleForumClick = (title) => {
@@ -47,14 +47,14 @@ const Community = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 pt-28">
-      <ForumForm onCreateForum={handleCreateForum} />
-      {error && <div className="text-red-500">{error}</div>}{" "}
-   
-      <div>
-        <ForumList forums={forums} onForumClick={handleForumClick} />
+    <div>
+      <div className="container mx-auto p-4 pt-28">
+        <ForumForm onCreateForum={handleCreateForum} />
+        {error && <div className="text-red-500">{error}</div>}{" "}
+        <div>
+          <ForumList forums={forums} onForumClick={handleForumClick} />
+        </div>
       </div>
-      {isModalOpen && <ForumModal title={selectedForum} onClose={closeModal} />}
     </div>
   );
 };

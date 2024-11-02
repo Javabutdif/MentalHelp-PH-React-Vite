@@ -29,4 +29,35 @@ router.get("/get-forum", (req, res) => {
   });
 });
 
+router.post("/send-discussion", (req, res) => {
+  const { forum_id, patient_id, message } = req.body;
+
+  const currentDate = new Date();
+
+  const query =
+    "INSERT INTO discussion (forum_id, patient_id,message, msg_datetime) VALUES (?, ?,?,?)";
+  db.query(
+    query,
+    [forum_id, patient_id, message, currentDate],
+    (error, results) => {
+      if (error) {
+        return res.status(500).json({ error });
+      }
+      res.status(200).json({ message: "Send Chat Successfully" });
+    }
+  );
+});
+
+router.get("/get-discussion/:id", (req, res) => {
+  const { id } = req.params;
+  const query = "SELECT * FROM discussion WHERE forum_id = ?";
+
+  db.query(query, [id], (error, results) => {
+    if (error) {
+      return res.status(500).json({ error });
+    }
+    res.status(200).json({ data: results });
+  });
+});
+
 module.exports = router;
