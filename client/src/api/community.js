@@ -66,7 +66,7 @@ export const getConversation = async (id) => {
       }
     );
     if (response.status === 200) {
-      console.log(response.data.data);
+      //console.log(response.data.data);
       return response.data.data;
     } else {
       console.log("error", response.data.message);
