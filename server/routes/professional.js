@@ -94,6 +94,7 @@ router.post(
       profession,
       experience,
       license,
+      address,
     } = req.body;
 
     const documentPaths = req.files.map((file) => file.path);
@@ -102,7 +103,7 @@ router.post(
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const query =
-      "INSERT INTO mental_health_professionals (email, firstname, lastname, passwords, type, license, experience, professional_status, contact_number, documents) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO mental_health_professionals (email, firstname, lastname, professional_address	, passwords, type, license, experience, professional_status, contact_number, documents) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?)";
 
     db.query(
       query,
@@ -110,6 +111,7 @@ router.post(
         email,
         firstname,
         lastname,
+        address,
         hashedPassword,
         profession,
         license,
@@ -134,7 +136,7 @@ router.get("/get-specific-professional/:id", async (req, res) => {
   const { id } = req.params;
 
   const query =
-    "SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname, mental_health_professionals.email, mental_health_professionals.license, mental_health_professionals.experience, mental_health_professionals.type, mental_health_professionals.professional_status,mental_health_professionals.bio, mental_health_professionals.contact_number , mental_health_professionals.photo FROM mental_health_professionals WHERE professional_id = ?";
+    "SELECT mental_health_professionals.professional_id, mental_health_professionals.firstname, mental_health_professionals.lastname,mental_health_professionals.professional_address, mental_health_professionals.email, mental_health_professionals.license, mental_health_professionals.experience, mental_health_professionals.type, mental_health_professionals.professional_status,mental_health_professionals.bio, mental_health_professionals.contact_number , mental_health_professionals.photo FROM mental_health_professionals WHERE professional_id = ?";
   db.query(query, [id], (error, results) => {
     if (error) {
       return res
@@ -145,14 +147,6 @@ router.get("/get-specific-professional/:id", async (req, res) => {
     res.status(200).json({ data: results });
   });
 });
-// id: response[0].professional_id,
-// firstname: response[0].firstname,
-// lastname: response[0].lastname,
-// email: response[0].email,
-// license: response[0].license,
-// experience: response[0].experience,
-// profession: response[0].type,
-// contact: response[0].contact_number,
 
 router.post("/update-professional", async (req, res) => {
   const {
@@ -165,16 +159,18 @@ router.post("/update-professional", async (req, res) => {
     profession,
     contact,
     bio,
+    address,
   } = req.body;
 
   const query =
-    "UPDATE mental_health_professionals SET firstname = ? , lastname = ? , email = ? , license = ? , experience = ? , type =  ? , contact_number = ? , bio = ? WHERE professional_id = ? ";
+    "UPDATE mental_health_professionals SET firstname = ? , lastname = ? ,professional_address = ?, email = ? , license = ? , experience = ? , type =  ? , contact_number = ? , bio = ? WHERE professional_id = ? ";
 
   db.query(
     query,
     [
       firstname,
       lastname,
+      address,
       email,
       license,
       experience,
@@ -307,7 +303,8 @@ router.get("/retrieve-match-status-professional/:id", (req, res) => {
       patient.lastname,
       patient.age,
       patient.gender,
-      patient_details.mental_issues
+      patient_details.mental_issues,
+      patient_details.description
     FROM matching 
     JOIN mental_health_professionals 
       ON mental_health_professionals.professional_id = matching.professional_id  

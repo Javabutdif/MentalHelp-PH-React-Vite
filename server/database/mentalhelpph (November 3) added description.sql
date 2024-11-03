@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 03, 2024 at 02:31 PM
+-- Generation Time: Nov 03, 2024 at 04:05 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -69,7 +69,9 @@ INSERT INTO `discussion` (`discussion_id`, `forum_id`, `patient_id`, `message`, 
 (7, 2, 12, 'Hello From user', 0, '2024-11-03 21:26:14'),
 (8, 2, 12, 'Testing', 0, '2024-11-03 21:28:37'),
 (9, 2, 12, 'whyy', 0, '2024-11-03 21:28:46'),
-(10, 2, 13, 'Hi jimsss', 0, '2024-11-03 21:30:25');
+(10, 2, 13, 'Hi jimsss', 0, '2024-11-03 21:30:25'),
+(11, 2, 13, 'Hiii jimssss', 1, '2024-11-03 21:35:23'),
+(12, 2, 12, 'Hi DIONEEEEE', 1, '2024-11-03 21:36:20');
 
 -- --------------------------------------------------------
 
@@ -107,6 +109,13 @@ CREATE TABLE `matching` (
   `match_status` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `matching`
+--
+
+INSERT INTO `matching` (`match_id`, `patient_details_id`, `patient_id`, `professional_id`, `match_date`, `match_status`) VALUES
+(21, 11, 12, 1, '2024-11-03', 'Pending');
+
 -- --------------------------------------------------------
 
 --
@@ -117,6 +126,7 @@ CREATE TABLE `mental_health_professionals` (
   `professional_id` int(11) NOT NULL,
   `firstname` varchar(100) NOT NULL,
   `lastname` varchar(100) NOT NULL,
+  `professional_address` varchar(255) NOT NULL,
   `email` varchar(100) NOT NULL,
   `contact_number` varchar(100) NOT NULL,
   `type` varchar(20) NOT NULL,
@@ -135,11 +145,11 @@ CREATE TABLE `mental_health_professionals` (
 -- Dumping data for table `mental_health_professionals`
 --
 
-INSERT INTO `mental_health_professionals` (`professional_id`, `firstname`, `lastname`, `email`, `contact_number`, `type`, `passwords`, `license`, `experience`, `photo`, `bio`, `comments`, `ratings`, `documents`, `professional_status`) VALUES
-(1, 'Anton James', 'Genabio', 'jamesgenabio31@gmail.com', '090830958900', 'Psychologist', '$2y$10$KL4H5mBihZsgSryOErH.RO9mAh0YT8q9FmMVZcS8mLJ0hr7clxNpq', '900900', 2, 'http://localhost:3000/profile/1729451256002.png', 'I love ice creams', '', 0, '', 'Accepted'),
-(22, 'Ayla', 'Berds', 'jamesgenabio90@gmail.com', '09083095890', 'Psychologist', '$2a$10$InERmO1GAGi3EJJ4fod71eNRWz/ukBZ2Nb4d/B43MVlUjsFkTxmXS', '123', 3, 'http://localhost:3000/profile/1729452377862.jpg', '', '', 0, 'uploads\\1729152393101.pdf', 'Accepted'),
-(24, 'Ayala', 'Berdida', 'ailah.berdida34@gmail.com', '123123', 'Psychiatrist', '$2a$10$elCOuwvIqk90G2LfBN4XFuBCpwvVmZ3drevZLtENzKQzs7h6LCZy.', '123123', 1, '', '', '', 0, 'uploads\\1729783389117.txt', 'Accepted'),
-(25, 'Dione', 'Nipaya', 'louisnipaya2@gmail.com', '12312312', 'Psychologist', '$2a$10$Z1WPjAAmMLFmlnTO3rQ7u.A7ADQx6aat5rRJsq8q4b21BC8L4q78S', '123123', 2, '', '', '', 0, 'uploads\\1729783715454.txt', 'Accepted');
+INSERT INTO `mental_health_professionals` (`professional_id`, `firstname`, `lastname`, `professional_address`, `email`, `contact_number`, `type`, `passwords`, `license`, `experience`, `photo`, `bio`, `comments`, `ratings`, `documents`, `professional_status`) VALUES
+(1, 'Anton James', 'Genabio', 'Purok', 'jamesgenabio31@gmail.com', '090830958900', 'Psychologist', '$2y$10$KL4H5mBihZsgSryOErH.RO9mAh0YT8q9FmMVZcS8mLJ0hr7clxNpq', '900900', 2, 'http://localhost:3000/profile/1729451256002.png', 'I love ice creams', '', 0, '', 'Accepted'),
+(22, 'Ayla', 'Berds', '', 'jamesgenabio90@gmail.com', '09083095890', 'Psychologist', '$2a$10$InERmO1GAGi3EJJ4fod71eNRWz/ukBZ2Nb4d/B43MVlUjsFkTxmXS', '123', 3, 'http://localhost:3000/profile/1729452377862.jpg', '', '', 0, 'uploads\\1729152393101.pdf', 'Accepted'),
+(24, 'Ayala', 'Berdida', '', 'ailah.berdida34@gmail.com', '123123', 'Psychiatrist', '$2a$10$elCOuwvIqk90G2LfBN4XFuBCpwvVmZ3drevZLtENzKQzs7h6LCZy.', '123123', 1, '', '', '', 0, 'uploads\\1729783389117.txt', 'Accepted'),
+(25, 'Dione', 'Nipaya', '', 'louisnipaya2@gmail.com', '12312312', 'Psychologist', '$2a$10$Z1WPjAAmMLFmlnTO3rQ7u.A7ADQx6aat5rRJsq8q4b21BC8L4q78S', '123123', 2, '', '', '', 0, 'uploads\\1729783715454.txt', 'Accepted');
 
 -- --------------------------------------------------------
 
@@ -160,7 +170,7 @@ CREATE TABLE `mental_health_professional_preference` (
 --
 
 INSERT INTO `mental_health_professional_preference` (`professional_id`, `start_age`, `end_age`, `mental_issue`, `gender`) VALUES
-(1, 10, 40, 'depression, anxiety, stress', ''),
+(1, 18, 25, 'depression, anxiety, stress', ''),
 (22, 20, 25, 'depression, anxiety, stress', '');
 
 -- --------------------------------------------------------
@@ -187,7 +197,9 @@ INSERT INTO `notification` (`notification_id`, `notification_title`, `patient_id
 (3, 'Match Notice', 12, 'Request match successful ', '2024-10-24 23:07:12'),
 (4, 'Match Notice', 12, 'Request match successful', '2024-10-26 23:08:06'),
 (5, 'Match Notice', 12, 'Request match successful', '2024-10-26 23:10:34'),
-(6, 'Match Notice', 12, 'Request match successful', '2024-10-27 00:16:44');
+(6, 'Match Notice', 12, 'Request match successful', '2024-10-27 00:16:44'),
+(7, 'Match Notice', 12, 'Request match successful', '2024-11-03 22:44:51'),
+(8, 'Match Notice', 12, 'Request match successful', '2024-11-03 22:49:39');
 
 -- --------------------------------------------------------
 
@@ -213,7 +225,9 @@ INSERT INTO `notification_professional` (`notification_id`, `notification_title`
 (3, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-24 23:07:12'),
 (4, 'Matching Alert', 1, 'A patient has submitted a request', '2024-10-26 23:08:06'),
 (5, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-26 23:10:34'),
-(6, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-27 00:16:44');
+(6, 'Matching Alert', 22, 'A patient has submitted a request', '2024-10-27 00:16:44'),
+(7, 'Matching Alert', 22, 'A patient has submitted a request', '2024-11-03 22:44:51'),
+(8, 'Matching Alert', 1, 'A patient has submitted a request', '2024-11-03 22:49:39');
 
 -- --------------------------------------------------------
 
@@ -257,8 +271,15 @@ CREATE TABLE `patient_details` (
   `patient_id` int(11) NOT NULL,
   `mental_issues` varchar(100) NOT NULL,
   `age` int(11) NOT NULL,
-  `gender` varchar(100) NOT NULL
+  `description` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `patient_details`
+--
+
+INSERT INTO `patient_details` (`patient_details_id`, `patient_id`, `mental_issues`, `age`, `description`) VALUES
+(11, 12, 'anxiety, stress', 24, 'I have ice cream decease ');
 
 --
 -- Indexes for dumped tables
@@ -346,7 +367,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `discussion`
 --
 ALTER TABLE `discussion`
-  MODIFY `discussion_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `discussion_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `forum`
@@ -358,7 +379,7 @@ ALTER TABLE `forum`
 -- AUTO_INCREMENT for table `matching`
 --
 ALTER TABLE `matching`
-  MODIFY `match_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `match_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `mental_health_professionals`
@@ -370,13 +391,13 @@ ALTER TABLE `mental_health_professionals`
 -- AUTO_INCREMENT for table `notification`
 --
 ALTER TABLE `notification`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `notification_professional`
 --
 ALTER TABLE `notification_professional`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `patient`
@@ -388,7 +409,7 @@ ALTER TABLE `patient`
 -- AUTO_INCREMENT for table `patient_details`
 --
 ALTER TABLE `patient_details`
-  MODIFY `patient_details_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `patient_details_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Constraints for dumped tables

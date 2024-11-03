@@ -5,12 +5,11 @@ const ViewBackground = ({ data, onClose }) => {
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
       <div className="max-w-md w-full p-5 bg-white shadow-lg rounded-lg relative">
         {" "}
-        {/* Added relative positioning here */}
         <button
           onClick={onClose}
           className="text-gray-500 text-2xl hover:text-gray-800 focus:outline-none mb-4"
         >
-          &times; {/* Close Icon */}
+          &times;
         </button>
         <div className="flex flex-col items-center mb-4">
           {data.photo && (
@@ -27,6 +26,7 @@ const ViewBackground = ({ data, onClose }) => {
           <h2 className="text-lg font-medium">Contact Information</h2>
           <p>Email: {data.email}</p>
           <p>Contact Number: {data.contact_number}</p>
+          <p>Address: {data.professional_address}</p>
         </div>
         <div className="mb-4">
           <h2 className="text-lg font-medium">Professional Details</h2>

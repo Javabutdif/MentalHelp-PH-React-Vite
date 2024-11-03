@@ -10,6 +10,7 @@ import { retrieveStatus, cancelMatch } from "../../api/patients";
 import LoadingScreen from "../../Loader/LoadingScreen";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 
+
 const Dashboard = () => {
   const data = getInformationData();
   const [matchModal, setMatchModal] = useState(false);
@@ -17,6 +18,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [cancelData, setCancelData] = useState("");
+
 
   const handleCancelModal = (id) => {
     setCancelConfirm(true);
@@ -49,6 +51,7 @@ const Dashboard = () => {
     fetchStatus();
     handleHideCancelModal();
   };
+
 
   return (
     <>

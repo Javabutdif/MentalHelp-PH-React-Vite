@@ -14,10 +14,12 @@ function MatchType({ onClose }) {
     anxiety: false,
     stress: false,
   });
+  const [description, setDescription] = useState("");
   const [formData, setFormData] = useState({
     profession: selectedType,
     issues: issues,
     age: user.age,
+    description: description,
   });
   const [loading, setLoading] = useState(false);
   const [matchRequstForm, setMatchRequestForm] = useState({
@@ -25,6 +27,7 @@ function MatchType({ onClose }) {
     issues: issues,
     age: user.age,
     professional_id: data.professional_id,
+    description: description,
   });
 
   useEffect(() => {
@@ -32,14 +35,16 @@ function MatchType({ onClose }) {
       profession: selectedType,
       issues: issues,
       age: user.age,
+      description: description,
     });
     setMatchRequestForm({
       id: user.id,
       issues: issues,
       age: user.age,
       professional_id: data.professional_id,
+      description: description,
     });
-  }, [selectedType, issues, user.age, data]);
+  }, [selectedType, issues, user.age, data, description]); // Add description to dependencies
 
   const handleTypeSelection = (type) => {
     setSelectedType(type);
@@ -48,6 +53,10 @@ function MatchType({ onClose }) {
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
     setIssues((prevState) => ({ ...prevState, [name]: checked }));
+  };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value); // Update description state
   };
 
   const handleSubmit = async () => {
@@ -77,7 +86,9 @@ function MatchType({ onClose }) {
   const handleHideDisplayResult = () => {
     setDisplayResult(false);
   };
+
   const handleMatchRequest = async () => {
+    console.log(matchRequstForm);
     if (await requestMatch(matchRequstForm)) {
       handleHideDisplayResult();
       onClose();
@@ -164,7 +175,15 @@ function MatchType({ onClose }) {
                 Stress
               </label>
             </div>
-
+            <h3 className="font-semibold mb-2">Describe your condition:</h3>
+            <div className="space-y-2 mb-4">
+              <textarea
+                className="w-full h-40 p-2 border border-gray-300 rounded-md"
+                placeholder="Please describe your condition here..."
+                value={description} // Set the value of the textarea to the description state
+                onChange={handleDescriptionChange} // Handle changes to the textarea
+              />
+            </div>
             <div className="flex justify-end space-x-2">
               <button
                 onClick={onClose}

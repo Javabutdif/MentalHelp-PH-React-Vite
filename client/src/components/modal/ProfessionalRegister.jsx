@@ -24,6 +24,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
     license: "",
     documents: [],
     bio: "",
+    address: "",
   });
 
   const handleChange = (e) => {
@@ -50,6 +51,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
             profession: response[0].type,
             contact: response[0].contact_number,
             bio: response[0].bio,
+            address: response[0].address,
           });
         } catch (error) {
           console.error("Error fetching professional data: ", error);
@@ -81,6 +83,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
       license: "",
       documents: [],
       bio: "",
+      address: "",
     });
     onCancel();
   };
@@ -298,6 +301,20 @@ function ProfessionalRegister({ onCancel, type, id }) {
               className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
               placeholder="Enter License Number"
               value={formData.license}
+              onChange={handleChange}
+            />
+          </div>
+          <div>
+            <label htmlFor="license" className="block text-sm font-medium">
+              Address
+            </label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
+              placeholder="Enter Address"
+              value={formData.address}
               onChange={handleChange}
             />
           </div>

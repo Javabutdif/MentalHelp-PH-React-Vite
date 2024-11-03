@@ -9,6 +9,7 @@ import {
   cancelRequest,
 } from "../../api/professionals";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
+import ViewConditionModal from "../../components/modal/ViewConditionModal";
 
 const Dashboard = () => {
   const user = getInformationData();
@@ -18,6 +19,8 @@ const Dashboard = () => {
   const [matchId, setMatchId] = useState("");
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [type, setType] = useState("");
+  const [viewCondition, setViewCondition] = useState(false);
+  const [viewData, setViewData] = useState("");
 
   const fetchStatus = async () => {
     const result = await retrievePatientRequest(user.id);
@@ -67,6 +70,14 @@ const Dashboard = () => {
   const cancelRequestApi = async () => {
     await cancelRequest(matchId);
     handleHideCancelRequest();
+  };
+
+  const handleViewCondition = (data) => {
+    setViewData(data);
+    setViewCondition(true);
+  };
+  const handleHideViewCondition = () => {
+    setViewCondition(false);
   };
 
   return (
@@ -136,6 +147,7 @@ const Dashboard = () => {
             {showStatus ? (
               showStatus.map((request, index) => (
                 <MatchStatus
+                  onView={() => handleViewCondition(request.description)}
                   key={index}
                   type={request.mental_issues}
                   name={`${request.firstname + " " + request.lastname}, ${
@@ -224,11 +236,19 @@ const Dashboard = () => {
           />
         </>
       )}
+      {viewCondition && (
+        <>
+          <ViewConditionModal
+            data={viewData}
+            onClose={handleHideViewCondition}
+          />
+        </>
+      )}
     </div>
   );
 };
 
-const MatchStatus = ({ type, name, status, onCancel, onSubmit }) => {
+const MatchStatus = ({ onView, type, name, status, onCancel, onSubmit }) => {
   return (
     <div className="flex justify-between items-center bg-gray-100 p-2 rounded-md shadow-sm border-b py-2 text-xs">
       <div className="flex-1">
@@ -248,8 +268,12 @@ const MatchStatus = ({ type, name, status, onCancel, onSubmit }) => {
       </div>
       <div className="flex-shrink-2 ml-4">
         <div className="flex gap-4">
-          {" "}
-          {/* Added flex class */}
+          <button
+            onClick={onView}
+            className="px-2 py-1 bg-blue-500 text-white rounded"
+          >
+            View
+          </button>
           <button
             onClick={onSubmit}
             className="px-2 py-1 bg-green-500 text-white rounded"

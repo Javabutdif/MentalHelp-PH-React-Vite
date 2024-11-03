@@ -3,7 +3,7 @@ import { getInformationData } from "../../authentication/authentication";
 import { sendDiscussion, getConversation } from "../../api/community";
 import { useParams } from "react-router-dom";
 
-const ChatMessage = ({ avatar, username, message, isUser }) => (
+const ChatMessage = ({ avatar, username, message, isUser, date }) => (
   <div className={`flex items-center mb-3 ${isUser ? "justify-end" : ""}`}>
     {!isUser && (
       <img
@@ -19,6 +19,7 @@ const ChatMessage = ({ avatar, username, message, isUser }) => (
     >
       <p className="text-sm font-semibold">{username}</p>
       <p>{message}</p>
+      <p className="text-xs text-gray-500">{date}</p>
     </div>
     {isUser && (
       <img
@@ -64,12 +65,20 @@ const CommunityForum = () => {
             avatar:
               item.isAnonymous === 1
                 ? "https://via.placeholder.com/40"
-                : item.photo || "https://via.placeholder.com/40", // fallback in case item.photo is missing
+                : item.photo || "https://via.placeholder.com/40",
             username: item.isAnonymous
               ? "Anonymous"
               : `${item.firstname || ""} ${item.lastname || ""}`.trim(), // fallback in case names are missing
             message: item.message || "", // fallback for message
             isUser: item.patient_id === user.id,
+            date: new Date(item.msg_datetime).toLocaleString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            }),
           }))
         : [];
 
@@ -102,6 +111,7 @@ const CommunityForum = () => {
               username={msg.username}
               message={msg.message}
               isUser={msg.isUser}
+              date={msg.date}
             />
           ))
         )}

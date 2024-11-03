@@ -64,6 +64,9 @@ const Profile = () => {
               {data.firstname + " " + data.lastname}{" "}
             </h2>
             <p className="text-gray-700">Bio: {data.bio}</p>
+            <p className="text-gray-700">
+              Address: {data.professional_address}
+            </p>
             <p className="text-gray-700">Experience: {data.experience}</p>
             <p className="text-gray-700">License: {data.license}</p>
             <p className="text-gray-700">Email: {data.email}</p>

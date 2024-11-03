@@ -230,11 +230,9 @@ router.post("/match-professional", async (req, res) => {
     if (results.length > 0) {
       const professionalIds = results.map((row) => row.professional_id);
 
-      // Initialize query for searching preferences
       let query =
         "SELECT * FROM mental_health_professional_preference WHERE professional_id IN (?)";
 
-      // Convert issues object to an array of issue strings
       const issueKeys = Object.keys(issues).filter((key) => issues[key]);
       if (issueKeys.length > 0) {
         const issueConditions = issueKeys
@@ -297,12 +295,12 @@ router.post("/match-professional", async (req, res) => {
   });
 });
 router.post("/request-match", async (req, res) => {
-  const { id, issues, age, professional_id } = req.body;
+  const { id, issues, age, professional_id, description } = req.body;
 
   const getMatchingDataQuery =
     "SELECT match_id FROM matching WHERE professional_id = ?";
   const insertPatientDetailsQuery =
-    "INSERT INTO patient_details (patient_id, mental_issues, age) VALUES (?, ?, ?)";
+    "INSERT INTO patient_details (patient_id, mental_issues, age , description) VALUES (?, ?, ?, ?)";
   const insertMatchingQuery =
     "INSERT INTO matching (patient_details_id, patient_id, professional_id, match_date, match_status) VALUES (?, ?, ?, ?, ?)";
 
@@ -326,7 +324,7 @@ router.post("/request-match", async (req, res) => {
 
     db.query(
       insertPatientDetailsQuery,
-      [id, issuesString, age],
+      [id, issuesString, age, description],
       (error, result) => {
         if (error) {
           return res.status(500).json({
