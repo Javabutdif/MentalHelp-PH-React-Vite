@@ -32,12 +32,12 @@ router.post("/send-discussion", (req, res) => {
   const { forum_id, id, isAnonymous, message } = req.body;
 
   const currentDate = new Date();
-  console.log(isAnonymous);
+  const anon = isAnonymous ? 1 : 0;
   const query =
     "INSERT INTO discussion (forum_id, patient_id, isAnonymous, message, msg_datetime) VALUES (?, ?, ?, ?, ?)";
   db.query(
     query,
-    [forum_id, id, isAnonymous, message, currentDate],
+    [forum_id, id, anon, message, currentDate],
     (error, results) => {
       if (error) {
         return res.status(500).json({ error });
