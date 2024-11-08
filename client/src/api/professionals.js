@@ -566,3 +566,29 @@ export const setUpdateProfessionalPreferences = async (professional_data) => {
     return null;
   }
 };
+
+
+export const setAppointment = async (data) => {
+  try {
+    const response = await axios.post(
+      `${Server_Connection()}/api/set-appointment`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+      window.location.reload();
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};

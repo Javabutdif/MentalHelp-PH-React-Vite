@@ -10,6 +10,7 @@ import {
 } from "../../api/professionals";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import ViewConditionModal from "../../components/modal/ViewConditionModal";
+import AppointmentModal from "../../components/Appointments/AppointmentModal";
 
 const Dashboard = () => {
   const user = getInformationData();
@@ -21,6 +22,8 @@ const Dashboard = () => {
   const [type, setType] = useState("");
   const [viewCondition, setViewCondition] = useState(false);
   const [viewData, setViewData] = useState("");
+  const [viewAppointments, setViewAppointments] = useState(false);
+  const [patientId, setPatientId] = useState("");
 
   const fetchStatus = async () => {
     const result = await retrievePatientRequest(user.id);
@@ -54,8 +57,9 @@ const Dashboard = () => {
   const handleHideAcceptRequest = () => {
     setConfirmationModal(false);
   };
-  const handleAcceptRequest = (id) => {
+  const handleAcceptRequest = (id, patient_id) => {
     setMatchId(id);
+    setPatientId(patient_id);
     setConfirmationModal(true);
     setType("Accept");
     fetchPreferences();
@@ -66,6 +70,8 @@ const Dashboard = () => {
   const acceptRequestApi = async () => {
     await acceptRequest(matchId);
     handleHideAcceptRequest();
+    //setViewAppointments
+    setViewAppointments(true);
   };
   const cancelRequestApi = async () => {
     await cancelRequest(matchId);
@@ -157,7 +163,9 @@ const Dashboard = () => {
                   onCancel={() =>
                     handleCancelRequest(request.patient_details_id)
                   }
-                  onSubmit={() => handleAcceptRequest(request.match_id)}
+                  onSubmit={() =>
+                    handleAcceptRequest(request.match_id, request.patient_id)
+                  }
                 />
               ))
             ) : (
@@ -241,6 +249,16 @@ const Dashboard = () => {
           <ViewConditionModal
             data={viewData}
             onClose={handleHideViewCondition}
+          />
+        </>
+      )}
+      {viewAppointments && (
+        <>
+          <AppointmentModal
+            patient_id={patientId}
+            professional_id={user.id}
+            isOpen={true}
+            closeModal={() => setViewAppointments(false)}
           />
         </>
       )}

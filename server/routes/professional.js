@@ -458,4 +458,33 @@ router.post("/updated-professional-preferences", async (req, res) => {
   });
 });
 
+router.post("/set-appointment", (req, res) => {
+  const { patient_id, professional_id, scheduleDate, scheduleTime } = req.body;
+  console.log(
+    patient_id + " " + professional_id + " " + scheduleDate + " " + scheduleTime
+  );
+  const query =
+    "INSERT INTO schedule (patient_id, professional_id,schedule_date, schedule_time, status ) VALUES(?,?,?,?,?)";
+
+  db.query(
+    query,
+    [patient_id, professional_id, scheduleDate, scheduleTime, "Pending"],
+    (error, result) => {
+      if (error) {
+        res
+          .status(500)
+          .json({ message: "There is an error inserting into the schedule" });
+      }
+
+      if (result.affectedRows > 0) {
+        return res
+          .status(200)
+          .json({ message: "Appointment set successfully" });
+      } else {
+        return res.status(500).json({ message: "Failed to set appointment" });
+      }
+    }
+  );
+});
+
 module.exports = router;
