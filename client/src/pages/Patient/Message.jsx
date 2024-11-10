@@ -1,24 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getInformationData } from "../../authentication/authentication";
+import { retrieveScheduleActive } from "../../api/patients";
 
 const Message = () => {
-  // Sample list of people
-  const people = [
-    { id: 1, name: "John Doe" },
-    { id: 2, name: "Jane Smith" },
-    { id: 3, name: "Alice Johnson" },
-    { id: 4, name: "Bob Brown" },
-  ];
+  const user = getInformationData();
+  const [scheduleData, setScheduleData] = useState([]);
 
-  const [selectedPerson, setSelectedPerson] = useState(null);
+  const fetchSchedule = async () => {
+    const result = await retrieveScheduleActive(user.id);
+    setScheduleData(result);
+  };
+  useEffect(() => {
+    fetchSchedule();
+    console.log(scheduleData);
+  }, []);
+
+  const [selectedPerson, setSelectedPerson] = useState("");
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    { sender: "John Doe", text: "Hey, how are you?" },
-    { sender: "You", text: "I'm good, thanks! How about you?" },
-  ]);
+  const [messages, setMessages] = useState([]);
 
   // Handle person click event
   const handlePersonClick = (person) => {
     setSelectedPerson(person);
+    console.log(person);
   };
 
   // Handle message change
@@ -40,24 +44,24 @@ const Message = () => {
       <div className="w-1/4 p-4 bg-gray-200 rounded-lg shadow-md">
         <h2 className="font-bold text-xl mb-4">Inbox</h2>
         <ul>
-          {people.map((person) => (
+          {scheduleData.map((person) => (
             <li
               key={person.id}
               className="cursor-pointer hover:bg-gray-300 p-2 rounded"
-              onClick={() => handlePersonClick(person)}
+              onClick={() => handlePersonClick(person.professional_name)}
             >
-              {person.name}
+              {person.professional_name}
             </li>
           ))}
         </ul>
       </div>
 
-      {/* Right side: Chat window */}
+   
       <div className="w-3/4 p-4 bg-white rounded-lg shadow-md">
         {selectedPerson ? (
           <div>
             <h2 className="font-bold text-xl mb-4">
-              Chat with {selectedPerson.name}
+              Chat with Dr. {selectedPerson}
             </h2>
             {/* Display messages */}
             <div className="h-80 overflow-y-scroll mb-4 space-y-3">

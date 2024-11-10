@@ -309,30 +309,28 @@ export const upload_picture = async (data, id) => {
 };
 
 export const getNotification = async (id) => {
-    try {
-			const response = await axios.get(
-				`${Server_Connection()}/api/get-notification-patient/${id}`,
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-notification-patient/${id}`,
 
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			);
-			if (response.status === 200) {
-				return response.data.data;
-			} else {
-				console.log("error", response.data.error);
-			}
-			console.log(response.data.message);
-		} catch (error) {
-			console.error("Error:", error.response.data.message);
-			console.error("Error:", error.response.data.message);
-			return null;
-		}
-}
-
-
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      console.log("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    console.error("Error:", error.response.data.message);
+    return null;
+  }
+};
 
 export const retrieveSchedule = async (id) => {
   try {
@@ -358,9 +356,32 @@ export const retrieveSchedule = async (id) => {
   }
 };
 
+export const retrieveScheduleActive = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-appointments-active/${id}"`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
 
 export const setAppointmentStatus = async (id) => {
-   try {
+  try {
     const response = await axios.put(
       `${Server_Connection()}/api/set-appointments-status/${id}"`,
 
@@ -381,4 +402,4 @@ export const setAppointmentStatus = async (id) => {
     showToast("error", error.response.data.message);
     return null;
   }
-}
+};

@@ -81,15 +81,6 @@ const Dashboard = () => {
           ? appointment.schedule_time <= currentTime
           : true;
 
-      console.log({
-        appointmentId: appointment.schedule_id,
-        isDateValid,
-        isTimeValid,
-        appointmentStatus: appointment.status,
-        currentTime,
-        scheduledTime: appointment.schedule_time,
-      }); // Debugging log for each appointment
-
       if (isDateValid && isTimeValid && appointment.status === "Pending") {
         await setAppointmentStatus(appointment.schedule_id);
         fetchSchedule();
