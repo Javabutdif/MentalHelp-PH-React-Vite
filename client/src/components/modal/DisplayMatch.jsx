@@ -46,7 +46,6 @@ const DisplayMatch = ({ onRequestMatch, onSearch, data, onClose }) => {
             <span className="text-yellow-500">★★★★★</span>
             <span className="ml-2 text-gray-500">4.5 out of 5</span>
           </div>
-          <p className="text-gray-700 font-semibold">P 1,580.00 per session</p>
 
           <div className="flex justify-around mt-6">
             <button

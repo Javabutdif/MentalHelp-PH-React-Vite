@@ -6,10 +6,14 @@ import { FaPeoplePulling } from "react-icons/fa6";
 import { getInformationData } from "../../authentication/authentication";
 import MatchType from "../../components/modal/MatchType";
 import { Link, useActionData } from "react-router-dom";
-import { retrieveStatus, cancelMatch } from "../../api/patients";
+import {
+  retrieveStatus,
+  cancelMatch,
+  retrieveSchedule,
+  setAppointmentStatus,
+} from "../../api/patients";
 import LoadingScreen from "../../Loader/LoadingScreen";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
-
 
 const Dashboard = () => {
   const data = getInformationData();
@@ -18,7 +22,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(false);
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [cancelData, setCancelData] = useState("");
-
+  const [scheduleData, setScheduleData] = useState([]);
 
   const handleCancelModal = (id) => {
     setCancelConfirm(true);
@@ -40,11 +44,19 @@ const Dashboard = () => {
     const result = await retrieveStatus(data.id);
     setShowStatus(result);
   };
+  const fetchSchedule = async () => {
+    const result = await retrieveSchedule(data.id);
+    setScheduleData(result);
+  };
+
   useEffect(() => {
     setLoading(true);
     fetchStatus();
+    fetchSchedule();
     setLoading(false);
-  }, []);
+    console.log(scheduleData);
+    updateAppointmentStatus();
+  }, [scheduleData]);
 
   const handleCancel = async () => {
     await cancelMatch(cancelData);
@@ -52,6 +64,38 @@ const Dashboard = () => {
     handleHideCancelModal();
   };
 
+  const updateAppointmentStatus = async () => {
+    const currentDate = new Date();
+    const currentTime = currentDate.toTimeString().split(" ")[0];
+
+    console.log("Updating appointment status...");
+
+    scheduleData.forEach(async (appointment) => {
+      const scheduleDate = new Date(appointment.schedule_date);
+      const scheduleDateOnly = new Date(scheduleDate.toDateString());
+      const currentDateOnly = new Date(currentDate.toDateString());
+
+      const isDateValid = scheduleDateOnly <= currentDateOnly;
+      const isTimeValid =
+        scheduleDateOnly.getTime() === currentDateOnly.getTime()
+          ? appointment.schedule_time <= currentTime
+          : true;
+
+      console.log({
+        appointmentId: appointment.schedule_id,
+        isDateValid,
+        isTimeValid,
+        appointmentStatus: appointment.status,
+        currentTime,
+        scheduledTime: appointment.schedule_time,
+      }); // Debugging log for each appointment
+
+      if (isDateValid && isTimeValid && appointment.status === "Pending") {
+        await setAppointmentStatus(appointment.schedule_id);
+        fetchSchedule();
+      }
+    });
+  };
 
   return (
     <>
@@ -163,17 +207,73 @@ const Dashboard = () => {
               </div>
 
               <div className="bg-white p-4 rounded-lg shadow">
-                <h2 className="font-semibold mb-4">Metric Stats</h2>
-                <div className="flex justify-between">
-                  <div className="bg-blue-200 w-8 h-20" />
-                  <div className="bg-blue-200 w-8 h-16" />
-                  <div className="bg-blue-200 w-8 h-24" />
-                  <div className="bg-blue-200 w-8 h-28" />
-                  <div className="bg-blue-200 w-8 h-12" />
+                <h2 className="font-semibold mb-4">Appointments</h2>
+                <div
+                  className="space-y-2 overflow-y-auto"
+                  style={{ maxHeight: "12rem" }}
+                >
+                  {scheduleData.map((appointment) => {
+                    const dateStr = appointment.schedule_date;
+                    const timeStr = appointment.schedule_time;
+
+                    const scheduleDate = new Date(dateStr);
+                    const currentDate = new Date();
+                    const currentTime = currentDate
+                      .toTimeString()
+                      .split(" ")[0];
+
+                    const scheduleDateOnly = new Date(
+                      scheduleDate.toDateString()
+                    );
+                    const currentDateOnly = new Date(
+                      currentDate.toDateString()
+                    );
+
+                    const isDateValid = scheduleDateOnly <= currentDateOnly;
+                    const isTimeValid =
+                      scheduleDateOnly.getTime() === currentDateOnly.getTime()
+                        ? timeStr <= currentTime
+                        : true;
+
+                    return (
+                      <div
+                        key={appointment.schedule_id}
+                        className="bg-gray-100 p-2 rounded-lg shadow"
+                      >
+                        <p>
+                          <strong>Professional:</strong>{" "}
+                          {appointment.professional_name}
+                        </p>
+                        <p>
+                          <strong>Schedule Date:</strong>{" "}
+                          {scheduleDateOnly.toLocaleDateString()}
+                        </p>
+                        <p>
+                          <strong>Schedule Time:</strong>{" "}
+                          {appointment.schedule_time}
+                        </p>
+                        <p
+                          className={`${
+                            appointment.status === "Active"
+                              ? "text-green-600"
+                              : appointment.status === "Pending"
+                              ? "text-orange-500"
+                              : "text-red-600"
+                          }`}
+                        >
+                          <strong>Status:</strong> {appointment.status}
+                        </p>
+                        {isDateValid && isTimeValid && (
+                          <Link to="/patient/messages">
+                            <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                              Go to Appointment
+                            </button>
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
-                <p className="text-sm text-gray-600 mt-2">
-                  Positive & Negative
-                </p>
               </div>
             </div>
             {matchModal && (

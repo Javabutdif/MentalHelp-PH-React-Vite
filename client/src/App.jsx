@@ -37,6 +37,7 @@ import PatientDashboard from "./pages/Patient/Dashboard";
 import PatientSettings from "./pages/Patient/Settings";
 import PatientProfile from "./pages/Patient/Profile";
 import PatientNotification from "./pages/Patient/Notification";
+import PatientMessage from "./pages/Patient/Message";
 //Professional
 import ProfessionalDashboard from "./pages/Professional/Dashboard";
 import ProfessionalProfile from "./pages/Professional/Profile";
@@ -98,6 +99,11 @@ function App() {
           <Route
             path="settings"
             element={<PrivateRoutePatient element={PatientSettings} />}
+          />
+
+          <Route
+            path="messages"
+            element={<PrivateRoutePatient element={PatientMessage} />}
           />
           <Route
             path="profile"

@@ -6,6 +6,10 @@ require("dotenv").config();
 const { sendMail } = require("../mail/mailContents");
 const multer = require("multer");
 const path = require("path");
+const {
+  notification,
+  notification_professional,
+} = require("../middleware/notification");
 
 //Upload File
 const storage = multer.diskStorage({
@@ -118,7 +122,7 @@ router.post(
         experience,
         "Pending",
         contact,
-        documentPathsString, // Insert document paths string into the database
+        documentPathsString,
       ],
       (error, results) => {
         if (error) {
@@ -299,6 +303,7 @@ router.get("/retrieve-match-status-professional/:id", (req, res) => {
       matching.patient_details_id,
       matching.match_date, 
       matching.match_status,
+      patient.patient_id,
       patient.firstname, 
       patient.lastname,
       patient.age,
@@ -309,7 +314,7 @@ router.get("/retrieve-match-status-professional/:id", (req, res) => {
     JOIN mental_health_professionals 
       ON mental_health_professionals.professional_id = matching.professional_id  
     JOIN patient_details 
-      ON patient_details.patient_id = matching.patient_id
+      ON patient_details.patient_details_id = matching.patient_details_id
     JOIN patient 
       ON patient.patient_id = matching.patient_id
     WHERE matching.match_status = 'Pending' 
@@ -457,34 +462,51 @@ router.post("/updated-professional-preferences", async (req, res) => {
     }
   });
 });
-
 router.post("/set-appointment", (req, res) => {
   const { patient_id, professional_id, scheduleDate, scheduleTime } = req.body;
-  console.log(
-    patient_id + " " + professional_id + " " + scheduleDate + " " + scheduleTime
-  );
-  const query =
-    "INSERT INTO schedule (patient_id, professional_id,schedule_date, schedule_time, status ) VALUES(?,?,?,?,?)";
 
-  db.query(
-    query,
-    [patient_id, professional_id, scheduleDate, scheduleTime, "Pending"],
-    (error, result) => {
-      if (error) {
-        res
-          .status(500)
-          .json({ message: "There is an error inserting into the schedule" });
-      }
+  const professional_query =
+    "SELECT firstname, lastname FROM mental_health_professionals WHERE professional_id = ?";
 
-      if (result.affectedRows > 0) {
-        return res
-          .status(200)
-          .json({ message: "Appointment set successfully" });
-      } else {
-        return res.status(500).json({ message: "Failed to set appointment" });
-      }
+  db.query(professional_query, [professional_id], (error, result) => {
+    if (error) {
+      console.error("Error retrieving professional details");
+      return res
+        .status(500)
+        .json({ message: "Error retrieving professional details" });
     }
-  );
+
+    const professional_name =
+      result.length > 0
+        ? `${result[0].firstname} ${result[0].lastname}`
+        : "Your Professional";
+
+    const insert_query =
+      "INSERT INTO schedule (patient_id, professional_id, schedule_date, schedule_time, status) VALUES (?, ?, ?, ?, ?)";
+    db.query(
+      insert_query,
+      [patient_id, professional_id, scheduleDate, scheduleTime, "Pending"],
+      (error, insertResult) => {
+        if (error) {
+          console.error("Error inserting schedule");
+          return res
+            .status(500)
+            .json({ message: "Error inserting into the schedule" });
+        }
+
+        if (insertResult.affectedRows > 0) {
+          const notificationMessage = `Dr. ${professional_name} has accepted your request. The scheduled time is ${scheduleTime} on ${scheduleDate}.`;
+          notification("Appointment Notice", patient_id, notificationMessage);
+
+          return res
+            .status(200)
+            .json({ message: "Appointment set successfully" });
+        } else {
+          return res.status(500).json({ message: "Failed to set appointment" });
+        }
+      }
+    );
+  });
 });
 
 module.exports = router;

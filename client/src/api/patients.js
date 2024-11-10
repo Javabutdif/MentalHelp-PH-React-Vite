@@ -331,3 +331,54 @@ export const getNotification = async (id) => {
 			return null;
 		}
 }
+
+
+
+export const retrieveSchedule = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-appointments/${id}"`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+
+
+export const setAppointmentStatus = async (id) => {
+   try {
+    const response = await axios.put(
+      `${Server_Connection()}/api/set-appointments-status/${id}"`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+}

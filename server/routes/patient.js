@@ -22,7 +22,6 @@ const profileStorage = multer.diskStorage({
 
 const uploadProfile = multer({ storage: profileStorage });
 
-//email,firstname,lastname,passwords,bio,photo,addresses,gender,age,patient_status,contact_number
 router.post("/patient-otp", async (req, res) => {
   const { firstName, lastName, userEmail } = req.body;
   console.log(firstName + " " + lastName + " " + userEmail);
@@ -511,6 +510,71 @@ router.get("/get-notification-patient/:id", (req, res) => {
       res.status(500).json({ message: "Error retrieving notification" });
     }
     res.status(200).json({ data: result });
+  });
+});
+router.get("/get-appointments/:id", (req, res) => {
+  const { id } = req.params;
+  const query =
+    "SELECT * FROM schedule WHERE patient_id = ? ORDER BY schedule_date ASC";
+
+  db.query(query, [id], (error, results) => {
+    if (error)
+      return res.status(400).json({ message: "Error getting the schedule" });
+    if (results.length === 0)
+      return res
+        .status(404)
+        .json({ message: "No schedule found for this patient" });
+
+    const professionalIds = [
+      ...new Set(results.map((item) => item.professional_id)),
+    ];
+    const professionalQuery = `SELECT professional_id, firstname, lastname FROM mental_health_professionals WHERE professional_id IN (?)`;
+
+    db.query(professionalQuery, [professionalIds], (error, professionals) => {
+      if (error)
+        return res
+          .status(500)
+          .json({ message: "Error getting professional names" });
+
+      const professionalMap = {};
+      professionals.forEach((prof) => {
+        professionalMap[
+          prof.professional_id
+        ] = `${prof.firstname} ${prof.lastname}`;
+      });
+
+      const scheduleData = results.map((schedule) => ({
+        schedule_id: schedule.schedule_id,
+        patient_id: schedule.patient_id,
+        professional_id: schedule.professional_id,
+        schedule_date: schedule.schedule_date,
+        schedule_time: schedule.schedule_time,
+        status: schedule.status,
+        professional_name:
+          professionalMap[schedule.professional_id] || "Unknown",
+      }));
+
+      res.status(200).json({ data: scheduleData });
+    });
+  });
+});
+
+//set-appointments-status
+router.put("/set-appointments-status/:id", (req, res) => {
+  const { id } = req.params;
+  const query = "UPDATE schedule SET status = ? WHERE schedule_id = ?";
+
+  db.query(query, ["Active", id], (error, result) => {
+    if (error) {
+      return res.status(400).json({ message: "Cannot set the status" });
+    }
+
+    if (result.affectedRows > 0) {
+      console.log("Update" + result);
+      return res.status(200).json({ message: "Status updated successfully" });
+    } else {
+      return res.status(404).json({ message: "Schedule not found" });
+    }
   });
 });
 

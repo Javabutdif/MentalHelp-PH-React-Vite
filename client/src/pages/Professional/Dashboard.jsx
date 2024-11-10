@@ -58,6 +58,7 @@ const Dashboard = () => {
     setConfirmationModal(false);
   };
   const handleAcceptRequest = (id, patient_id) => {
+    console.log(patient_id);
     setMatchId(id);
     setPatientId(patient_id);
     setConfirmationModal(true);

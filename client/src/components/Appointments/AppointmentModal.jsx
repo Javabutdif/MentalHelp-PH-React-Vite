@@ -12,7 +12,7 @@ const AppointmentModal = ({
     scheduleDate: "",
     scheduleTime: "",
   });
-
+  console.log(formData);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -28,7 +28,7 @@ const AppointmentModal = ({
     closeModal();
   };
 
-  if (!isOpen) return null; // Don't render modal if it's not open
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
