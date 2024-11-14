@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getInformationData } from "../../authentication/authentication";
-import {
-  retrieveScheduleActive,
-  sendMessage,
-  fetchMessage,
-} from "../../api/patients";
+import { fetchMessage, sendMessage } from "../../api/patients";
+import { retrieveScheduleActive } from "../../api/professionals";
 import { FaPaperclip } from "react-icons/fa";
 
 const Message = () => {
@@ -99,14 +96,14 @@ const Message = () => {
               className="cursor-pointer hover:bg-gray-300 p-2 rounded"
               onClick={() =>
                 handlePersonClick(
-                  person.professional_name,
+                  person.patient_name,
                   person.schedule_id,
                   person.patient_id,
                   person.professional_id
                 )
               }
             >
-              {person.professional_name}
+              {person.patient_name}
             </li>
           ))}
         </ul>

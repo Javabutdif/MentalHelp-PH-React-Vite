@@ -14,6 +14,7 @@ const Settings = () => {
       stress: false,
     },
     id: user.id,
+    service_fee: "",
   });
   const [ageRange, setAgeRange] = useState(""); // Separate state for ageRange
 
@@ -22,7 +23,9 @@ const Settings = () => {
       const data = await getProfessionalPreferences(user.id);
       console.log(data);
 
-      const issuesArray = data[0].mental_issue.split(", ").filter(Boolean);
+      const issuesArray = data.preferences[0].mental_issue
+        .split(", ")
+        .filter(Boolean);
       const issuesObject = {
         depression: issuesArray.includes("depression"),
         anxiety: issuesArray.includes("anxiety"),
@@ -32,8 +35,11 @@ const Settings = () => {
       setFormData((prevData) => ({
         ...prevData,
         issues: issuesObject,
+        service_fee: data.service_fee,
       }));
-      setAgeRange(data[0].start_age + "-" + data[0].end_age);
+      setAgeRange(
+        data.preferences[0].start_age + "-" + data.preferences[0].end_age
+      );
     };
     fetchPreferences();
   }, [user.id]);
@@ -70,6 +76,12 @@ const Settings = () => {
         [name]: checked,
       },
     }));
+  };
+  const handleFeeChange = (event) => {
+    setFormData({
+      ...formData,
+      service_fee: event.target.value,
+    });
   };
 
   return (
@@ -124,6 +136,17 @@ const Settings = () => {
             />
             Stress
           </label>
+        </div>
+        <h3 className="font-semibold mb-2">Service Fee</h3>
+        <div className="space-y-2 mb-4">
+          <input
+            type="number"
+            name="fee"
+            value={formData.service_fee} // use `value` for a text input
+            onChange={handleFeeChange}
+            className="mr-2"
+            placeholder="Enter service fee"
+          />
         </div>
 
         <div className="flex justify-end">

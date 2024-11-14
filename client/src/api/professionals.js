@@ -530,6 +530,7 @@ export const getProfessionalPreferences = async (id) => {
       }
     );
     if (response.status === 200) {
+      console.log(response.data.data);
       return response.data.data;
     } else {
       console.log("error", response.data.error);
@@ -567,7 +568,6 @@ export const setUpdateProfessionalPreferences = async (professional_data) => {
   }
 };
 
-
 export const setAppointment = async (data) => {
   try {
     const response = await axios.post(
@@ -592,3 +592,29 @@ export const setAppointment = async (data) => {
     return null;
   }
 };
+
+
+export const retrieveScheduleActive = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-appointments-active-professional/${id}"`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+

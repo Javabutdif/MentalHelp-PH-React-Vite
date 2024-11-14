@@ -22,6 +22,17 @@ const profileStorage = multer.diskStorage({
 
 const uploadProfile = multer({ storage: profileStorage });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "messages/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage: storage });
+
 router.post("/patient-otp", async (req, res) => {
   const { firstName, lastName, userEmail } = req.body;
   console.log(firstName + " " + lastName + " " + userEmail);
@@ -624,22 +635,116 @@ router.put("/set-appointments-status/:id", (req, res) => {
     }
   });
 });
+router.post("/send-message-patient/:id", upload.single("file"), (req, res) => {
+  const { id: schedule_id } = req.params;
+  const { patient_id, professional_id, message, sender } = req.body;
+  const currentDate = new Date();
 
-router.post("/send-message", (req, res) => {
-  const { patient_id, professional_id, message } = req.body;
-  const query =
-    "INSERT INTO messaging (patient_id, professional_id, message_content) VALUES (?,?,?)";
-  db.query(query, [patient_id, professional_id, message], (error, result) => {
-    if (error) {
-      res.status(500).json({ message: "Cannot store the message" });
+  // Determine if the sender is the patient or the professional
+  const isPatientSender = sender === patient_id;
+
+  // Fetch the patient's name for the notification message
+  const patientQuery =
+    "SELECT firstname, lastname FROM patient WHERE patient_id = ?";
+  db.query(patientQuery, [patient_id], (error, result) => {
+    if (error || result.length === 0) {
+      console.error("No patient found!");
+      return res.status(404).json({ message: "Patient not found" });
     }
-    if (result.affectedRows > 0) {
-      res.status(200).json({ message: "Message Sent" });
-    }
+
+    const patientName = `${result[0].firstname} ${result[0].lastname}`;
+
+    // Fetch the professional's name for the notification message
+    const professionalQuery =
+      "SELECT firstname, lastname FROM mental_health_professionals WHERE professional_id = ?";
+    db.query(professionalQuery, [professional_id], (error, results) => {
+      if (error || results.length === 0) {
+        console.error("No professional found!");
+        return res.status(404).json({ message: "Professional not found" });
+      }
+
+      const professionalName = `${results[0].firstname} ${results[0].lastname}`;
+
+      // Prepare SQL query and values based on whether a file is included
+      let query, values;
+      if (req.file) {
+        const filePath = req.file.path;
+        query = `
+          INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        values = [
+          patient_id,
+          professional_id,
+          filePath,
+          schedule_id,
+          currentDate,
+          sender,
+        ];
+      } else {
+        query = `
+          INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        values = [
+          patient_id,
+          professional_id,
+          message,
+          schedule_id,
+          currentDate,
+          sender,
+        ];
+      }
+
+      // Execute the query to store the message
+      db.query(query, values, (error, result) => {
+        if (error) {
+          console.error("Error storing the message:", error);
+          return res.status(500).json({ message: "Cannot store the message" });
+        }
+
+        // Send notification based on the sender
+        if (isPatientSender && result.affectedRows > 0) {
+          notification_professional(
+            "Message Notification",
+            professional_id,
+            `${patientName} has messaged you`
+          );
+        } else if (!isPatientSender && result.affectedRows > 0) {
+          notification(
+            "Message Notification",
+            patient_id,
+            `${professionalName} has messaged you`
+          );
+        }
+
+        return res.status(200).json({ message: "Message Sent" });
+      });
+    });
   });
 });
+
 router.get("/get-message/:id", (req, res) => {
   const { id } = req.params;
+
+  const query =
+    "SELECT * FROM messaging WHERE schedule_id = ? ORDER BY message_date ASC";
+  db.query(query, [id], (error, result) => {
+    if (error) {
+      console.error("Error fetching messages:", error);
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching messages." });
+    }
+
+    if (result.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No messages found for the provided schedule ID." });
+    }
+    console.log(result);
+    res.status(200).json({ data: result });
+  });
 });
 
 module.exports = router;

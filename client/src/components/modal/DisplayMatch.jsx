@@ -41,7 +41,9 @@ const DisplayMatch = ({ onRequestMatch, onSearch, data, onClose }) => {
           >
             View Background
           </a>
-
+          <div>
+            <p className="font-semibold">₱ {data.service_fee}.00</p>
+          </div>
           <div className="flex justify-center items-center my-2">
             <span className="text-yellow-500">★★★★★</span>
             <span className="ml-2 text-gray-500">4.5 out of 5</span>

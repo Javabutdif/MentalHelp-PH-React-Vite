@@ -227,16 +227,21 @@ router.get("/check-professional-preferences/:id", async (req, res) => {
 });
 
 router.post("/update-professional-preferences", async (req, res) => {
-  const { id, startAge, endAge, issues } = req.body;
-
-  console.log(issues);
+  const { id, startAge, endAge, issues, service_fee } = req.body;
 
   let result = Object.keys(issues)
     .filter((key) => issues[key])
     .join(", ");
-  console.log(id + " " + startAge + " " + endAge + " " + result);
+  const fee_query =
+    "UPDATE mental_health_professionals SET service_fee = ? WHERE professional_id = ?";
   const query =
     "INSERT INTO mental_health_professional_preference (professional_id, start_age, end_age, mental_issue) VALUES (?, ?, ?, ?)";
+
+  db.query(fee_query, [service_fee, id], (error, result) => {
+    if (error) {
+      res.status(500).json({ message: "Error updating the service fee" });
+    }
+  });
 
   db.query(query, [id, startAge, endAge, result], (error, results) => {
     if (error) {
@@ -422,20 +427,42 @@ router.get("/get-notification-professional/:id", (req, res) => {
 router.get("/get-professional-preferences/:id", (req, res) => {
   const { id } = req.params;
 
-  const query =
-    "SELECT * FROM mental_health_professional_preference WHERE professional_id = ? ";
+  const queryPreferences =
+    "SELECT * FROM mental_health_professional_preference WHERE professional_id = ?";
+  const queryProfessional =
+    "SELECT service_fee FROM mental_health_professionals WHERE professional_id = ?";
 
-  db.query(query, [id], async (error, result) => {
+  db.query(queryProfessional, [id], (error, professionalResult) => {
     if (error) {
-      res.status(500).json({ message: "Error retrieving preferences" });
+      return res.status(500).json({ message: "Error retrieving service fee" });
     }
-    res.status(200).json({ data: result });
+
+    if (professionalResult.length === 0) {
+      return res.status(404).json({ message: "Professional not found" });
+    }
+
+    const serviceFee = professionalResult[0].service_fee;
+
+    db.query(queryPreferences, [id], (error, preferencesResult) => {
+      if (error) {
+        return res
+          .status(500)
+          .json({ message: "Error retrieving preferences" });
+      }
+
+      const data = {
+        service_fee: serviceFee,
+        preferences: preferencesResult,
+      };
+
+      res.status(200).json({ data: data });
+    });
   });
 });
 
 //Professional Edited their Preferences
 router.post("/updated-professional-preferences", async (req, res) => {
-  const { id, startAge, endAge, issues } = req.body;
+  const { id, startAge, endAge, issues, service_fee } = req.body;
 
   console.log(issues);
 
@@ -445,6 +472,13 @@ router.post("/updated-professional-preferences", async (req, res) => {
   console.log(id + " " + startAge + " " + endAge + " " + result);
   const query =
     "UPDATE mental_health_professional_preference SET start_age = ?, end_age = ?, mental_issue = ? WHERE professional_id = ?";
+  const serviceQuery =
+    "UPDATE mental_health_professionals SET service_fee = ? WHERE professional_id = ? ";
+  db.query(serviceQuery, [service_fee, id], (error, result) => {
+    if (error) {
+      res.status(500).json({ message: "Unable to set the service_fee" });
+    }
+  });
 
   db.query(query, [startAge, endAge, result, id], (error, results) => {
     if (error) {
@@ -506,6 +540,50 @@ router.post("/set-appointment", (req, res) => {
         }
       }
     );
+  });
+});
+
+router.get("/get-appointments-active-professional/:id", (req, res) => {
+  const { id } = req.params;
+  const query =
+    "SELECT * FROM schedule WHERE professional_id = ? AND status = ? ORDER BY schedule_date ASC";
+
+  db.query(query, [id, "Active"], (error, results) => {
+    if (error)
+      return res.status(400).json({ message: "Error getting the schedule" });
+    if (results.length === 0)
+      return res
+        .status(404)
+        .json({ message: "No schedule found for this patient" });
+
+    const patientId = [...new Set(results.map((item) => item.patient_id))];
+    const patientQuery = `SELECT patient_id, firstname, lastname FROM patient WHERE patient_id IN (?)`;
+
+    db.query(patientQuery, [patientId], (error, patients) => {
+      if (error)
+        return res
+          .status(500)
+          .json({ message: "Error getting professional names" });
+
+      const patientMap = {};
+      patients.forEach((patient) => {
+        patientMap[
+          patient.patient_id
+        ] = `${patient.firstname} ${patient.lastname}`;
+      });
+
+      const scheduleData = results.map((schedule) => ({
+        schedule_id: schedule.schedule_id,
+        patient_id: schedule.patient_id,
+        professional_id: schedule.professional_id,
+        schedule_date: schedule.schedule_date,
+        schedule_time: schedule.schedule_time,
+        status: schedule.status,
+        patient_name: patientMap[schedule.patient_id] || "Unknown",
+      }));
+      console.log(scheduleData);
+      res.status(200).json({ data: scheduleData });
+    });
   });
 });
 

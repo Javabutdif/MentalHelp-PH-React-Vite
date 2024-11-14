@@ -43,6 +43,7 @@ import ProfessionalDashboard from "./pages/Professional/Dashboard";
 import ProfessionalProfile from "./pages/Professional/Profile";
 import ProfessionalNotification from "./pages/Professional/Notification";
 import ProfessionalSettings from "./pages/Professional/Settings";
+import ProfessionalMessage from "./pages/Professional/Message";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
@@ -147,6 +148,18 @@ function App() {
             element={
               <PrivateRouteProfessional element={ProfessionalSettings} />
             }
+          />
+          <Route
+            path="messages"
+            element={<PrivateRouteProfessional element={ProfessionalMessage} />}
+          />
+          <Route
+            path="community"
+            element={<PrivateRouteProfessional element={Community} />}
+          />
+          <Route
+            path="community/discussion/:forum_id"
+            element={<PrivateRouteProfessional element={CommunityForum} />}
           />
         </Route>
 

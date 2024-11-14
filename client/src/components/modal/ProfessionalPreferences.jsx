@@ -13,6 +13,7 @@ const ProfessionalPreferences = () => {
       stress: false,
     },
     id: user.id,
+    service_fee: "",
   });
 
   const handleSubmit = async () => {
@@ -38,6 +39,12 @@ const ProfessionalPreferences = () => {
         [name]: checked,
       },
     }));
+  };
+  const handleFeeChange = (event) => {
+    setFormData({
+      ...formData,
+      service_fee: event.target.value,
+    });
   };
 
   return (
@@ -90,6 +97,17 @@ const ProfessionalPreferences = () => {
             />
             Stress
           </label>
+        </div>
+        <h3 className="font-semibold mb-2">Service Fee</h3>
+        <div className="space-y-2 mb-4">
+          <input
+            type="number"
+            name="fee"
+            value={formData.service_fee} // use `value` for a text input
+            onChange={handleFeeChange}
+            className="mr-2"
+            placeholder="Enter service fee"
+          />
         </div>
 
         <div className="flex justify-end space-x-2">
