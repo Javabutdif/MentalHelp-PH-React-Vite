@@ -587,4 +587,26 @@ router.get("/get-appointments-active-professional/:id", (req, res) => {
   });
 });
 
+//set-rating-professionals
+
+router.post("/set-rating-professionals/:id", (req, res) => {
+  const { id } = req.params;
+  const { rating } = req.body;
+  const newRating = parseInt(rating);
+  const currentDate = new Date();
+
+  const query =
+    "INSERT INTO experience_professional (professional_id, rating,date) VALUES (?,?,?)";
+
+  db.query(query, [id, newRating, currentDate], (error, result) => {
+    if (error) {
+      res.status(400).json({ message: "Error inserting the rating " });
+    }
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: "Successfully submitted rating" });
+    }
+  });
+});
+
 module.exports = router;

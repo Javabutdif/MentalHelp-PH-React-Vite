@@ -455,3 +455,27 @@ export const fetchMessage = async (id) => {
     return null;
   }
 };
+
+export const handleSetRating = async (rating, id) => {
+  try {
+    const response = await axios.post(
+      `${Server_Connection()}/api/set-rating-patients/${id}`,
+      { rating },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};

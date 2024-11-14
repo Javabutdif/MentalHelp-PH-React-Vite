@@ -7,10 +7,12 @@ import {
   retrievePatientRequest,
   acceptRequest,
   cancelRequest,
+  handleSetRating,
 } from "../../api/professionals";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import ViewConditionModal from "../../components/modal/ViewConditionModal";
 import AppointmentModal from "../../components/Appointments/AppointmentModal";
+import Experience from "../../components/modal/Experience";
 
 const Dashboard = () => {
   const user = getInformationData();
@@ -24,6 +26,20 @@ const Dashboard = () => {
   const [viewData, setViewData] = useState("");
   const [viewAppointments, setViewAppointments] = useState(false);
   const [patientId, setPatientId] = useState("");
+  const [experienceModal, setExperienceModal] = useState(false);
+  const [rating, setRating] = useState("");
+
+  const handleExperienceModal = () => {
+    setExperienceModal(true);
+  };
+  const handleHideExperienceModal = () => {
+    setExperienceModal(false);
+  };
+
+  const handleSubmitRating = async () => {
+    console.log(rating);
+    await handleSetRating(rating, user.id);
+  };
 
   const fetchStatus = async () => {
     const result = await retrievePatientRequest(user.id);
@@ -103,6 +119,7 @@ const Dashboard = () => {
             <p className="text-gray-500">{user.type}</p>
           </div>
         </div>
+
         <div className="flex space-x-4">
           {/* Statistic Cards */}
           <div className="bg-white shadow-md rounded-md p-4">
@@ -224,6 +241,19 @@ const Dashboard = () => {
           </table>
         </div>
       </div>
+      <footer className="pt-2">
+        <div className="bg-blue-100 border border-blue-300 text-blue-800 p-4 rounded-lg shadow-lg flex items-center justify-between">
+          <p className="font-semibold">
+            How’s your experience using our website?
+          </p>
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm"
+            onClick={() => handleExperienceModal()}
+          >
+            Give Feedback
+          </button>
+        </div>
+      </footer>
       {confirmationModal && type === "Accept" && (
         <>
           <ConfirmationModal
@@ -263,6 +293,12 @@ const Dashboard = () => {
           />
         </>
       )}
+      <Experience
+        isOpen={experienceModal}
+        setIsOpen={handleHideExperienceModal}
+        finalRating={setRating}
+        onSubmit={handleSubmitRating}
+      />
     </div>
   );
 };

@@ -593,7 +593,6 @@ export const setAppointment = async (data) => {
   }
 };
 
-
 export const retrieveScheduleActive = async (id) => {
   try {
     const response = await axios.get(
@@ -618,3 +617,77 @@ export const retrieveScheduleActive = async (id) => {
   }
 };
 
+export const handleSetRating = async (rating, id) => {
+  try {
+    const response = await axios.post(
+      `${Server_Connection()}/api/set-rating-professionals/${id}`,
+      { rating },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+export const getUserActivity = async () => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-user-activity`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log(response.data.data);
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+  } catch (error) {
+    console.error(
+      "Error:",
+      error.response?.data?.message || "An error occurred"
+    );
+    showToast("error", error.response?.data?.message || "An error occurred");
+    return null;
+  }
+};
+
+export const getProfessionalActivity = async () => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-professional-activity`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log(response.data.data);
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+  } catch (error) {
+    console.error(
+      "Error:",
+      error.response?.data?.message || "An error occurred"
+    );
+    showToast("error", error.response?.data?.message || "An error occurred");
+    return null;
+  }
+};

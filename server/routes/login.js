@@ -6,6 +6,10 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const token_key = process.env.JWT_SECRET;
 const authenticateToken = require("../middleware/authenticateToken");
+const {
+  userActivity,
+  professionalActivity,
+} = require("../middleware/activity");
 
 const passwordMatch = async (data, password) => {
   return await bcrypt.compare(password, data);
@@ -40,6 +44,7 @@ router.post("/login", async (req, res) => {
     if (patientResults.length > 0) {
       const patient = patientResults[0];
       if (await passwordMatch(patient.passwords, password)) {
+        userActivity(patient.patient_id);
         return loginSuccess(res, {
           id: patient.patient_id,
           name: `${patient.firstname} ${patient.lastname}`,
@@ -74,6 +79,7 @@ router.post("/login", async (req, res) => {
     if (professionalResults.length > 0) {
       const professional = professionalResults[0];
       if (await passwordMatch(professional.passwords, password)) {
+        professionalActivity(professional.professional_id);
         return loginSuccess(res, {
           id: professional.professional_id,
           name: `${professional.firstname} ${professional.lastname}`,

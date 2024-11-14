@@ -149,7 +149,6 @@ router.post("/delete-professional/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-   
     const getProfessional =
       "SELECT * FROM mental_health_professionals WHERE professional_id = ?";
     db.query(getProfessional, [id], async (error, result) => {
@@ -157,15 +156,12 @@ router.post("/delete-professional/:id", async (req, res) => {
         return res.status(500).json({ message: "Database error", error });
       }
 
-   
       if (result.length === 0) {
         return res.status(404).json({ message: "Professional not found" });
       }
 
-   
       const { email, firstname, lastname } = result[0];
 
-   
       const updateQuery =
         "UPDATE mental_health_professionals SET professional_status = ? WHERE professional_id = ?";
       db.query(
@@ -178,11 +174,9 @@ router.post("/delete-professional/:id", async (req, res) => {
               .json({ message: "Database error", error: updateError });
           }
 
-         
           if (updateResult.affectedRows === 0) {
             return res.status(404).json({ message: "Professional not found" });
           } else {
-          
             try {
               let emailInfo = await sendDeletedMail(email, firstname, lastname);
               return res
@@ -246,6 +240,27 @@ router.post("/decline-professional", async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: "Error sending email", error });
   }
+});
+router.get("/get-user-activity", (req, res) => {
+  const query = "SELECT * FROM user_activity ORDER BY date ASC";
+  db.query(query, (error, result) => {
+    if (error) {
+      return res.status(500).json({ message: "No Data Found!" });
+    }
+    console.log(result);
+    res.status(200).json({ data: result });
+  });
+});
+
+router.get("/get-professional-activity", (req, res) => {
+  const query = "SELECT * FROM professional_activity ORDER BY date ASC";
+  db.query(query, (error, result) => {
+    if (error) {
+      return res.status(500).json({ message: "No Data Found!" });
+    }
+    console.log(result);
+    res.status(200).json({ data: result });
+  });
 });
 
 module.exports = router;

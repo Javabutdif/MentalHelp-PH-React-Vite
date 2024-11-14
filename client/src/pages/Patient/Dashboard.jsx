@@ -11,9 +11,11 @@ import {
   cancelMatch,
   retrieveSchedule,
   setAppointmentStatus,
+  handleSetRating,
 } from "../../api/patients";
 import LoadingScreen from "../../Loader/LoadingScreen";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
+import Experience from "../../components/modal/Experience";
 
 const Dashboard = () => {
   const data = getInformationData();
@@ -23,6 +25,19 @@ const Dashboard = () => {
   const [cancelConfirm, setCancelConfirm] = useState(false);
   const [cancelData, setCancelData] = useState("");
   const [scheduleData, setScheduleData] = useState([]);
+  const [experienceModal, setExperienceModal] = useState(false);
+  const [rating, setRating] = useState("");
+
+  const handleExperienceModal = () => {
+    setExperienceModal(true);
+  };
+  const handleHideExperienceModal = () => {
+    setExperienceModal(false);
+  };
+
+  const handleSubmitRating = async () => {
+    await handleSetRating(rating, data.id);
+  };
 
   const handleCancelModal = (id) => {
     setCancelConfirm(true);
@@ -267,6 +282,19 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+            <footer className="pt-2">
+              <div className="bg-blue-100 border border-blue-300 text-blue-800 p-4 rounded-lg shadow-lg flex items-center justify-between">
+                <p className="font-semibold">
+                  How’s your experience using our website?
+                </p>
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-sm"
+                  onClick={() => handleExperienceModal()}
+                >
+                  Give Feedback
+                </button>
+              </div>
+            </footer>
             {matchModal && (
               <>
                 <MatchType onClose={handleHideMatchModal} />
@@ -282,6 +310,12 @@ const Dashboard = () => {
                 />
               </>
             )}
+            <Experience
+              isOpen={experienceModal}
+              setIsOpen={handleHideExperienceModal}
+              finalRating={setRating}
+              onSubmit={handleSubmitRating}
+            />
           </div>
         </>
       )}
