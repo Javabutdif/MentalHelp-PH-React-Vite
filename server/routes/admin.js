@@ -242,7 +242,8 @@ router.post("/decline-professional", async (req, res) => {
   }
 });
 router.get("/get-user-activity", (req, res) => {
-  const query = "SELECT * FROM user_activity ORDER BY date ASC";
+  const query =
+    "SELECT user_activity.activity_id, user_activity.patient_id, user_activity.time_in , user_activity.date , patient.firstname, patient.lastname FROM user_activity JOIN patient on patient.patient_id = user_activity.patient_id ORDER BY date ASC";
   db.query(query, (error, result) => {
     if (error) {
       return res.status(500).json({ message: "No Data Found!" });
@@ -253,7 +254,32 @@ router.get("/get-user-activity", (req, res) => {
 });
 
 router.get("/get-professional-activity", (req, res) => {
-  const query = "SELECT * FROM professional_activity ORDER BY date ASC";
+  const query =
+    "SELECT professional_activity.activity_id, professional_activity.professional_id, professional_activity.time_in, professional_activity.date, mental_health_professionals.firstname,mental_health_professionals.lastname FROM professional_activity  JOIN mental_health_professionals  on mental_health_professionals.professional_id = professional_activity.professional_id ORDER BY date ASC";
+  db.query(query, (error, result) => {
+    if (error) {
+      return res.status(500).json({ message: "No Data Found!" });
+    }
+    console.log(result);
+    res.status(200).json({ data: result });
+  });
+});
+
+router.get("/get-feedback-patients", (req, res) => {
+  const query =
+    "SELECT experience_patient.experience_id ,experience_patient.patient_id ,experience_patient.rating , experience_patient.date , patient.firstname, patient.lastname FROM experience_patient JOIN patient on patient.patient_id = experience_patient.patient_id ORDER BY date ASC";
+  db.query(query, (error, result) => {
+    if (error) {
+      return res.status(500).json({ message: "No Data Found!" });
+    }
+    console.log(result);
+    res.status(200).json({ data: result });
+  });
+});
+
+router.get("/get-feedback-professionals", (req, res) => {
+  const query =
+    "SELECT experience_professional.experience_id ,experience_professional.professional_id ,experience_professional.rating , experience_professional.date , mental_health_professionals.firstname, mental_health_professionals.lastname FROM experience_professional JOIN mental_health_professionals on mental_health_professionals.professional_id = experience_professional.professional_id ORDER BY date ASC";
   db.query(query, (error, result) => {
     if (error) {
       return res.status(500).json({ message: "No Data Found!" });

@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import {
   getUserActivity,
   getProfessionalActivity,
+  fetchFeedbackProfessionals,
 } from "../../api/professionals";
+import { fetchFeedbackPatients } from "../../api/patients";
 import DataTable from "react-data-table-component"; // Import DataTable
 
 const Reports = () => {
@@ -19,8 +21,14 @@ const Reports = () => {
         } else if (selectedReport === "Professional Activity") {
           const data = await getProfessionalActivity();
           setReportData(data);
+        } else if (selectedReport === "Feedback Patients") {
+          const data = await fetchFeedbackPatients();
+          setReportData(data);
+        } else if (selectedReport === "Feedback Professionals") {
+          const data = await fetchFeedbackProfessionals();
+          setReportData(data);
         } else {
-          setReportData([]); // Default to an empty array for other report types
+          setReportData([]);
         }
       } catch (error) {
         console.error("Error fetching report data:", error);
@@ -29,22 +37,44 @@ const Reports = () => {
     fetchData();
   }, [selectedReport]);
 
-  // Define columns based on selected report
   const columns = [
     { name: "Activity ID", selector: (row) => row.activity_id, sortable: true },
-    selectedReport === "Patient Activity"
-      ? {
-          name: "Patient ID",
-          selector: (row) => row.patient_id,
-          sortable: true,
-        }
-      : {
-          name: "Professional ID",
-          selector: (row) => row.professional_id,
-          sortable: true,
-        },
-    { name: "Time In", selector: (row) => row.time_in, sortable: true },
-    { name: "Date", selector: (row) => row.date, sortable: true },
+
+    {
+      name: "Name",
+      selector: (row) => row.firstname + " " + row.lastname,
+      sortable: true,
+    },
+    {
+      name: "Time In",
+      selector: (row) => new Date(row.time_in).toLocaleTimeString(),
+      sortable: true,
+    },
+    {
+      name: "Date",
+      selector: (row) => new Date(row.date).toLocaleDateString(),
+      sortable: true,
+    },
+  ];
+
+  const columnsFeedback = [
+    { name: "ID", selector: (row) => row.experience_id, sortable: true },
+
+    {
+      name: "Name",
+      selector: (row) => row.firstname + " " + row.lastname,
+      sortable: true,
+    },
+    {
+      name: "Rating",
+      selector: (row) => row.rating,
+      sortable: true,
+    },
+    {
+      name: "Date",
+      selector: (row) => new Date(row.date).toLocaleDateString(),
+      sortable: true,
+    },
   ];
 
   // Handle dropdown change
@@ -68,14 +98,20 @@ const Reports = () => {
           <option value="Session">Session</option>
           <option value="Patient Activity">Patient Activity</option>
           <option value="Professional Activity">Professional Activity</option>
-          <option value="Feedback">Feedback</option>
+          <option value="Feedback Patients">Feedback Patients</option>
+          <option value="Feedback Professionals">Feedback Professionals</option>
         </select>
       </div>
 
       {/* Display DataTable with fetched report data */}
       <div className="mt-6">
         <DataTable
-          columns={columns}
+          columns={
+            selectedReport === "Feedback Patients" ||
+            selectedReport === "Feedback Professionals"
+              ? columnsFeedback
+              : columns
+          }
           data={reportData}
           pagination
           highlightOnHover

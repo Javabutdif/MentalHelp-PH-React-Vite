@@ -609,4 +609,53 @@ router.post("/set-rating-professionals/:id", (req, res) => {
   });
 });
 
+
+
+router.get("/get-appointments-professional/:id", (req, res) => {
+  const { id } = req.params;
+  const query =
+    "SELECT * FROM schedule WHERE professional_id = ? ORDER BY schedule_date ASC";
+
+  db.query(query, [id], (error, results) => {
+    if (error)
+      return res.status(400).json({ message: "Error getting the schedule" });
+    if (results.length === 0)
+      return res
+        .status(404)
+        .json({ message: "No schedule found for this patient" });
+
+    const patientId = [
+      ...new Set(results.map((item) => item.patient_id)),
+    ];
+    const patientQuery = `SELECT patient_id, firstname, lastname FROM patient WHERE patient_id IN (?)`;
+
+    db.query(patientQuery, [patientId], (error, patients) => {
+      if (error)
+        return res
+          .status(500)
+          .json({ message: "Error getting patient name" });
+
+      const patientMap = {};
+      patients.forEach((pat) => {
+        patientMap[
+          pat.patient_id
+        ] = `${pat.firstname} ${pat.lastname}`;
+      });
+
+      const scheduleData = results.map((schedule) => ({
+        schedule_id: schedule.schedule_id,
+        patient_id: schedule.patient_id,
+        professional_id: schedule.professional_id,
+        schedule_date: schedule.schedule_date,
+        schedule_time: schedule.schedule_time,
+        status: schedule.status,
+        patient_name:
+        patientMap[schedule.patient_id] || "Unknown",
+      }));
+      console.log(scheduleData);
+      res.status(200).json({ data: scheduleData });
+    });
+  });
+});
+
 module.exports = router;

@@ -308,13 +308,13 @@ router.post("/request-match", async (req, res) => {
   const { id, issues, age, professional_id, description } = req.body;
 
   const getMatchingDataQuery =
-    "SELECT match_id FROM matching WHERE professional_id = ?";
+    "SELECT match_id FROM matching WHERE professional_id = ? AND patient_id = ?";
   const insertPatientDetailsQuery =
     "INSERT INTO patient_details (patient_id, mental_issues, age , description) VALUES (?, ?, ?, ?)";
   const insertMatchingQuery =
     "INSERT INTO matching (patient_details_id, patient_id, professional_id, match_date, match_status) VALUES (?, ?, ?, ?, ?)";
 
-  db.query(getMatchingDataQuery, [professional_id], (error, result) => {
+  db.query(getMatchingDataQuery, [professional_id, id], (error, result) => {
     if (error) {
       return res.status(500).json({
         message: "Cannot retrieve the data from the matching table",
@@ -337,6 +337,7 @@ router.post("/request-match", async (req, res) => {
       [id, issuesString, age, description],
       (error, result) => {
         if (error) {
+          console.log(error);
           return res.status(500).json({
             message: "Cannot add the patient's details into the database",
           });
@@ -746,7 +747,6 @@ router.get("/get-message/:id", (req, res) => {
     res.status(200).json({ data: result });
   });
 });
-
 
 router.post("/set-rating-patients/:id", (req, res) => {
   const { id } = req.params;
