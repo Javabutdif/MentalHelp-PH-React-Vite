@@ -93,22 +93,24 @@ const Message = () => {
       <div className="w-1/4 p-4 bg-gray-200 rounded-lg shadow-md">
         <h2 className="font-bold text-xl mb-4">Inbox</h2>
         <ul>
-          {scheduleData.map((person) => (
-            <li
-              key={person.id}
-              className="cursor-pointer hover:bg-gray-300 p-2 rounded"
-              onClick={() =>
-                handlePersonClick(
-                  person.professional_name,
-                  person.schedule_id,
-                  person.patient_id,
-                  person.professional_id
-                )
-              }
-            >
-              {person.professional_name}
-            </li>
-          ))}
+          {scheduleData
+            ? scheduleData.map((person) => (
+                <li
+                  key={person.id}
+                  className="cursor-pointer hover:bg-gray-300 p-2 rounded"
+                  onClick={() =>
+                    handlePersonClick(
+                      person.professional_name,
+                      person.schedule_id,
+                      person.patient_id,
+                      person.professional_id
+                    )
+                  }
+                >
+                  {person.professional_name}
+                </li>
+              ))
+            : []}
         </ul>
       </div>
 

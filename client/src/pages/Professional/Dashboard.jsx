@@ -8,11 +8,13 @@ import {
   acceptRequest,
   cancelRequest,
   handleSetRating,
+  fetchProfessionalSchedule,
 } from "../../api/professionals";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import ViewConditionModal from "../../components/modal/ViewConditionModal";
 import AppointmentModal from "../../components/Appointments/AppointmentModal";
 import Experience from "../../components/modal/Experience";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const user = getInformationData();
@@ -28,9 +30,20 @@ const Dashboard = () => {
   const [patientId, setPatientId] = useState("");
   const [experienceModal, setExperienceModal] = useState(false);
   const [rating, setRating] = useState("");
+  const [schedule, setSchedule] = useState([]);
 
   const handleExperienceModal = () => {
     setExperienceModal(true);
+  };
+
+  const fetchSchedule = async () => {
+    try {
+      const result = await fetchProfessionalSchedule(user.id);
+      setSchedule(result);
+      console.log(schedule);
+    } catch (error) {
+      console.error("Error retrieving the schedule");
+    }
   };
   const handleHideExperienceModal = () => {
     setExperienceModal(false);
@@ -57,6 +70,7 @@ const Dashboard = () => {
     fetchPreferences();
     fetchStatus();
     fetchData();
+    fetchSchedule();
   }, [user.id]);
 
   const handleCancelRequest = (id) => {
@@ -146,18 +160,30 @@ const Dashboard = () => {
         <div className="col-span-1">
           <h3 className="font-semibold mb-2">Appointments</h3>
           <div className="space-y-4">
-            {["04 July", "04 July", "04 July"].map((date, index) => (
-              <div
-                key={index}
-                className={`bg-${
-                  index === 0 ? "orange" : index === 1 ? "blue" : "green"
-                }-100 p-4 rounded-md shadow-md`}
-              >
-                <p className="font-bold">{date}</p>
-                <p>{`1:00 - 2:00`}</p>
-                <p>{`Monica, 20, Female, Depression`}</p>
-              </div>
-            ))}
+            {schedule &&
+              schedule.map((scheduleMap, index) => (
+                <Link to="/professional/messages">
+                  <div
+                    key={scheduleMap}
+                    className={`bg-${
+                      scheduleMap.status === "Pending"
+                        ? "orange"
+                        : scheduleMap.status === "Active"
+                        ? "blue"
+                        : "green"
+                    }-100 p-4 rounded-md shadow-md`}
+                  >
+                    <p className="font-bold">
+                      {new Date(scheduleMap.schedule_date).toLocaleDateString()}
+                    </p>
+                    <p>{scheduleMap.schedule_time}</p>
+                    <p>{scheduleMap.patient_name}</p>
+                    <div className="flex flex-row">
+                      <p>{scheduleMap.status}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
           </div>
         </div>
 

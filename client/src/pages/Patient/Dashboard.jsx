@@ -70,7 +70,7 @@ const Dashboard = () => {
     fetchSchedule();
     setLoading(false);
     console.log(scheduleData);
-    updateAppointmentStatus();
+    scheduleData ? updateAppointmentStatus() : [];
   }, [scheduleData]);
 
   const handleCancel = async () => {
@@ -218,67 +218,70 @@ const Dashboard = () => {
                   className="space-y-2 overflow-y-auto"
                   style={{ maxHeight: "12rem" }}
                 >
-                  {scheduleData.map((appointment) => {
-                    const dateStr = appointment.schedule_date;
-                    const timeStr = appointment.schedule_time;
+                  {scheduleData
+                    ? scheduleData.map((appointment) => {
+                        const dateStr = appointment.schedule_date;
+                        const timeStr = appointment.schedule_time;
 
-                    const scheduleDate = new Date(dateStr);
-                    const currentDate = new Date();
-                    const currentTime = currentDate
-                      .toTimeString()
-                      .split(" ")[0];
+                        const scheduleDate = new Date(dateStr);
+                        const currentDate = new Date();
+                        const currentTime = currentDate
+                          .toTimeString()
+                          .split(" ")[0];
 
-                    const scheduleDateOnly = new Date(
-                      scheduleDate.toDateString()
-                    );
-                    const currentDateOnly = new Date(
-                      currentDate.toDateString()
-                    );
+                        const scheduleDateOnly = new Date(
+                          scheduleDate.toDateString()
+                        );
+                        const currentDateOnly = new Date(
+                          currentDate.toDateString()
+                        );
 
-                    const isDateValid = scheduleDateOnly <= currentDateOnly;
-                    const isTimeValid =
-                      scheduleDateOnly.getTime() === currentDateOnly.getTime()
-                        ? timeStr <= currentTime
-                        : true;
+                        const isDateValid = scheduleDateOnly <= currentDateOnly;
+                        const isTimeValid =
+                          scheduleDateOnly.getTime() ===
+                          currentDateOnly.getTime()
+                            ? timeStr <= currentTime
+                            : true;
 
-                    return (
-                      <div
-                        key={appointment.schedule_id}
-                        className="bg-gray-100 p-2 rounded-lg shadow"
-                      >
-                        <p>
-                          <strong>Professional:</strong>{" "}
-                          {appointment.professional_name}
-                        </p>
-                        <p>
-                          <strong>Schedule Date:</strong>{" "}
-                          {scheduleDateOnly.toLocaleDateString()}
-                        </p>
-                        <p>
-                          <strong>Schedule Time:</strong>{" "}
-                          {appointment.schedule_time}
-                        </p>
-                        <p
-                          className={`${
-                            appointment.status === "Active"
-                              ? "text-green-600"
-                              : appointment.status === "Pending"
-                              ? "text-orange-500"
-                              : "text-red-600"
-                          }`}
-                        >
-                          <strong>Status:</strong> {appointment.status}
-                        </p>
-                        {isDateValid && isTimeValid && (
-                          <Link to="/patient/messages">
-                            <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                              Go to Appointment
-                            </button>
-                          </Link>
-                        )}
-                      </div>
-                    );
-                  })}
+                        return (
+                          <div
+                            key={appointment.schedule_id}
+                            className="bg-gray-100 p-2 rounded-lg shadow"
+                          >
+                            <p>
+                              <strong>Professional:</strong>{" "}
+                              {appointment.professional_name}
+                            </p>
+                            <p>
+                              <strong>Schedule Date:</strong>{" "}
+                              {scheduleDateOnly.toLocaleDateString()}
+                            </p>
+                            <p>
+                              <strong>Schedule Time:</strong>{" "}
+                              {appointment.schedule_time}
+                            </p>
+                            <p
+                              className={`${
+                                appointment.status === "Active"
+                                  ? "text-green-600"
+                                  : appointment.status === "Pending"
+                                  ? "text-orange-500"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              <strong>Status:</strong> {appointment.status}
+                            </p>
+                            {isDateValid && isTimeValid && (
+                              <Link to="/patient/messages">
+                                <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                  Go to Appointment
+                                </button>
+                              </Link>
+                            )}
+                          </div>
+                        );
+                      })
+                    : []}
                 </div>
               </div>
             </div>

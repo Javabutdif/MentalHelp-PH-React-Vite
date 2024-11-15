@@ -109,13 +109,15 @@ const Message = () => {
         </ul>
       </div>
 
-      {/* Right side: Chat window */}
       <div className="w-3/4 p-4 bg-white rounded-lg shadow-md">
         {selectedPerson ? (
           <div>
             <h2 className="font-bold text-xl mb-4">
               Chat with Dr. {selectedPerson}
             </h2>
+            <div>
+              <button>Start Session</button>
+            </div>
             {/* Display messages */}
             <div className="h-80 overflow-y-scroll mb-4 space-y-3">
               {messages && messages.length === 0 ? (
@@ -137,25 +139,23 @@ const Message = () => {
                           : "bg-gray-300 text-black"
                       }`}
                     >
-                      {msg.message_content}
-                      {msg.message_content && (
-                        <img
-                          src={msg.message_content}
-                          alt="uploaded"
-                          className="mt-2 max-h-32 rounded-lg"
-                        />
-                      )}
+                      <div>
+                        <p className="">{msg.message_content}</p>
+                        <p className="text-sm">
+                          {new Date(msg.message_date).toLocaleString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ))
               )}
             </div>
-
             {file && (
               <div className="mb-4">
                 <img src={file} alt="Preview" className="max-h-16 rounded-lg" />
               </div>
             )}
+
             <div className="flex items-center space-x-2 mb-4">
               <input
                 type="file"
@@ -178,7 +178,6 @@ const Message = () => {
                 placeholder="Type your message here..."
               />
             </div>
-
             <button
               onClick={handleSendMessage}
               className="bg-blue-500 text-white py-2 px-4 rounded"
