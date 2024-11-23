@@ -20,6 +20,7 @@ function MatchType({ onClose }) {
     issues: issues,
     age: user.age,
     description: description,
+    id: user.id,
   });
   const [loading, setLoading] = useState(false);
   const [matchRequstForm, setMatchRequestForm] = useState({
@@ -36,6 +37,7 @@ function MatchType({ onClose }) {
       issues: issues,
       age: user.age,
       description: description,
+      id: user.id,
     });
     setMatchRequestForm({
       id: user.id,
@@ -60,12 +62,11 @@ function MatchType({ onClose }) {
   };
 
   const handleSubmit = async () => {
-    console.log("Form Data:", formData);
-
     setLoading(true);
-
+    alert("Form Data:", formData);
     try {
       const response = await matchProfessional(formData);
+
       console.log(response);
       if (response !== null) {
         setData(response);

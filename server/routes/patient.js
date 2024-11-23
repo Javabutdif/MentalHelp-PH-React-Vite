@@ -229,6 +229,8 @@ router.post("/recover-patient/:id", async (req, res) => {
 router.post("/match-professional", async (req, res) => {
   const { profession, issues, age } = req.body;
 
+ 
+
   const find_professional =
     "SELECT professional_id FROM mental_health_professionals WHERE type = ? AND professional_status = 'Accepted'";
 
@@ -239,7 +241,7 @@ router.post("/match-professional", async (req, res) => {
 
     if (results.length > 0) {
       const professionalIds = results.map((row) => row.professional_id);
-
+      
       let query =
         "SELECT * FROM mental_health_professional_preference WHERE professional_id IN (?)";
 
