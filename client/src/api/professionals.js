@@ -443,8 +443,7 @@ export const retrievePatientRequest = async (id) => {
 };
 
 //Cancel Request
-
-export const cancelRequest = async (id) => {
+export const cancelRequest = async (id, reasons) => {
   try {
     const response = await axios.delete(
       `${Server_Connection()}/api/cancel-match-request/${id}`,
@@ -453,6 +452,7 @@ export const cancelRequest = async (id) => {
         headers: {
           "Content-Type": "application/json",
         },
+        data: { reasons },
       }
     );
     if (response.status === 200) {
@@ -462,8 +462,11 @@ export const cancelRequest = async (id) => {
     }
     console.log(response.data.message);
   } catch (error) {
-    console.error("Error:", error.response.data.message);
-    showToast("error", error.response.data.message);
+    console.error("Error:", error.response?.data?.message || error.message);
+    showToast(
+      "error",
+      error.response?.data?.message || "Something went wrong."
+    );
     return null;
   }
 };
@@ -607,12 +610,12 @@ export const retrieveScheduleActive = async (id) => {
     if (response.status === 200) {
       return response.data.data;
     } else {
-      showToast("error", response.data.message);
+      console.log("error", response.data.message);
     }
     console.log(response.data.message);
   } catch (error) {
     console.error("Error:", error.response.data.message);
-    showToast("error", error.response.data.message);
+
     return null;
   }
 };
@@ -706,14 +709,14 @@ export const fetchProfessionalSchedule = async (id) => {
       console.log(response.data.data);
       return response.data.data;
     } else {
-      showToast("error", response.data.message);
+      console.log("error", response.data.message);
     }
   } catch (error) {
     console.error(
       "Error:",
       error.response?.data?.message || "An error occurred"
     );
-    showToast("error", error.response?.data?.message || "An error occurred");
+    console.log("error", error.response?.data?.message || "An error occurred");
     return null;
   }
 };
@@ -736,6 +739,30 @@ export const fetchFeedbackProfessionals = async () => {
       return response.data.data;
     } else {
       showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+
+export const changeScheduleAppointment = async (data) => {
+  try {
+    const response = await axios.put(
+      `${Server_Connection()}/api/change-schedule-professional`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.error);
     }
     console.log(response.data.message);
   } catch (error) {

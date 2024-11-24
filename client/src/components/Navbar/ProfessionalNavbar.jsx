@@ -59,16 +59,6 @@ function ProfessionalNavbar() {
         <ul className="flex space-x-8 items-center">
           <li>
             <Link
-              to="/professional/community"
-              className="text-gray-700 hover:text-green-500"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              <FaPeopleGroup className="text-2xl" />
-            </Link>
-          </li>
-          <li>
-            <Link
               to="/professional/messages"
               className="text-gray-700 hover:text-green-500"
               onMouseEnter={() => setIsHovered(true)}

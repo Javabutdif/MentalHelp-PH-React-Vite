@@ -15,6 +15,7 @@ import ViewConditionModal from "../../components/modal/ViewConditionModal";
 import AppointmentModal from "../../components/Appointments/AppointmentModal";
 import Experience from "../../components/modal/Experience";
 import { Link } from "react-router-dom";
+import CancelModal from "../../components/modal/CancelModal";
 
 const Dashboard = () => {
   const user = getInformationData();
@@ -31,6 +32,8 @@ const Dashboard = () => {
   const [experienceModal, setExperienceModal] = useState(false);
   const [rating, setRating] = useState("");
   const [schedule, setSchedule] = useState([]);
+  const [viewCancelModal, setCancelModal] = useState(false);
+  const [reason, setReason] = useState("");
 
   const handleExperienceModal = () => {
     setExperienceModal(true);
@@ -105,7 +108,7 @@ const Dashboard = () => {
     setViewAppointments(true);
   };
   const cancelRequestApi = async () => {
-    await cancelRequest(matchId);
+    await cancelRequest(matchId, reason);
     handleHideCancelRequest();
   };
 
@@ -115,6 +118,20 @@ const Dashboard = () => {
   };
   const handleHideViewCondition = () => {
     setViewCondition(false);
+  };
+
+  const handleCancelModalView = () => {
+    setCancelModal(true);
+    handleHideCancelRequest();
+  };
+  const handleCloseCancelModal = () => {
+    setCancelModal(false);
+  };
+  const handleCancelRequestWithReason = (reasons) => {
+    setReason(reasons); // Update the state
+    console.log("Cancellation Reason:", reason);
+    console.log("Match ID:", matchId);
+    cancelRequestApi();
   };
 
   return (
@@ -160,7 +177,7 @@ const Dashboard = () => {
         <div className="col-span-1">
           <h3 className="font-semibold mb-2">Appointments</h3>
           <div className="space-y-4">
-            {schedule &&
+            {schedule ? (
               schedule.map((scheduleMap, index) => (
                 <Link to="/professional/messages">
                   <div
@@ -170,7 +187,7 @@ const Dashboard = () => {
                         ? "orange"
                         : scheduleMap.status === "Active"
                         ? "blue"
-                        : "green"
+                        : "red"
                     }-100 p-4 rounded-md shadow-md`}
                   >
                     <p className="font-bold">
@@ -178,12 +195,41 @@ const Dashboard = () => {
                     </p>
                     <p>{scheduleMap.schedule_time}</p>
                     <p>{scheduleMap.patient_name}</p>
-                    <div className="flex flex-row">
-                      <p>{scheduleMap.status}</p>
+                    <div className="flex flex-col ">
+                      <p
+                        className={`text-${
+                          scheduleMap.status === "Pending"
+                            ? "orange"
+                            : scheduleMap.status === "Active"
+                            ? "blue"
+                            : "red"
+                        }-500 `}
+                      >
+                        {scheduleMap.status}
+                      </p>
+                      {scheduleMap.status === "Change" ? (
+                        <div>
+                          <button
+                            onClick={() =>
+                              handleConfirmChange(appointment.schedule_id)
+                            }
+                            className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                          >
+                            Change Schedule
+                          </button>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                     </div>
                   </div>
                 </Link>
-              ))}
+              ))
+            ) : (
+              <>
+                <p>No appointments found.</p>
+              </>
+            )}
           </div>
         </div>
 
@@ -296,7 +342,7 @@ const Dashboard = () => {
           <ConfirmationModal
             type={type}
             person="request"
-            onSubmit={() => cancelRequestApi(matchId)}
+            onSubmit={() => handleCancelModalView()}
             onCancel={handleHideCancelRequest}
           />
         </>
@@ -316,6 +362,14 @@ const Dashboard = () => {
             professional_id={user.id}
             isOpen={true}
             closeModal={() => setViewAppointments(false)}
+          />
+        </>
+      )}
+      {viewCancelModal && (
+        <>
+          <CancelModal
+            onSubmit={handleCancelRequestWithReason}
+            onClose={handleCloseCancelModal}
           />
         </>
       )}

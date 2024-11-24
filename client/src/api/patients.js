@@ -346,12 +346,12 @@ export const retrieveSchedule = async (id) => {
     if (response.status === 200) {
       return response.data.data;
     } else {
-      showToast("error", response.data.message);
+      console.log("error", response.data.message);
     }
     console.log(response.data.message);
   } catch (error) {
     console.error("Error:", error.response.data.message);
-    showToast("error", error.response.data.message);
+    console.log("error", error.response.data.message);
     return null;
   }
 };
@@ -370,12 +370,12 @@ export const retrieveScheduleActive = async (id) => {
     if (response.status === 200) {
       return response.data.data;
     } else {
-      showToast("error", response.data.message);
+      console.log("error", response.data.message);
     }
     console.log(response.data.message);
   } catch (error) {
     console.error("Error:", error.response.data.message);
-    showToast("error", error.response.data.message);
+    console.log("error", error.response.data.message);
     return null;
   }
 };
@@ -446,12 +446,12 @@ export const fetchMessage = async (id) => {
       console.log(response.data.data);
       return response.data.data;
     } else {
-      showToast("error", response.data.message);
+      console.log("error", response.data.message);
     }
     console.log(response.data.message);
   } catch (error) {
     console.error("Error:", error.response.data.message);
-    showToast("error", error.response.data.message);
+    console.log("error", error.response.data.message);
     return null;
   }
 };
@@ -483,7 +483,6 @@ export const handleSetRating = async (rating, id) => {
 //get-feedback-patients
 
 export const fetchFeedbackPatients = async () => {
- 
   try {
     const response = await axios.get(
       `${Server_Connection()}/api/get-feedback-patients`,
@@ -497,6 +496,31 @@ export const fetchFeedbackPatients = async () => {
     if (response.status === 200) {
       console.log(response.data.data);
       return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+
+export const changeSchedule = async (id) => {
+  try {
+    const response = await axios.put(
+      `${Server_Connection()}/api/change-schedule/${id}"`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+      return true;
     } else {
       showToast("error", response.data.message);
     }

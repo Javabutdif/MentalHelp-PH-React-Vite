@@ -63,7 +63,7 @@ function MatchType({ onClose }) {
 
   const handleSubmit = async () => {
     setLoading(true);
-    alert("Form Data:", formData);
+
     try {
       const response = await matchProfessional(formData);
 

@@ -3,6 +3,8 @@ import { getInformationData } from "../../authentication/authentication";
 import { fetchMessage, sendMessage } from "../../api/patients";
 import { retrieveScheduleActive } from "../../api/professionals";
 import { FaPaperclip } from "react-icons/fa";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const Message = () => {
   const user = getInformationData();
@@ -17,7 +19,7 @@ const Message = () => {
 
   const fetchSchedule = async () => {
     const result = await retrieveScheduleActive(user.id);
-    setScheduleData(result);
+    setScheduleData(result ? result : []);
   };
 
   const fetchConversation = async () => {
@@ -87,6 +89,11 @@ const Message = () => {
   return (
     <div className="flex pt-24 container p-2 space-x-4">
       {/* Left side: List of people */}
+      <div className="flex  flex-row ">
+        <Link to="/professional/dashboard">
+          <IoArrowBackCircle className="text-3xl" />
+        </Link>
+      </div>
       <div className="w-1/4 p-4 bg-gray-200 rounded-lg shadow-md">
         <h2 className="font-bold text-xl mb-4">Inbox</h2>
         <ul>
@@ -113,7 +120,7 @@ const Message = () => {
         {selectedPerson ? (
           <div>
             <h2 className="font-bold text-xl mb-4">
-              Chat with Dr. {selectedPerson}
+              Chat with {selectedPerson}
             </h2>
             <div>
               <button>Start Session</button>

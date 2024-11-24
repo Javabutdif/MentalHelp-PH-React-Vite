@@ -12,6 +12,7 @@ import {
   retrieveSchedule,
   setAppointmentStatus,
   handleSetRating,
+  changeSchedule,
 } from "../../api/patients";
 import LoadingScreen from "../../Loader/LoadingScreen";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
@@ -27,6 +28,8 @@ const Dashboard = () => {
   const [scheduleData, setScheduleData] = useState([]);
   const [experienceModal, setExperienceModal] = useState(false);
   const [rating, setRating] = useState("");
+  const [scheduleId, setScheduleId] = useState("");
+  const [change, setChange] = useState(false); //;<
 
   const handleExperienceModal = () => {
     setExperienceModal(true);
@@ -37,6 +40,19 @@ const Dashboard = () => {
 
   const handleSubmitRating = async () => {
     await handleSetRating(rating, data.id);
+  };
+
+  const handleConfirmChange = (schedule_id) => {
+    setScheduleId(schedule_id);
+    setChange(true);
+  };
+  const handleHideConfirmChange = () => {
+    setChange(false);
+  };
+  const handleChangeScheduleApi = async () => {
+    if (await changeSchedule(scheduleId)) {
+      handleHideConfirmChange();
+    }
   };
 
   const handleCancelModal = (id) => {
@@ -271,13 +287,30 @@ const Dashboard = () => {
                             >
                               <strong>Status:</strong> {appointment.status}
                             </p>
-                            {isDateValid && isTimeValid && (
-                              <Link to="/patient/messages">
-                                <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                  Go to Appointment
-                                </button>
-                              </Link>
-                            )}
+                            <div className="flex flex-row gap-3">
+                              {isDateValid && isTimeValid ? (
+                                <Link to="/patient/messages">
+                                  <button className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                    Go to Appointment
+                                  </button>
+                                </Link>
+                              ) : appointment.status === "Pending" ? (
+                                <>
+                                  <button
+                                    onClick={() =>
+                                      handleConfirmChange(
+                                        appointment.schedule_id
+                                      )
+                                    }
+                                    className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                  >
+                                    Change Schedule
+                                  </button>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+                            </div>
                           </div>
                         );
                       })
@@ -310,6 +343,16 @@ const Dashboard = () => {
                   person="request"
                   onCancel={handleHideCancelModal}
                   onSubmit={handleCancel}
+                />
+              </>
+            )}
+            {change && (
+              <>
+                <ConfirmationModal
+                  type="Change"
+                  person="schedule"
+                  onCancel={handleHideConfirmChange}
+                  onSubmit={handleChangeScheduleApi}
                 />
               </>
             )}

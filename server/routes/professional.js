@@ -368,45 +368,72 @@ router.put("/accept-match-request/:id", async (req, res) => {
     }
   });
 });
-
 router.delete("/cancel-match-request/:id", (req, res) => {
   const { id } = req.params;
+  const { reasons } = req.body;
+  const getPatientIdQuery =
+    "SELECT patient_id FROM matching WHERE patient_details_id = ?";
   const matchQuery = `DELETE FROM matching WHERE patient_details_id = ?`;
   const patientDetailsQuery = `DELETE FROM patient_details WHERE patient_details_id = ?`;
 
-  db.query(matchQuery, [id], (error, matchResult) => {
+  // Retrieve patient_id before deleting
+  db.query(getPatientIdQuery, [id], (error, result) => {
     if (error) {
+      console.error(error);
       return res.status(500).json({
-        message: "Cannot cancel the matching",
+        message: "Failed to retrieve patient_id",
         error: error.message,
       });
     }
 
-    if (matchResult.affectedRows > 0) {
-      db.query(patientDetailsQuery, [id], (error, detailsResult) => {
-        if (error) {
-          return res.status(500).json({
-            message: "Cancelled match but failed to delete patient details",
-            error: error.message,
-          });
-        }
-
-        if (detailsResult.affectedRows > 0) {
-          return res.status(200).json({
-            message:
-              "Successfully cancelled the request and deleted patient details",
-          });
-        } else {
-          return res.status(404).json({
-            message: "Match cancelled, but no patient details found to delete",
-          });
-        }
-      });
-    } else {
+    if (result.length === 0) {
       return res.status(404).json({
-        message: "No pending matches found for the patient",
+        message: "No matching record found for the provided ID",
       });
     }
+
+    const patient_id = result[0].patient_id;
+
+    // Log the notification before performing deletions
+    notification("Request Cancelled", patient_id, reasons);
+
+    // Delete the matching record
+    db.query(matchQuery, [id], (error, matchResult) => {
+      if (error) {
+        return res.status(500).json({
+          message: "Cannot cancel the matching",
+          error: error.message,
+        });
+      }
+
+      if (matchResult.affectedRows > 0) {
+        // Delete the patient details
+        db.query(patientDetailsQuery, [id], (error, detailsResult) => {
+          if (error) {
+            return res.status(500).json({
+              message: "Cancelled match but failed to delete patient details",
+              error: error.message,
+            });
+          }
+
+          if (detailsResult.affectedRows > 0) {
+            return res.status(200).json({
+              message:
+                "Successfully cancelled the request and deleted patient details",
+            });
+          } else {
+            return res.status(404).json({
+              message:
+                "Match cancelled, but no patient details found to delete",
+            });
+          }
+        });
+      } else {
+        return res.status(404).json({
+          message: "No pending matches found for the patient",
+        });
+      }
+    });
   });
 });
 
@@ -609,8 +636,6 @@ router.post("/set-rating-professionals/:id", (req, res) => {
   });
 });
 
-
-
 router.get("/get-appointments-professional/:id", (req, res) => {
   const { id } = req.params;
   const query =
@@ -624,22 +649,16 @@ router.get("/get-appointments-professional/:id", (req, res) => {
         .status(404)
         .json({ message: "No schedule found for this patient" });
 
-    const patientId = [
-      ...new Set(results.map((item) => item.patient_id)),
-    ];
+    const patientId = [...new Set(results.map((item) => item.patient_id))];
     const patientQuery = `SELECT patient_id, firstname, lastname FROM patient WHERE patient_id IN (?)`;
 
     db.query(patientQuery, [patientId], (error, patients) => {
       if (error)
-        return res
-          .status(500)
-          .json({ message: "Error getting patient name" });
+        return res.status(500).json({ message: "Error getting patient name" });
 
       const patientMap = {};
       patients.forEach((pat) => {
-        patientMap[
-          pat.patient_id
-        ] = `${pat.firstname} ${pat.lastname}`;
+        patientMap[pat.patient_id] = `${pat.firstname} ${pat.lastname}`;
       });
 
       const scheduleData = results.map((schedule) => ({
@@ -649,13 +668,31 @@ router.get("/get-appointments-professional/:id", (req, res) => {
         schedule_date: schedule.schedule_date,
         schedule_time: schedule.schedule_time,
         status: schedule.status,
-        patient_name:
-        patientMap[schedule.patient_id] || "Unknown",
+        patient_name: patientMap[schedule.patient_id] || "Unknown",
       }));
       console.log(scheduleData);
       res.status(200).json({ data: scheduleData });
     });
   });
+});
+
+router.put("/change-schedule-professional", (req, res) => {
+  const { schedule_id, scheduleDate, scheduleTime } = req.body;
+
+  const query =
+    "UPDATE schedule SET schedule_date = ? , schedule_time = ? , status = ? WHERE schedule_id = ? ";
+  db.query(
+    query,
+    [scheduleDate, scheduleTime, "Pending", schedule_id],
+    (error, result) => {
+      if (error) {
+        console.error(error);
+      }
+      if (result.affectedRows > 0) {
+        res.status(200).json({ message: "Change Schedule Successful" });
+      }
+    }
+  );
 });
 
 module.exports = router;

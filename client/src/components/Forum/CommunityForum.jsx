@@ -6,9 +6,10 @@ import {
   getTitle,
   deleteForum,
 } from "../../api/community";
-import { useParams } from "react-router-dom";
 import EditForum from "../modal/EditForum";
 import ConfirmationModal from "../common/ConfirmationModal";
+import { IoArrowBackCircleSharp } from "react-icons/io5";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 const ChatMessage = ({ avatar, username, message, isUser, date }) => (
   <div className={`flex items-center mb-3 ${isUser ? "justify-end" : ""}`}>
@@ -47,6 +48,9 @@ const CommunityForum = () => {
   const [titles, setTitle] = useState("");
   const [viewEdit, setViewEdit] = useState(false);
   const [viewDelete, setViewDelete] = useState(false);
+  const path = location.pathname.split("/");
+  const lastpath = path[path.length - 3];
+  const firstpath = path[path.length - 4];
 
   const handleDeleteModal = () => {
     setViewDelete(true);
@@ -116,7 +120,6 @@ const CommunityForum = () => {
           }))
         : [];
 
-      // console.log("Fetched Conversations:", result);
       setMessages(conversations);
     } catch (error) {
       console.error("Error fetching conversation:", error);
@@ -138,6 +141,11 @@ const CommunityForum = () => {
   }, [forum_id]);
   return (
     <div className="w-full bg-cyan-50 border rounded-lg shadow-md p-4 flex flex-col h-full pt-24">
+      <div>
+        <Link to={`/${firstpath}/${lastpath}`}>
+          <IoArrowBackCircleSharp className="text-3xl" />
+        </Link>
+      </div>
       <div className="flex flex-row gap-3 items-center justify-between pb-2">
         <p className="text-3xl text-zinc-600">{titles}</p>
         {user.role === "Admin" && (

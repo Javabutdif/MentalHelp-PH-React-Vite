@@ -135,11 +135,23 @@ router.post("/update-patient", async (req, res) => {
     userAddress,
     userStatus,
     userContact,
+    userBirthDate,
     bio,
   } = req.body;
+  const currentDate = new Date();
+  const birthDate = new Date(userBirthDate);
 
+  let age = currentDate.getFullYear() - birthDate.getFullYear();
+  const monthDifference = currentDate.getMonth() - birthDate.getMonth();
+
+  if (
+    monthDifference < 0 ||
+    (monthDifference === 0 && currentDate.getDate() < birthDate.getDate())
+  ) {
+    age--;
+  }
   const query =
-    "UPDATE patient SET firstname = ? , lastname = ? , email = ? , gender = ? , addresses = ? , patient_status =  ? , contact_number = ? , bio = ?  WHERE patient_id = ? ";
+    "UPDATE patient SET firstname = ? , lastname = ? , email = ? , gender = ? , age = ? , addresses = ? , patient_status =  ? , contact_number = ? , bio = ?  WHERE patient_id = ? ";
 
   db.query(
     query,
@@ -148,6 +160,7 @@ router.post("/update-patient", async (req, res) => {
       lastName,
       userEmail,
       userGender,
+      age,
       userAddress,
       userStatus,
       userContact,
@@ -227,40 +240,61 @@ router.post("/recover-patient/:id", async (req, res) => {
 
 //mental_health_professionals
 router.post("/match-professional", async (req, res) => {
-  const { profession, issues, age } = req.body;
+  const { id, profession, issues, age } = req.body;
 
- 
+  const find_matching =
+    "SELECT professional_id FROM matching WHERE patient_id = ? AND match_status = 'Pending'";
 
-  const find_professional =
-    "SELECT professional_id FROM mental_health_professionals WHERE type = ? AND professional_status = 'Accepted'";
-
-  db.query(find_professional, [profession], (error, results) => {
+  db.query(find_matching, [id], (error, result) => {
     if (error) {
-      return res.status(500).json({ message: "Unable to find professional." });
+      console.error(error);
+      return res
+        .status(500)
+        .json({ message: "Error retrieving matching records." });
     }
 
-    if (results.length > 0) {
-      const professionalIds = results.map((row) => row.professional_id);
-      
-      let query =
-        "SELECT * FROM mental_health_professional_preference WHERE professional_id IN (?)";
+    const matchedProfessionalIds = result.map((row) => row.professional_id);
 
-      const issueKeys = Object.keys(issues).filter((key) => issues[key]);
-      if (issueKeys.length > 0) {
-        const issueConditions = issueKeys
-          .map((issue) => `mental_issue LIKE ?`)
-          .join(" OR ");
-        query += ` AND (${issueConditions})`;
+    const find_professional =
+      "SELECT professional_id FROM mental_health_professionals WHERE type = ? AND professional_status = 'Accepted'";
+
+    db.query(find_professional, [profession], (error, results) => {
+      if (error) {
+        return res
+          .status(500)
+          .json({ message: "Unable to find professionals." });
       }
 
-      if (age) {
-        query += ` AND ? BETWEEN start_age AND end_age`;
-      }
+      if (results.length > 0) {
+        const availableProfessionalIds = results
+          .map((row) => row.professional_id)
+          .filter((id) => !matchedProfessionalIds.includes(id));
 
-      db.query(
-        query,
-        [professionalIds, ...issueKeys.map((issue) => `%${issue}%`), age],
-        (error, preferenceResults) => {
+        if (availableProfessionalIds.length === 0) {
+          return res
+            .status(404)
+            .json({ message: "No available professionals found." });
+        }
+
+        let query =
+          "SELECT * FROM mental_health_professional_preference WHERE professional_id IN (?)";
+        const queryParams = [availableProfessionalIds];
+
+        const issueKeys = Object.keys(issues).filter((key) => issues[key]);
+        if (issueKeys.length > 0) {
+          const issueConditions = issueKeys
+            .map(() => "mental_issue LIKE ?")
+            .join(" OR ");
+          query += ` AND (${issueConditions})`;
+          queryParams.push(...issueKeys.map((issue) => `%${issue}%`));
+        }
+
+        if (age) {
+          query += " AND ? BETWEEN start_age AND end_age";
+          queryParams.push(age);
+        }
+
+        db.query(query, queryParams, (error, preferenceResults) => {
           if (error) {
             return res
               .status(500)
@@ -280,15 +314,19 @@ router.post("/match-professional", async (req, res) => {
               [randomProfessional.professional_id],
               (error, professionalResult) => {
                 if (error) {
-                  return res
-                    .status(500)
-                    .json({ message: "Error finding professional." });
+                  return res.status(500).json({
+                    message: "Error retrieving professional details.",
+                  });
                 }
                 if (professionalResult.length > 0) {
                   return res.status(200).json({
                     data: professionalResult[0],
                     message: "Search successful",
                   });
+                } else {
+                  return res
+                    .status(404)
+                    .json({ message: "Professional details not found." });
                 }
               }
             );
@@ -297,15 +335,16 @@ router.post("/match-professional", async (req, res) => {
               .status(404)
               .json({ message: "No matching professionals found." });
           }
-        }
-      );
-    } else {
-      return res
-        .status(404)
-        .json({ message: "No professionals found with the specified type." });
-    }
+        });
+      } else {
+        return res
+          .status(404)
+          .json({ message: "No professionals found with the specified type." });
+      }
+    });
   });
 });
+
 router.post("/request-match", async (req, res) => {
   const { id, issues, age, professional_id, description } = req.body;
 
@@ -753,6 +792,7 @@ router.get("/get-message/:id", (req, res) => {
 router.post("/set-rating-patients/:id", (req, res) => {
   const { id } = req.params;
   const { rating } = req.body;
+  console.log(id + " " + rating);
   const newRating = parseInt(rating);
   const currentDate = new Date();
 
@@ -766,6 +806,23 @@ router.post("/set-rating-patients/:id", (req, res) => {
 
     if (result.affectedRows > 0) {
       res.status(200).json({ message: "Successfully submitted rating" });
+    }
+  });
+});
+
+router.put("/change-schedule/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = "UPDATE schedule SET status = ? WHERE schedule_id = ?";
+
+  db.query(query, ["Change", id], (error, result) => {
+    if (error) {
+      console.error(error);
+    }
+    if (result.affectedRows > 0) {
+      res
+        .status(200)
+        .json({ message: "Request to change schedule successful" });
     }
   });
 });

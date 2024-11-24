@@ -5,6 +5,7 @@ export const confirmationType = Object.freeze({
   DECLINE: "Decline",
   REQUEST: "Request",
   CANCEL: "Cancel",
+  CHANGE: "Change",
 });
 
 export const confirmationWords = Object.freeze({
@@ -14,4 +15,5 @@ export const confirmationWords = Object.freeze({
   Decline: "decline",
   Request: "request",
   Cancel: "cancel",
+  Change: "change",
 });

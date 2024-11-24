@@ -326,7 +326,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
                   htmlFor="documents"
                   className="block text-sm font-medium"
                 >
-                  Upload 1 Valid ID
+                  Upload 1 Valid PRC ID
                 </label>
                 <input
                   type="file"

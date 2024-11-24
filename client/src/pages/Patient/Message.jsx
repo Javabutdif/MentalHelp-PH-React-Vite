@@ -6,6 +6,8 @@ import {
   fetchMessage,
 } from "../../api/patients";
 import { FaPaperclip } from "react-icons/fa";
+import { IoArrowBackCircle } from "react-icons/io5";
+import { Link } from "react-router-dom";
 
 const Message = () => {
   const user = getInformationData();
@@ -90,6 +92,11 @@ const Message = () => {
   return (
     <div className="flex pt-24 container p-2 space-x-4">
       {/* Left side: List of people */}
+      <div className="flex  flex-row ">
+        <Link to="/patient/dashboard">
+          <IoArrowBackCircle className="text-3xl" />
+        </Link>
+      </div>
       <div className="w-1/4 p-4 bg-gray-200 rounded-lg shadow-md">
         <h2 className="font-bold text-xl mb-4">Inbox</h2>
         <ul>
@@ -142,14 +149,14 @@ const Message = () => {
                           : "bg-gray-300 text-black"
                       }`}
                     >
-                      {msg.message_content}
-                      {msg.message_content && (
-                        <img
-                          src={msg.message_content}
-                          alt="uploaded"
-                          className="mt-2 max-h-32 rounded-lg"
-                        />
-                      )}
+                      <p> {msg.message_content}</p>
+
+                      <p>
+                        {" "}
+                        <p className="text-sm">
+                          {new Date(msg.message_date).toLocaleString()}
+                        </p>
+                      </p>
                     </div>
                   </div>
                 ))

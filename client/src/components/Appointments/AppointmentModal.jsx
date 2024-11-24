@@ -1,14 +1,19 @@
 import React, { useState } from "react";
-import { setAppointment } from "../../api/professionals";
+import {
+  setAppointment,
+  changeScheduleAppointment,
+} from "../../api/professionals";
 const AppointmentModal = ({
   patient_id,
   professional_id,
+  schedule_id,
   isOpen,
   closeModal,
 }) => {
   const [formData, setFormData] = useState({
     patient_id: patient_id,
     professional_id: professional_id,
+    schedule_id: schedule_id,
     scheduleDate: "",
     scheduleTime: "",
   });
@@ -23,9 +28,15 @@ const AppointmentModal = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await setAppointment(formData);
-    console.log(formData);
-    closeModal();
+    if (!formData.schedule_id) {
+      await setAppointment(formData);
+      console.log(formData);
+      closeModal();
+    } else {
+      await changeScheduleAppointment(formData);
+      console.log(formData);
+      closeModal();
+    }
   };
 
   if (!isOpen) return null;
