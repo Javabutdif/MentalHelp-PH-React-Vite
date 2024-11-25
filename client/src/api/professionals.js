@@ -12,8 +12,8 @@ export const getCountActiveProfessionals = async () => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -36,8 +36,8 @@ export const getCountPendingProfessionals = async () => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -63,8 +63,8 @@ export const getAllActiveProfessionals = async () => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -88,8 +88,8 @@ export const getAllPendingProfessionals = async () => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -111,8 +111,8 @@ export const getAllDeclineProfessionals = async () => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -136,8 +136,8 @@ export const sendOtp = async (data) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -162,8 +162,8 @@ export const acceptProfessional = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -186,8 +186,8 @@ export const declineProfessional = async (data) => {
       data,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -210,8 +210,8 @@ export const deleteProfessional = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -234,8 +234,8 @@ export const recoverProfessional = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -259,8 +259,8 @@ export const retrieveSpecificProfessional = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -285,8 +285,8 @@ export const editProfessional = async (professional_data) => {
       professional_data,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -311,8 +311,8 @@ export const checkProfessionalPreferences = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -336,8 +336,8 @@ export const updateProfessionalPreferences = async (professional_data) => {
       professional_data,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -362,8 +362,8 @@ export const downloadFile = async (filename) => {
       {
         responseType: "blob",
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -400,8 +400,8 @@ export const upload_picture_professional = async (data, id) => {
       formData,
       {
         headers: {
-          "Content-Type": "multipart/form-data",
-        },
+          "Content-Type": "multipart/form-data"
+        }
       }
     );
     if (response.status === 200) {
@@ -425,8 +425,8 @@ export const retrievePatientRequest = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -450,9 +450,9 @@ export const cancelRequest = async (id, reasons) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        data: { reasons },
+        data: { reasons }
       }
     );
     if (response.status === 200) {
@@ -478,8 +478,8 @@ export const acceptRequest = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -502,8 +502,8 @@ export const getNotification = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -528,8 +528,8 @@ export const getProfessionalPreferences = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -553,8 +553,8 @@ export const setUpdateProfessionalPreferences = async (professional_data) => {
       professional_data,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -578,8 +578,8 @@ export const setAppointment = async (data) => {
       data,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -603,8 +603,8 @@ export const retrieveScheduleActive = async (id) => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -627,8 +627,8 @@ export const handleSetRating = async (rating, id) => {
       { rating },
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -649,8 +649,8 @@ export const getUserActivity = async () => {
       `${Server_Connection()}/api/get-user-activity`,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -675,8 +675,8 @@ export const getProfessionalActivity = async () => {
       `${Server_Connection()}/api/get-professional-activity`,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -701,8 +701,8 @@ export const fetchProfessionalSchedule = async (id) => {
       `${Server_Connection()}/api/get-appointments-professional/${id}`,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -730,8 +730,8 @@ export const fetchFeedbackProfessionals = async () => {
 
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
@@ -755,12 +755,37 @@ export const changeScheduleAppointment = async (data) => {
       data,
       {
         headers: {
-          "Content-Type": "application/json",
-        },
+          "Content-Type": "application/json"
+        }
       }
     );
     if (response.status === 200) {
       showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.error);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+
+export const declineChangeSchedule = async (id) => {
+  try {
+    const response = await axios.put(
+      `${Server_Connection()}/api/decline-schedule-professional/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+      return true;
     } else {
       showToast("error", response.data.error);
     }

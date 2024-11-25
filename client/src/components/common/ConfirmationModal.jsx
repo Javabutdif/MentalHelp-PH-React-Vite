@@ -33,7 +33,8 @@ function ConfirmationModal({ type, person, onSubmit, onCancel }) {
 
         <div className="p-6 space-y-4 font-secondary text-lg bg-gray-50 text-gray-800 text-center">
           <p>
-            Do you want to {confirmationWords[type]} this {person}?
+            Do you want to {type === "Change" ? "request" : ""}{" "}
+            {confirmationWords[type]} this {person}?
           </p>
         </div>
 
@@ -43,7 +44,7 @@ function ConfirmationModal({ type, person, onSubmit, onCancel }) {
             className={`px-5 py-2 text-white hover:text-white transition-all focus:outline-none rounded-md border border-gray-300 hover:border-gray-400 ${confirmButtonColor}`}
             onClick={onSubmit}
           >
-            {type}
+            {type === "Change" ? "Request" : type}
           </button>
 
           <button
