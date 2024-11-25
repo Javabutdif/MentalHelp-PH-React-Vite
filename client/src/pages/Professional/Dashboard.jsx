@@ -9,6 +9,7 @@ import {
   cancelRequest,
   handleSetRating,
   fetchProfessionalSchedule,
+  declineChangeSchedule
 } from "../../api/professionals";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import ViewConditionModal from "../../components/modal/ViewConditionModal";
@@ -34,6 +35,8 @@ const Dashboard = () => {
   const [schedule, setSchedule] = useState([]);
   const [viewCancelModal, setCancelModal] = useState(false);
   const [reason, setReason] = useState("");
+  const [schedId, setSchedId] = useState("");
+  const [declineModal, setDeclineModal] = useState(false);
 
   const handleExperienceModal = () => {
     setExperienceModal(true);
@@ -134,6 +137,19 @@ const Dashboard = () => {
     cancelRequestApi();
   };
 
+  const handleDeclineModal = (id) => {
+    setSchedId(id);
+    setDeclineModal(true);
+  };
+  const handleHideDeclineModal = () => {
+    setDeclineModal(false);
+  };
+  const declineRequestApi = async () => {
+    if (await declineChangeSchedule(schedId)) {
+      handleHideDeclineModal();
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 pt-28">
       {!dataRetrieve && <ProfessionalPreferences />}
@@ -179,51 +195,57 @@ const Dashboard = () => {
           <div className="space-y-4">
             {schedule ? (
               schedule.map((scheduleMap, index) => (
-                <Link to="/professional/messages">
-                  <div
-                    key={scheduleMap}
-                    className={`bg-${
-                      scheduleMap.status === "Pending"
-                        ? "orange"
-                        : scheduleMap.status === "Active"
-                        ? "blue"
-                        : "red"
-                    }-100 p-4 rounded-md shadow-md`}
-                  >
-                    <p className="font-bold">
-                      {new Date(scheduleMap.schedule_date).toLocaleDateString()}
+                <div
+                  key={scheduleMap}
+                  className={`bg-${
+                    scheduleMap.status === "Pending"
+                      ? "orange"
+                      : scheduleMap.status === "Active"
+                      ? "blue"
+                      : "red"
+                  }-100 p-4 rounded-md shadow-md`}
+                >
+                  <p className="font-bold">
+                    {new Date(scheduleMap.schedule_date).toLocaleDateString()}
+                  </p>
+                  <p>{scheduleMap.schedule_time}</p>
+                  <p>{scheduleMap.patient_name}</p>
+                  <div className="flex flex-col ">
+                    <p
+                      className={`text-${
+                        scheduleMap.status === "Pending"
+                          ? "orange"
+                          : scheduleMap.status === "Active"
+                          ? "blue"
+                          : "red"
+                      }-500 `}
+                    >
+                      {scheduleMap.status}
                     </p>
-                    <p>{scheduleMap.schedule_time}</p>
-                    <p>{scheduleMap.patient_name}</p>
-                    <div className="flex flex-col ">
-                      <p
-                        className={`text-${
-                          scheduleMap.status === "Pending"
-                            ? "orange"
-                            : scheduleMap.status === "Active"
-                            ? "blue"
-                            : "red"
-                        }-500 `}
-                      >
-                        {scheduleMap.status}
-                      </p>
-                      {scheduleMap.status === "Change" ? (
-                        <div>
-                          <button
-                            onClick={() =>
-                              handleConfirmChange(appointment.schedule_id)
-                            }
-                            className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                          >
-                            Change Schedule
-                          </button>
-                        </div>
-                      ) : (
-                        <></>
-                      )}
-                    </div>
+                    {scheduleMap.status === "Change" ? (
+                      <div className="flex flex-row gap-3">
+                        <button
+                          onClick={() =>
+                            handleConfirmChange(scheduleMap.schedule_id)
+                          }
+                          className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                        >
+                          Change Schedule
+                        </button>
+                        <button
+                          onClick={() =>
+                            handleDeclineModal(scheduleMap.schedule_id)
+                          }
+                          className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                        >
+                          Decline
+                        </button>
+                      </div>
+                    ) : (
+                      <></>
+                    )}
                   </div>
-                </Link>
+                </div>
               ))
             ) : (
               <>
@@ -284,22 +306,22 @@ const Dashboard = () => {
                   age: 21,
                   gender: "Female",
                   condition: "Anxiety",
-                  date: "02-07-24",
+                  date: "02-07-24"
                 },
                 {
                   name: "Randy",
                   age: 33,
                   gender: "Male",
                   condition: "Anxiety",
-                  date: "02-07-24",
+                  date: "02-07-24"
                 },
                 {
                   name: "Krisha",
                   age: 18,
                   gender: "Female",
                   condition: "Depression",
-                  date: "02-07-24",
-                },
+                  date: "02-07-24"
+                }
               ].map((patient, index) => (
                 <tr key={index} className="border-b">
                   <td className="py-2 px-4">{patient.name}</td>
@@ -370,6 +392,16 @@ const Dashboard = () => {
           <CancelModal
             onSubmit={handleCancelRequestWithReason}
             onClose={handleCloseCancelModal}
+          />
+        </>
+      )}
+      {declineModal && (
+        <>
+          <ConfirmationModal
+            type="Decline"
+            person="schedule"
+            onSubmit={() => declineRequestApi()}
+            onCancel={handleHideDeclineModal}
           />
         </>
       )}

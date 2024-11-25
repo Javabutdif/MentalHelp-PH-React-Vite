@@ -8,7 +8,7 @@ const multer = require("multer");
 const path = require("path");
 const {
   notification,
-  notification_professional,
+  notification_professional
 } = require("../middleware/notification");
 
 //Upload File
@@ -18,7 +18,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
-  },
+  }
 });
 
 const upload = multer({ storage });
@@ -29,7 +29,7 @@ const profileStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
-  },
+  }
 });
 
 const uploadProfile = multer({ storage: profileStorage });
@@ -45,7 +45,7 @@ router.post(
 
       res.status(200).json({
         message: "Profile picture uploaded successfully.",
-        file: req.file,
+        file: req.file
       });
     } catch (error) {
       console.error(error);
@@ -63,12 +63,12 @@ router.post("/professional-otp", async (req, res) => {
     res.status(200).json({
       message: "OTP sent successfully",
       otp: otp,
-      emailInfo: emailInfo,
+      emailInfo: emailInfo
     });
   } catch (error) {
     res.status(500).json({
       message: "Error sending OTP email",
-      error,
+      error
     });
   }
 });
@@ -98,7 +98,7 @@ router.post(
       profession,
       experience,
       license,
-      address,
+      address
     } = req.body;
 
     const documentPaths = req.files.map((file) => file.path);
@@ -122,7 +122,7 @@ router.post(
         experience,
         "Pending",
         contact,
-        documentPathsString,
+        documentPathsString
       ],
       (error, results) => {
         if (error) {
@@ -130,7 +130,7 @@ router.post(
         }
         res.status(200).json({
           message:
-            "Professional registered successfully. Verification of your account will take a few days.",
+            "Professional registered successfully. Verification of your account will take a few days."
         });
       }
     );
@@ -163,7 +163,7 @@ router.post("/update-professional", async (req, res) => {
     profession,
     contact,
     bio,
-    address,
+    address
   } = req.body;
 
   const query =
@@ -181,7 +181,7 @@ router.post("/update-professional", async (req, res) => {
       profession,
       contact,
       bio,
-      id,
+      id
     ],
     (error, results) => {
       if (error) {
@@ -280,12 +280,12 @@ router.post(
       db.query(query, [filePath, id], async (error, result) => {
         if (error) {
           res.status(500).json({
-            message: "Error uploading image path into the database",
+            message: "Error uploading image path into the database"
           });
         }
         if (result.affectedRows > 0) {
           res.status(200).json({
-            message: "Profile image uploaded successfully",
+            message: "Profile image uploaded successfully"
           });
         }
       });
@@ -329,7 +329,7 @@ router.get("/retrieve-match-status-professional/:id", (req, res) => {
     if (error) {
       return res.status(500).json({
         message: "Cannot retrieve the details",
-        error: error.message,
+        error: error.message
       });
     }
     console.log(result);
@@ -337,7 +337,7 @@ router.get("/retrieve-match-status-professional/:id", (req, res) => {
       return res.status(200).json({ data: result });
     } else {
       return res.status(404).json({
-        message: "No pending matches found for the patient",
+        message: "No pending matches found for the patient"
       });
     }
   });
@@ -359,7 +359,7 @@ router.put("/accept-match-request/:id", async (req, res) => {
 
     if (results.affectedRows > 0) {
       return res.status(200).json({
-        message: "The patient's request has been successfully accepted.",
+        message: "The patient's request has been successfully accepted."
       });
     } else {
       return res
@@ -382,13 +382,13 @@ router.delete("/cancel-match-request/:id", (req, res) => {
       console.error(error);
       return res.status(500).json({
         message: "Failed to retrieve patient_id",
-        error: error.message,
+        error: error.message
       });
     }
 
     if (result.length === 0) {
       return res.status(404).json({
-        message: "No matching record found for the provided ID",
+        message: "No matching record found for the provided ID"
       });
     }
 
@@ -402,7 +402,7 @@ router.delete("/cancel-match-request/:id", (req, res) => {
       if (error) {
         return res.status(500).json({
           message: "Cannot cancel the matching",
-          error: error.message,
+          error: error.message
         });
       }
 
@@ -412,25 +412,24 @@ router.delete("/cancel-match-request/:id", (req, res) => {
           if (error) {
             return res.status(500).json({
               message: "Cancelled match but failed to delete patient details",
-              error: error.message,
+              error: error.message
             });
           }
 
           if (detailsResult.affectedRows > 0) {
             return res.status(200).json({
               message:
-                "Successfully cancelled the request and deleted patient details",
+                "Successfully cancelled the request and deleted patient details"
             });
           } else {
             return res.status(404).json({
-              message:
-                "Match cancelled, but no patient details found to delete",
+              message: "Match cancelled, but no patient details found to delete"
             });
           }
         });
       } else {
         return res.status(404).json({
-          message: "No pending matches found for the patient",
+          message: "No pending matches found for the patient"
         });
       }
     });
@@ -479,7 +478,7 @@ router.get("/get-professional-preferences/:id", (req, res) => {
 
       const data = {
         service_fee: serviceFee,
-        preferences: preferencesResult,
+        preferences: preferencesResult
       };
 
       res.status(200).json({ data: data });
@@ -606,7 +605,7 @@ router.get("/get-appointments-active-professional/:id", (req, res) => {
         schedule_date: schedule.schedule_date,
         schedule_time: schedule.schedule_time,
         status: schedule.status,
-        patient_name: patientMap[schedule.patient_id] || "Unknown",
+        patient_name: patientMap[schedule.patient_id] || "Unknown"
       }));
       console.log(scheduleData);
       res.status(200).json({ data: scheduleData });
@@ -668,7 +667,7 @@ router.get("/get-appointments-professional/:id", (req, res) => {
         schedule_date: schedule.schedule_date,
         schedule_time: schedule.schedule_time,
         status: schedule.status,
-        patient_name: patientMap[schedule.patient_id] || "Unknown",
+        patient_name: patientMap[schedule.patient_id] || "Unknown"
       }));
       console.log(scheduleData);
       res.status(200).json({ data: scheduleData });
@@ -693,6 +692,21 @@ router.put("/change-schedule-professional", (req, res) => {
       }
     }
   );
+});
+
+router.put("/decline-schedule-professional/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = "UPDATE schedule SET status = ? WHERE schedule_id = ?";
+
+  db.query(query, ["Pending", id], (error, result) => {
+    if (error) {
+      console.error(error);
+    }
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: "Decline schedule successfully" });
+    }
+  });
 });
 
 module.exports = router;
