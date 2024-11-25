@@ -3,7 +3,7 @@ import { getInformationData } from "../../authentication/authentication";
 import {
   retrieveScheduleActive,
   sendMessage,
-  fetchMessage,
+  fetchMessage
 } from "../../api/patients";
 import { FaPaperclip } from "react-icons/fa";
 import { IoArrowBackCircle } from "react-icons/io5";
@@ -19,6 +19,7 @@ const Message = () => {
   const [chatId, setChatId] = useState("");
   const [patientId, setPatientId] = useState("");
   const [professionalId, setProfessionalId] = useState("");
+  const regex = /(https:\/\/meet\.google\.com\/[a-zA-Z0-9\-]+)/;
 
   const fetchSchedule = async () => {
     const result = await retrieveScheduleActive(user.id);
@@ -149,8 +150,21 @@ const Message = () => {
                           : "bg-gray-300 text-black"
                       }`}
                     >
-                      <p> {msg.message_content}</p>
-
+                      <p>
+                        {" "}
+                        {msg.message_content.match(regex) ? (
+                          <a
+                            href={msg.message_content.match(regex)[0]}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white-500 underline"
+                          >
+                            {msg.message_content.match(regex)[0]}
+                          </a>
+                        ) : (
+                          <span>{msg.message_content}</span>
+                        )}
+                      </p>
                       <p>
                         {" "}
                         <p className="text-sm">
