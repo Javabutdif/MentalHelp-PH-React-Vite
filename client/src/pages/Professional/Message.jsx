@@ -345,9 +345,6 @@ const Message = () => {
               >
                 Send Payment
               </button>
-              <button className="bg-red-600 text-white p-2 rounded-sm">
-                Delete Chat
-              </button>
             </div>
             <div className="flex items-center space-x-2 mb-4">
               <input
@@ -371,7 +368,7 @@ const Message = () => {
                 placeholder="Type your message here..."
               />
               <button
-                onClick={handleSendMessage}
+                onClick={() => handleSendMessage()}
                 type="submit"
                 className="bg-green-500 text-white py-2 px-4 rounded"
               >

@@ -33,6 +33,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "file/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const fileStore = multer({ storage: fileStorage });
+
 router.post("/patient-otp", async (req, res) => {
   const { firstName, lastName, userEmail } = req.body;
   console.log(firstName + " " + lastName + " " + userEmail);
@@ -349,88 +360,92 @@ router.post("/request-match", async (req, res) => {
   const { id, issues, age, professional_id, description } = req.body;
 
   const getMatchingDataQuery =
-    "SELECT match_id FROM matching WHERE professional_id = ? AND patient_id = ? ";
+    "SELECT match_id FROM matching WHERE professional_id = ? AND patient_id = ? AND match_status != ? ";
   const insertPatientDetailsQuery =
     "INSERT INTO patient_details (patient_id, mental_issues, age , description) VALUES (?, ?, ?, ?)";
   const insertMatchingQuery =
     "INSERT INTO matching (patient_details_id, patient_id, professional_id, match_date, match_status) VALUES (?, ?, ?, ?, ?)";
 
-  db.query(getMatchingDataQuery, [professional_id, id], (error, result) => {
-    if (error) {
-      return res.status(500).json({
-        message: "Cannot retrieve the data from the matching table",
-      });
-    }
-
-    if (result.length > 0) {
-      return res.status(400).json({
-        message:
-          "You've already reached out to this professional; please wait for their response.",
-      });
-    }
-
-    let issuesString = Object.keys(issues)
-      .filter((key) => issues[key])
-      .join(", ");
-
-    db.query(
-      insertPatientDetailsQuery,
-      [id, issuesString, age, description],
-      (error, result) => {
-        if (error) {
-          console.log(error);
-          return res.status(500).json({
-            message: "Cannot add the patient's details into the database",
-          });
-        }
-
-        if (result.affectedRows > 0) {
-          const patientDetailsId = result.insertId; // Get the newly inserted patient_details_id
-          const date = new Date();
-
-          // Insert matching request
-          db.query(
-            insertMatchingQuery,
-            [patientDetailsId, id, professional_id, date, "Pending"],
-            (error, results) => {
-              if (error) {
-                // Add in the notification
-                notification(
-                  "Match Notice",
-                  id,
-                  "Cannot add the match details into the database"
-                );
-                return res.status(500).json({
-                  message: "Cannot add the match details into the database",
-                });
-              }
-
-              if (results.affectedRows > 0) {
-                notification_professional(
-                  "Matching Alert",
-                  professional_id,
-                  "A patient has submitted a request"
-                );
-
-                notification("Match Notice", id, "Request match successful");
-                return res.status(200).json({
-                  message: "Request match successful",
-                });
-              } else {
-                return res.status(500).json({
-                  message: "Failed to create the match request",
-                });
-              }
-            }
-          );
-        } else {
-          return res.status(500).json({
-            message: "Failed to add the patient's details",
-          });
-        }
+  db.query(
+    getMatchingDataQuery,
+    [professional_id, id, "Pending"],
+    (error, result) => {
+      if (error) {
+        return res.status(500).json({
+          message: "Cannot retrieve the data from the matching table",
+        });
       }
-    );
-  });
+
+      if (result.length > 0) {
+        return res.status(400).json({
+          message:
+            "You've already reached out to this professional; please wait for their response.",
+        });
+      }
+
+      let issuesString = Object.keys(issues)
+        .filter((key) => issues[key])
+        .join(", ");
+
+      db.query(
+        insertPatientDetailsQuery,
+        [id, issuesString, age, description],
+        (error, result) => {
+          if (error) {
+            console.log(error);
+            return res.status(500).json({
+              message: "Cannot add the patient's details into the database",
+            });
+          }
+
+          if (result.affectedRows > 0) {
+            const patientDetailsId = result.insertId; // Get the newly inserted patient_details_id
+            const date = new Date();
+
+            // Insert matching request
+            db.query(
+              insertMatchingQuery,
+              [patientDetailsId, id, professional_id, date, "Pending"],
+              (error, results) => {
+                if (error) {
+                  // Add in the notification
+                  notification(
+                    "Match Notice",
+                    id,
+                    "Cannot add the match details into the database"
+                  );
+                  return res.status(500).json({
+                    message: "Cannot add the match details into the database",
+                  });
+                }
+
+                if (results.affectedRows > 0) {
+                  notification_professional(
+                    "Matching Alert",
+                    professional_id,
+                    "A patient has submitted a request"
+                  );
+
+                  notification("Match Notice", id, "Request match successful");
+                  return res.status(200).json({
+                    message: "Request match successful",
+                  });
+                } else {
+                  return res.status(500).json({
+                    message: "Failed to create the match request",
+                  });
+                }
+              }
+            );
+          } else {
+            return res.status(500).json({
+              message: "Failed to add the patient's details",
+            });
+          }
+        }
+      );
+    }
+  );
 });
 
 router.get("/retrieve-match-status/:id", (req, res) => {
@@ -568,9 +583,9 @@ router.get("/get-notification-patient/:id", (req, res) => {
 router.get("/get-appointments/:id", (req, res) => {
   const { id } = req.params;
   const query =
-    "SELECT * FROM schedule WHERE patient_id = ? ORDER BY schedule_date ASC";
+    "SELECT * FROM schedule WHERE patient_id = ? AND status != ? ORDER BY schedule_date ASC";
 
-  db.query(query, [id], (error, results) => {
+  db.query(query, [id, "Complete"], (error, results) => {
     if (error)
       return res.status(400).json({ message: "Error getting the schedule" });
     if (results.length === 0)
@@ -677,94 +692,101 @@ router.put("/set-appointments-status/:id", (req, res) => {
     }
   });
 });
-router.post("/send-message-patient/:id", upload.single("file"), (req, res) => {
-  const { id: schedule_id } = req.params;
-  const { patient_id, professional_id, message, sender } = req.body;
-  const currentDate = new Date();
 
-  // Determine if the sender is the patient or the professional
-  const isPatientSender = sender === patient_id;
+router.post(
+  "/send-message-patient/:id",
+  fileStore.single("file"),
+  (req, res) => {
+    const { id: schedule_id } = req.params;
+    const { patient_id, professional_id, message, sender } = req.body;
+    const currentDate = new Date();
 
-  // Fetch the patient's name for the notification message
-  const patientQuery =
-    "SELECT firstname, lastname FROM patient WHERE patient_id = ?";
-  db.query(patientQuery, [patient_id], (error, result) => {
-    if (error || result.length === 0) {
-      console.error("No patient found!");
-      return res.status(404).json({ message: "Patient not found" });
-    }
+    // Determine if the sender is the patient or the professional
+    const isPatientSender = sender === patient_id;
 
-    const patientName = `${result[0].firstname} ${result[0].lastname}`;
-
-    // Fetch the professional's name for the notification message
-    const professionalQuery =
-      "SELECT firstname, lastname FROM mental_health_professionals WHERE professional_id = ?";
-    db.query(professionalQuery, [professional_id], (error, results) => {
-      if (error || results.length === 0) {
-        console.error("No professional found!");
-        return res.status(404).json({ message: "Professional not found" });
+    // Fetch the patient's name for the notification message
+    const patientQuery =
+      "SELECT firstname, lastname FROM patient WHERE patient_id = ?";
+    db.query(patientQuery, [patient_id], (error, result) => {
+      if (error || result.length === 0) {
+        console.error("No patient found!");
+        return res.status(404).json({ message: "Patient not found" });
       }
 
-      const professionalName = `${results[0].firstname} ${results[0].lastname}`;
+      const patientName = `${result[0].firstname} ${result[0].lastname}`;
 
-      // Prepare SQL query and values based on whether a file is included
-      let query, values;
-      if (req.file) {
-        const filePath = req.file.path;
-        query = `
-          INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
-          VALUES (?, ?, ?, ?, ?, ?)
-        `;
-        values = [
-          patient_id,
-          professional_id,
-          filePath,
-          schedule_id,
-          currentDate,
-          sender,
-        ];
-      } else {
-        query = `
-          INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
-          VALUES (?, ?, ?, ?, ?, ?)
-        `;
-        values = [
-          patient_id,
-          professional_id,
-          message,
-          schedule_id,
-          currentDate,
-          sender,
-        ];
-      }
-
-      // Execute the query to store the message
-      db.query(query, values, (error, result) => {
-        if (error) {
-          console.error("Error storing the message:", error);
-          return res.status(500).json({ message: "Cannot store the message" });
+      // Fetch the professional's name for the notification message
+      const professionalQuery =
+        "SELECT firstname, lastname FROM mental_health_professionals WHERE professional_id = ?";
+      db.query(professionalQuery, [professional_id], (error, results) => {
+        if (error || results.length === 0) {
+          console.error("No professional found!");
+          return res.status(404).json({ message: "Professional not found" });
         }
 
-        // Send notification based on the sender
-        if (isPatientSender && result.affectedRows > 0) {
-          notification_professional(
-            "Message Notification",
-            professional_id,
-            `${patientName} has messaged you`
-          );
-        } else if (!isPatientSender && result.affectedRows > 0) {
-          notification(
-            "Message Notification",
+        const professionalName = `${results[0].firstname} ${results[0].lastname}`;
+
+        // Prepare SQL query and values based on whether a file is included
+        let query, values;
+        if (req.file) {
+          const filePath = req.file.path;
+          query = `
+          INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
+          values = [
             patient_id,
-            `${professionalName} has messaged you`
-          );
+            professional_id,
+            filePath,
+            schedule_id,
+            currentDate,
+            sender,
+          ];
+        } else {
+          query = `
+          INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
+          VALUES (?, ?, ?, ?, ?, ?)
+        `;
+          values = [
+            patient_id,
+            professional_id,
+            message,
+            schedule_id,
+            currentDate,
+            sender,
+          ];
         }
 
-        return res.status(200).json({ message: "Message Sent" });
+        // Execute the query to store the message
+        db.query(query, values, (error, result) => {
+          if (error) {
+            console.error("Error storing the message:", error);
+            return res
+              .status(500)
+              .json({ message: "Cannot store the message" });
+          }
+
+          // Send notification based on the sender
+          if (isPatientSender && result.affectedRows > 0) {
+            notification_professional(
+              "Message Notification",
+              professional_id,
+              `${patientName} has messaged you`
+            );
+          } else if (!isPatientSender && result.affectedRows > 0) {
+            notification(
+              "Message Notification",
+              patient_id,
+              `${professionalName} has messaged you`
+            );
+          }
+
+          return res.status(200).json({ message: "Message Sent" });
+        });
       });
     });
-  });
-});
+  }
+);
 
 router.get("/get-message/:id", (req, res) => {
   const { id } = req.params;

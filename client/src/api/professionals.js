@@ -840,7 +840,7 @@ export const fetchSession = async (id) => {
     }
   } catch (error) {
     console.error("Error:", error.response.data.message);
-    showToast("error", error.response.data.message);
+
     return null;
   }
 };
@@ -865,7 +865,7 @@ export const handleEndSession = async (id) => {
     console.log(response.data.message);
   } catch (error) {
     console.error("Error:", error.response.data.message);
-    showToast("error", error.response.data.message);
+
     return null;
   }
 };

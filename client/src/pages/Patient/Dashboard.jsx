@@ -233,6 +233,12 @@ const Dashboard = () => {
                                 entry.professional_lastname}
                             </td>
                             <td className="border-b p-2">{entry.type}</td>
+                            <td className="border-b p-2">
+                              {" "}
+                              <button className="bg-green-500 text-white p-2">
+                                Reappoint
+                              </button>
+                            </td>
                           </tr>
                         ))
                       : []}

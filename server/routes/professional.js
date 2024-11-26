@@ -735,14 +735,21 @@ router.put("/end-session/:id", (req, res) => {
   const currentDate = new Date();
   const query =
     "UPDATE session SET session_end = ? , status = ? WHERE schedule_id = ?  ";
+  const scheduleQuery = "UPDATE schedule SET status = ? WHERE schedule_id = ?";
+  
 
   db.query(query, [currentDate, "Completed", id], (error, result) => {
     if (error) {
       console.error(error);
     }
-    if (result.affectedRows > 0) {
-      res.status(200).json({ message: "Session Ended" });
-    }
+    db.query(scheduleQuery, ["Complete", id], (error, results) => {
+      if (error) {
+        console.error(error);
+      }
+      if (result.affectedRows > 0 && results.affectedRows > 0) {
+        res.status(200).json({ message: "Session Ended" });
+      }
+    });
   });
 });
 
