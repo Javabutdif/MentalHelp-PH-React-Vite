@@ -3,11 +3,12 @@ import { getInformationData } from "../../authentication/authentication";
 import {
   retrieveScheduleActive,
   sendMessage,
-  fetchMessage
+  fetchMessage,
 } from "../../api/patients";
 import { FaPaperclip } from "react-icons/fa";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { IoIosSend } from "react-icons/io";
 
 const Message = () => {
   const user = getInformationData();
@@ -150,27 +151,43 @@ const Message = () => {
                           : "bg-gray-300 text-black"
                       }`}
                     >
-                      <p>
-                        {" "}
-                        {msg.message_content.match(regex) ? (
-                          <a
-                            href={msg.message_content.match(regex)[0]}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-white-500 underline"
-                          >
-                            {msg.message_content.match(regex)[0]}
-                          </a>
-                        ) : (
-                          <span>{msg.message_content}</span>
-                        )}
-                      </p>
-                      <p>
-                        {" "}
+                      <div>
+                        <p>
+                          {msg.message_content.match(regex) ? (
+                            // Link detection
+                            <a
+                              href={msg.message_content.match(regex)[0]}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white-500 underline"
+                            >
+                              {msg.message_content.match(regex)[0]}
+                            </a>
+                          ) : /\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i.test(
+                              msg.message_content
+                            ) ? (
+                            // Image detection
+                            <img
+                              src={msg.message_content}
+                              alt="Message Content"
+                              className="max-w-full h-auto"
+                            />
+                          ) : msg.message_content === "Session Started!" ? (
+                            // Plain text fallback
+                            <>
+                              {" "}
+                              <span className="bg-green-500">
+                                {msg.message_content}
+                              </span>
+                            </>
+                          ) : (
+                            <span>{msg.message_content}</span>
+                          )}
+                        </p>
                         <p className="text-sm">
                           {new Date(msg.message_date).toLocaleString()}
                         </p>
-                      </p>
+                      </div>
                     </div>
                   </div>
                 ))
@@ -203,14 +220,14 @@ const Message = () => {
                 rows="3"
                 placeholder="Type your message here..."
               />
+              <button
+                onClick={handleSendMessage}
+                type="submit"
+                className="bg-green-500 text-white py-2 px-4 rounded"
+              >
+                <IoIosSend className="text-3xl" />
+              </button>
             </div>
-
-            <button
-              onClick={handleSendMessage}
-              className="bg-blue-500 text-white py-2 px-4 rounded"
-            >
-              Send Message
-            </button>
           </div>
         ) : (
           <p className="text-center text-gray-500">

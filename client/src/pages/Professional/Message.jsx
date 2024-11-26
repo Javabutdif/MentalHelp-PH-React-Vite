@@ -5,6 +5,7 @@ import { retrieveScheduleActive } from "../../api/professionals";
 import { FaPaperclip } from "react-icons/fa";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import { IoIosSend } from "react-icons/io";
 
 const Message = () => {
   const user = getInformationData();
@@ -87,6 +88,70 @@ const Message = () => {
     }
   };
 
+  const handleSendPayment = async () => {
+    const formData = new FormData();
+    formData.append("patient_id", patientId);
+    formData.append("professional_id", professionalId);
+    formData.append("message", "/transaction.jpg");
+    formData.append("sender", user.id);
+
+    try {
+      await sendMessage(formData, chatId);
+      handleCostPayment();
+      fetchConversation();
+      setMessage("");
+      setFile(null);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+    fetchConversation();
+    setMessage("");
+    setFile(null);
+  };
+
+  const handleCostPayment = async () => {
+    const formData = new FormData();
+    formData.append("patient_id", patientId);
+    formData.append("professional_id", professionalId);
+    formData.append(
+      "message",
+      "The total cost will be ₱" + (user.service_fee + 60)
+    );
+    formData.append("sender", user.id);
+
+    try {
+      await sendMessage(formData, chatId);
+      fetchConversation();
+      setMessage("");
+      setFile(null);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+    fetchConversation();
+    setMessage("");
+    setFile(null);
+  };
+
+  const handleSession = async () => {
+    const formData = new FormData();
+    formData.append("patient_id", patientId);
+    formData.append("professional_id", professionalId);
+    formData.append("message", "Session Started!");
+    formData.append("sender", user.id);
+
+    try {
+      await sendMessage(formData, chatId);
+      fetchConversation();
+      setMessage("");
+      setFile(null);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+    fetchConversation();
+    setMessage("");
+    setFile(null);
+  };
+
   return (
     <div className="flex pt-24 container p-2 space-x-4">
       {/* Left side: List of people */}
@@ -123,11 +188,10 @@ const Message = () => {
             <h2 className="font-bold text-xl mb-4">
               Chat with {selectedPerson}
             </h2>
-            <div>
-              <button>Start Session</button>
-            </div>
+            <div></div>
+
             {/* Display messages */}
-            <div className="h-80 overflow-y-scroll mb-4 space-y-3">
+            <div className="h-80 overflow-y-scroll mb-4 space-y-3 border border-spacing-2">
               {messages && messages.length === 0 ? (
                 <div className="text-center text-gray-500">
                   No messages available.
@@ -142,15 +206,18 @@ const Message = () => {
                   >
                     <div
                       className={`max-w-xs px-4 py-2 rounded-lg ${
-                        msg.sender === user.id
-                          ? "bg-blue-500 text-white"
+                         msg.sender === user.id &&
+                            msg.message_content === "Session Started!"
+                          ? "bg-green-500 text-white" : 
+                          msg.sender === user.id ? "bg-blue-500 text-white"
+                          
                           : "bg-gray-300 text-black"
                       }`}
                     >
                       <div>
                         <p>
-                          {" "}
                           {msg.message_content.match(regex) ? (
+                            // Link detection
                             <a
                               href={msg.message_content.match(regex)[0]}
                               target="_blank"
@@ -159,6 +226,20 @@ const Message = () => {
                             >
                               {msg.message_content.match(regex)[0]}
                             </a>
+                          ) : /\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i.test(
+                              msg.message_content
+                            ) ? (
+                            <img
+                              src={msg.message_content}
+                              alt="Message Content"
+                              className="max-w-full h-auto"
+                            />
+                          ) : msg.message_content === "Session Started!" ? (
+                            // Plain text fallback
+                            <>
+                              {" "}
+                              <span>{msg.message_content}</span>
+                            </>
                           ) : (
                             <span>{msg.message_content}</span>
                           )}
@@ -177,7 +258,23 @@ const Message = () => {
                 <img src={file} alt="Preview" className="max-h-16 rounded-lg" />
               </div>
             )}
-
+            <div className="flex flex-row items-center pb-2 gap-2">
+              <button
+                onClick={() => handleSession()}
+                className="bg-green-600 text-white p-2 rounded-sm"
+              >
+                Start Session
+              </button>
+              <button
+                onClick={() => handleSendPayment()}
+                className="bg-blue-600 text-white p-2 rounded-sm"
+              >
+                Send Payment
+              </button>
+              <button className="bg-red-600 text-white p-2 rounded-sm">
+                Delete Chat
+              </button>
+            </div>
             <div className="flex items-center space-x-2 mb-4">
               <input
                 type="file"
@@ -199,13 +296,14 @@ const Message = () => {
                 rows="3"
                 placeholder="Type your message here..."
               />
+              <button
+                onClick={handleSendMessage}
+                type="submit"
+                className="bg-green-500 text-white py-2 px-4 rounded"
+              >
+                <IoIosSend className="text-3xl" />
+              </button>
             </div>
-            <button
-              onClick={handleSendMessage}
-              className="bg-blue-500 text-white py-2 px-4 rounded"
-            >
-              Send Message
-            </button>
           </div>
         ) : (
           <p className="text-center text-gray-500">

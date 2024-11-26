@@ -414,6 +414,7 @@ export const sendMessage = async (data, id) => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       }
     );

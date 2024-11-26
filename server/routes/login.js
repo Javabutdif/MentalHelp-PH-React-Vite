@@ -91,6 +91,7 @@ router.post("/login", async (req, res) => {
           experience: professional.experience,
           status: professional.professional_status,
           contact: professional.contact_number,
+          service_fee: professional.service_fee,
           role: "Professional",
         });
       } else {

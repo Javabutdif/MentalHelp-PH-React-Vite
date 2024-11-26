@@ -9,7 +9,7 @@ import {
   cancelRequest,
   handleSetRating,
   fetchProfessionalSchedule,
-  declineChangeSchedule
+  declineChangeSchedule,
 } from "../../api/professionals";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
 import ViewConditionModal from "../../components/modal/ViewConditionModal";
@@ -192,12 +192,15 @@ const Dashboard = () => {
         {/* Appointments Section */}
         <div className="col-span-1">
           <h3 className="font-semibold mb-2">Appointments</h3>
-          <div className="space-y-4">
+          <div
+            className="space-y-4 overflow-y-auto"
+            style={{ maxHeight: "400px" }}
+          >
             {schedule ? (
               schedule.map((scheduleMap, index) => (
                 <div
-                  key={scheduleMap}
-                  className={`bg-${
+                  key={index}
+                  className={`flex justify-between items-center bg-${
                     scheduleMap.status === "Pending"
                       ? "orange"
                       : scheduleMap.status === "Active"
@@ -205,12 +208,13 @@ const Dashboard = () => {
                       : "red"
                   }-100 p-4 rounded-md shadow-md`}
                 >
-                  <p className="font-bold">
-                    {new Date(scheduleMap.schedule_date).toLocaleDateString()}
-                  </p>
-                  <p>{scheduleMap.schedule_time}</p>
-                  <p>{scheduleMap.patient_name}</p>
-                  <div className="flex flex-col ">
+                  {/* Left Section: Information */}
+                  <div>
+                    <p className="font-bold">
+                      {new Date(scheduleMap.schedule_date).toLocaleDateString()}
+                    </p>
+                    <p>{scheduleMap.schedule_time}</p>
+                    <p>{scheduleMap.patient_name}</p>
                     <p
                       className={`text-${
                         scheduleMap.status === "Pending"
@@ -218,17 +222,28 @@ const Dashboard = () => {
                           : scheduleMap.status === "Active"
                           ? "blue"
                           : "red"
-                      }-500 `}
+                      }-500`}
                     >
                       {scheduleMap.status}
                     </p>
-                    {scheduleMap.status === "Change" ? (
-                      <div className="flex flex-row gap-3">
+                  </div>
+
+                  {/* Right Section: Buttons */}
+                  <div className="flex flex-col items-end gap-2">
+                    {scheduleMap.status === "Active" && (
+                      <Link to="/professional/messages">
+                        <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                          Go to Appointment
+                        </button>
+                      </Link>
+                    )}
+                    {scheduleMap.status === "Change" && (
+                      <div className="flex gap-3">
                         <button
                           onClick={() =>
                             handleConfirmChange(scheduleMap.schedule_id)
                           }
-                          className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                         >
                           Change Schedule
                         </button>
@@ -236,21 +251,17 @@ const Dashboard = () => {
                           onClick={() =>
                             handleDeclineModal(scheduleMap.schedule_id)
                           }
-                          className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                         >
                           Decline
                         </button>
                       </div>
-                    ) : (
-                      <></>
                     )}
                   </div>
                 </div>
               ))
             ) : (
-              <>
-                <p>No appointments found.</p>
-              </>
+              <p>No appointments found.</p>
             )}
           </div>
         </div>
@@ -306,22 +317,22 @@ const Dashboard = () => {
                   age: 21,
                   gender: "Female",
                   condition: "Anxiety",
-                  date: "02-07-24"
+                  date: "02-07-24",
                 },
                 {
                   name: "Randy",
                   age: 33,
                   gender: "Male",
                   condition: "Anxiety",
-                  date: "02-07-24"
+                  date: "02-07-24",
                 },
                 {
                   name: "Krisha",
                   age: 18,
                   gender: "Female",
                   condition: "Depression",
-                  date: "02-07-24"
-                }
+                  date: "02-07-24",
+                },
               ].map((patient, index) => (
                 <tr key={index} className="border-b">
                   <td className="py-2 px-4">{patient.name}</td>

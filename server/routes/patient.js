@@ -8,7 +8,7 @@ const multer = require("multer");
 const path = require("path");
 const {
   notification,
-  notification_professional
+  notification_professional,
 } = require("../middleware/notification");
 
 const profileStorage = multer.diskStorage({
@@ -17,7 +17,7 @@ const profileStorage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
-  }
+  },
 });
 
 const uploadProfile = multer({ storage: profileStorage });
@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
-  }
+  },
 });
 
 const upload = multer({ storage: storage });
@@ -42,12 +42,12 @@ router.post("/patient-otp", async (req, res) => {
     res.status(200).json({
       message: "OTP sent successfully",
       otp: otp,
-      emailInfo: emailInfo
+      emailInfo: emailInfo,
     });
   } catch (error) {
     res.status(500).json({
       message: "Error sending OTP email",
-      error
+      error,
     });
   }
 });
@@ -62,7 +62,7 @@ router.post("/patient-register", async (req, res) => {
     userBirthDate,
     userAddress,
     userStatus,
-    userContact
+    userContact,
   } = req.body;
   const hashedPassword = await bcrypt.hash(userPassword, 10);
   const currentDate = new Date();
@@ -92,7 +92,7 @@ router.post("/patient-register", async (req, res) => {
       age,
       userStatus,
       userContact,
-      "Active"
+      "Active",
     ],
     (error, results) => {
       if (error) {
@@ -136,7 +136,7 @@ router.post("/update-patient", async (req, res) => {
     userStatus,
     userContact,
     userBirthDate,
-    bio
+    bio,
   } = req.body;
   const currentDate = new Date();
   const birthDate = new Date(userBirthDate);
@@ -165,7 +165,7 @@ router.post("/update-patient", async (req, res) => {
       userStatus,
       userContact,
       bio,
-      id
+      id,
     ],
     (error, results) => {
       if (error) {
@@ -315,13 +315,13 @@ router.post("/match-professional", async (req, res) => {
               (error, professionalResult) => {
                 if (error) {
                   return res.status(500).json({
-                    message: "Error retrieving professional details."
+                    message: "Error retrieving professional details.",
                   });
                 }
                 if (professionalResult.length > 0) {
                   return res.status(200).json({
                     data: professionalResult[0],
-                    message: "Search successful"
+                    message: "Search successful",
                   });
                 } else {
                   return res
@@ -358,14 +358,14 @@ router.post("/request-match", async (req, res) => {
   db.query(getMatchingDataQuery, [professional_id, id], (error, result) => {
     if (error) {
       return res.status(500).json({
-        message: "Cannot retrieve the data from the matching table"
+        message: "Cannot retrieve the data from the matching table",
       });
     }
 
     if (result.length > 0) {
       return res.status(400).json({
         message:
-          "You've already reached out to this professional; please wait for their response."
+          "You've already reached out to this professional; please wait for their response.",
       });
     }
 
@@ -380,7 +380,7 @@ router.post("/request-match", async (req, res) => {
         if (error) {
           console.log(error);
           return res.status(500).json({
-            message: "Cannot add the patient's details into the database"
+            message: "Cannot add the patient's details into the database",
           });
         }
 
@@ -401,7 +401,7 @@ router.post("/request-match", async (req, res) => {
                   "Cannot add the match details into the database"
                 );
                 return res.status(500).json({
-                  message: "Cannot add the match details into the database"
+                  message: "Cannot add the match details into the database",
                 });
               }
 
@@ -414,18 +414,18 @@ router.post("/request-match", async (req, res) => {
 
                 notification("Match Notice", id, "Request match successful");
                 return res.status(200).json({
-                  message: "Request match successful"
+                  message: "Request match successful",
                 });
               } else {
                 return res.status(500).json({
-                  message: "Failed to create the match request"
+                  message: "Failed to create the match request",
                 });
               }
             }
           );
         } else {
           return res.status(500).json({
-            message: "Failed to add the patient's details"
+            message: "Failed to add the patient's details",
           });
         }
       }
@@ -455,7 +455,7 @@ router.get("/retrieve-match-status/:id", (req, res) => {
     if (error) {
       return res.status(500).json({
         message: "Cannot retrieve the details",
-        error: error.message
+        error: error.message,
       });
     }
 
@@ -463,7 +463,7 @@ router.get("/retrieve-match-status/:id", (req, res) => {
       return res.status(200).json({ data: result });
     } else {
       return res.status(404).json({
-        message: "No pending matches found for the patient"
+        message: "No pending matches found for the patient",
       });
     }
   });
@@ -481,7 +481,7 @@ router.delete("/cancel-match-status/:id", (req, res) => {
     if (error) {
       return res.status(500).json({
         message: "Cannot cancel the matching",
-        error: error.message
+        error: error.message,
       });
     }
 
@@ -490,24 +490,24 @@ router.delete("/cancel-match-status/:id", (req, res) => {
         if (error) {
           return res.status(500).json({
             message: "Cancelled match but failed to delete patient details",
-            error: error.message
+            error: error.message,
           });
         }
 
         if (detailsResult.affectedRows > 0) {
           return res.status(200).json({
             message:
-              "Successfully cancelled the request and deleted patient details"
+              "Successfully cancelled the request and deleted patient details",
           });
         } else {
           return res.status(404).json({
-            message: "Match cancelled, but no patient details found to delete"
+            message: "Match cancelled, but no patient details found to delete",
           });
         }
       });
     } else {
       return res.status(404).json({
-        message: "No pending matches found for the patient"
+        message: "No pending matches found for the patient",
       });
     }
   });
@@ -534,12 +534,12 @@ router.post(
       db.query(query, [filePath, id], async (error, result) => {
         if (error) {
           res.status(500).json({
-            message: "Error uploading image path into the database"
+            message: "Error uploading image path into the database",
           });
         }
         if (result.affectedRows > 0) {
           res.status(200).json({
-            message: "Profile image uploaded successfully"
+            message: "Profile image uploaded successfully",
           });
         }
       });
@@ -579,7 +579,7 @@ router.get("/get-appointments/:id", (req, res) => {
         .json({ message: "No schedule found for this patient" });
 
     const professionalIds = [
-      ...new Set(results.map((item) => item.professional_id))
+      ...new Set(results.map((item) => item.professional_id)),
     ];
     const professionalQuery = `SELECT professional_id, firstname, lastname FROM mental_health_professionals WHERE professional_id IN (?)`;
 
@@ -604,7 +604,7 @@ router.get("/get-appointments/:id", (req, res) => {
         schedule_time: schedule.schedule_time,
         status: schedule.status,
         professional_name:
-          professionalMap[schedule.professional_id] || "Unknown"
+          professionalMap[schedule.professional_id] || "Unknown",
       }));
 
       res.status(200).json({ data: scheduleData });
@@ -626,7 +626,7 @@ router.get("/get-appointments-active/:id", (req, res) => {
         .json({ message: "No schedule found for this patient" });
 
     const professionalIds = [
-      ...new Set(results.map((item) => item.professional_id))
+      ...new Set(results.map((item) => item.professional_id)),
     ];
     const professionalQuery = `SELECT professional_id, firstname, lastname FROM mental_health_professionals WHERE professional_id IN (?)`;
 
@@ -651,7 +651,7 @@ router.get("/get-appointments-active/:id", (req, res) => {
         schedule_time: schedule.schedule_time,
         status: schedule.status,
         professional_name:
-          professionalMap[schedule.professional_id] || "Unknown"
+          professionalMap[schedule.professional_id] || "Unknown",
       }));
 
       res.status(200).json({ data: scheduleData });
@@ -681,6 +681,7 @@ router.post("/send-message-patient/:id", upload.single("file"), (req, res) => {
   const { id: schedule_id } = req.params;
   const { patient_id, professional_id, message, sender } = req.body;
   const currentDate = new Date();
+  
 
   // Determine if the sender is the patient or the professional
   const isPatientSender = sender === patient_id;
@@ -721,7 +722,7 @@ router.post("/send-message-patient/:id", upload.single("file"), (req, res) => {
           filePath,
           schedule_id,
           currentDate,
-          sender
+          sender,
         ];
       } else {
         query = `
@@ -734,7 +735,7 @@ router.post("/send-message-patient/:id", upload.single("file"), (req, res) => {
           message,
           schedule_id,
           currentDate,
-          sender
+          sender,
         ];
       }
 
