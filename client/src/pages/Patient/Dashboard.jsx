@@ -13,6 +13,7 @@ import {
   setAppointmentStatus,
   handleSetRating,
   changeSchedule,
+  getHistory,
 } from "../../api/patients";
 import LoadingScreen from "../../Loader/LoadingScreen";
 import ConfirmationModal from "../../components/common/ConfirmationModal";
@@ -29,7 +30,8 @@ const Dashboard = () => {
   const [experienceModal, setExperienceModal] = useState(false);
   const [rating, setRating] = useState("");
   const [scheduleId, setScheduleId] = useState("");
-  const [change, setChange] = useState(false); //;<
+  const [change, setChange] = useState(false);
+  const [history, setHistory] = useState([]);
 
   const handleExperienceModal = () => {
     setExperienceModal(true);
@@ -79,6 +81,10 @@ const Dashboard = () => {
     const result = await retrieveSchedule(data.id);
     setScheduleData(result);
   };
+  const fetchHistory = async () => {
+    const result = await getHistory(data.id);
+    setHistory(result);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -87,6 +93,7 @@ const Dashboard = () => {
     setLoading(false);
     console.log(scheduleData);
     scheduleData ? updateAppointmentStatus() : [];
+    fetchHistory();
   }, [scheduleData]);
 
   const handleCancel = async () => {
@@ -203,7 +210,7 @@ const Dashboard = () => {
               </div>
 
               {/* History */}
-              <div className="bg-white p-4 rounded-lg shadow col-span-1 md:col-span-2">
+              <div className="bg-white p-4 rounded-lg shadow col-span-1 md:col-span-2 h-64 overflow-y-auto">
                 <h2 className="font-semibold mb-4">History</h2>
                 <table className="w-full text-left border-collapse">
                   <thead>
@@ -214,16 +221,21 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="border-b p-2">08-05-2024</td>
-                      <td className="border-b p-2">Dr. Hyahay</td>
-                      <td className="border-b p-2">Psychologist</td>
-                    </tr>
-                    <tr>
-                      <td className="border-b p-2">06-05-2024</td>
-                      <td className="border-b p-2">Dr. Hyahay</td>
-                      <td className="border-b p-2">Psychologist</td>
-                    </tr>
+                    {history
+                      ? history.map((entry, index) => (
+                          <tr key={index}>
+                            <td className="border-b p-2">
+                              {new Date(entry.session_end).toLocaleDateString()}
+                            </td>
+                            <td className="border-b p-2">
+                              {entry.professional_firstname +
+                                " " +
+                                entry.professional_lastname}
+                            </td>
+                            <td className="border-b p-2">{entry.type}</td>
+                          </tr>
+                        ))
+                      : []}
                   </tbody>
                 </table>
               </div>

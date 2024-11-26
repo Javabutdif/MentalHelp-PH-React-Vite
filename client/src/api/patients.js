@@ -532,3 +532,29 @@ export const changeSchedule = async (id) => {
     return null;
   }
 };
+
+///get-history
+
+export const getHistory = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-history/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log(response.data.data);
+      return response.data.data;
+    } else {
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+
+    return null;
+  }
+};

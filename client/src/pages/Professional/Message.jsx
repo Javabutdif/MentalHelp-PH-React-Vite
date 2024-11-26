@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getInformationData } from "../../authentication/authentication";
 import { fetchMessage, sendMessage } from "../../api/patients";
-import { retrieveScheduleActive } from "../../api/professionals";
+import {
+  retrieveScheduleActive,
+  handleStartSession,
+  fetchSession,
+  handleEndSession,
+} from "../../api/professionals";
 import { FaPaperclip } from "react-icons/fa";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -17,6 +22,7 @@ const Message = () => {
   const [chatId, setChatId] = useState("");
   const [patientId, setPatientId] = useState("");
   const [professionalId, setProfessionalId] = useState("");
+  const [session, setSession] = useState(false);
   const regex = /(https:\/\/meet\.google\.com\/[a-zA-Z0-9\-]+)/;
 
   const fetchSchedule = async () => {
@@ -29,6 +35,7 @@ const Message = () => {
       const result = await fetchMessage(chatId);
       console.log(result);
       setMessages(result || []); // Ensure result is an array
+      fetchCurrentSession();
     }
   };
 
@@ -39,6 +46,12 @@ const Message = () => {
     }
     console.log(scheduleData);
   }, [chatId]);
+
+  const fetchCurrentSession = async () => {
+    if (await fetchSession(chatId)) {
+      setSession(true);
+    }
+  };
 
   const handlePersonClick = (person, id, patientid, professionalid) => {
     setSelectedPerson(person);
@@ -141,6 +154,7 @@ const Message = () => {
 
     try {
       await sendMessage(formData, chatId);
+      startSessionApi();
       fetchConversation();
       setMessage("");
       setFile(null);
@@ -150,6 +164,49 @@ const Message = () => {
     fetchConversation();
     setMessage("");
     setFile(null);
+  };
+
+  const handleEndSessionMessage = async () => {
+    const formData = new FormData();
+    formData.append("patient_id", patientId);
+    formData.append("professional_id", professionalId);
+    formData.append("message", "Session Ended!");
+    formData.append("sender", user.id);
+
+    try {
+      await sendMessage(formData, chatId);
+
+      fetchConversation();
+      setMessage("");
+      setFile(null);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+    fetchConversation();
+    setMessage("");
+    setFile(null);
+  };
+
+  const startSessionApi = async () => {
+    const formData = new FormData();
+    formData.append("patient_id", patientId);
+    formData.append("professional_id", professionalId);
+    formData.append("schedule_id", chatId);
+
+    try {
+      await handleStartSession(formData);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  const handleEndSessionApi = async () => {
+    try {
+      await handleEndSession(chatId);
+      handleEndSessionMessage();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -206,11 +263,14 @@ const Message = () => {
                   >
                     <div
                       className={`max-w-xs px-4 py-2 rounded-lg ${
-                         msg.sender === user.id &&
-                            msg.message_content === "Session Started!"
-                          ? "bg-green-500 text-white" : 
-                          msg.sender === user.id ? "bg-blue-500 text-white"
-                          
+                        msg.sender === user.id &&
+                        msg.message_content === "Session Started!"
+                          ? "bg-green-500 text-white"
+                          : msg.sender === user.id &&
+                            msg.message_content === "Session Ended!"
+                          ? "bg-red-500 text-white"
+                          : msg.sender === user.id
+                          ? "bg-blue-500 text-white"
                           : "bg-gray-300 text-black"
                       }`}
                     >
@@ -259,12 +319,26 @@ const Message = () => {
               </div>
             )}
             <div className="flex flex-row items-center pb-2 gap-2">
-              <button
-                onClick={() => handleSession()}
-                className="bg-green-600 text-white p-2 rounded-sm"
-              >
-                Start Session
-              </button>
+              {!session ? (
+                <>
+                  <button
+                    onClick={() => handleSession()}
+                    className="bg-green-600 text-white p-2 rounded-sm"
+                  >
+                    Start Session
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleEndSessionApi()}
+                    className="bg-red-600 text-white p-2 rounded-sm"
+                  >
+                    End Session
+                  </button>
+                </>
+              )}
+
               <button
                 onClick={() => handleSendPayment()}
                 className="bg-blue-600 text-white p-2 rounded-sm"

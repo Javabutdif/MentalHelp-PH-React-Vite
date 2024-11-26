@@ -146,7 +146,13 @@ const Message = () => {
                   >
                     <div
                       className={`max-w-xs px-4 py-2 rounded-lg ${
-                        msg.sender === user.id
+                        msg.sender !== user.id &&
+                        msg.message_content === "Session Started!"
+                          ? "bg-green-500 text-white"
+                          : msg.sender !== user.id &&
+                            msg.message_content === "Session Ended!"
+                          ? "bg-red-500 text-white"
+                          : msg.sender === user.id
                           ? "bg-blue-500 text-white"
                           : "bg-gray-300 text-black"
                       }`}

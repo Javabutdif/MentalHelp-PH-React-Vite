@@ -681,7 +681,6 @@ router.post("/send-message-patient/:id", upload.single("file"), (req, res) => {
   const { id: schedule_id } = req.params;
   const { patient_id, professional_id, message, sender } = req.body;
   const currentDate = new Date();
-  
 
   // Determine if the sender is the patient or the professional
   const isPatientSender = sender === patient_id;
@@ -825,6 +824,37 @@ router.put("/change-schedule/:id", (req, res) => {
         .status(200)
         .json({ message: "Request to change schedule successful" });
     }
+  });
+});
+
+router.get("/get-history/:id", (req, res) => {
+  const { id } = req.params;
+
+  const query = `
+    SELECT session.session_id, session.session_start, session.session_end,
+           patient.firstname AS patient_firstname , patient.lastname AS patient_lastname, 
+           mental_health_professionals.firstname AS professional_firstname,
+                mental_health_professionals.lastname AS professional_lastname, 
+           mental_health_professionals.type,
+           session.status
+    FROM session
+    INNER JOIN patient ON patient.patient_id = session.patient_id
+    INNER JOIN mental_health_professionals ON mental_health_professionals.professional_id = session.professional_id WHERE session.patient_id = ? AND session.status = ? ;
+  `;
+
+  db.query(query, [id, "Completed"], (error, result) => {
+    if (error) {
+      console.error("Error fetching messages:", error);
+      return res
+        .status(500)
+        .json({ message: "An error occurred while fetching history." });
+    }
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "No history" });
+    }
+    console.log(result);
+    res.status(200).json({ data: result });
   });
 });
 
