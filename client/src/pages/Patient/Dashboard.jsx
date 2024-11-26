@@ -28,7 +28,7 @@ const Dashboard = () => {
   const [cancelData, setCancelData] = useState("");
   const [scheduleData, setScheduleData] = useState([]);
   const [experienceModal, setExperienceModal] = useState(false);
-  const [rating, setRating] = useState("");
+  const [rating, setRating] = useState("5");
   const [scheduleId, setScheduleId] = useState("");
   const [change, setChange] = useState(false);
   const [history, setHistory] = useState([]);

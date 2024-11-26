@@ -31,7 +31,7 @@ const Dashboard = () => {
   const [viewAppointments, setViewAppointments] = useState(false);
   const [patientId, setPatientId] = useState("");
   const [experienceModal, setExperienceModal] = useState(false);
-  const [rating, setRating] = useState("");
+  const [rating, setRating] = useState("5");
   const [schedule, setSchedule] = useState([]);
   const [viewCancelModal, setCancelModal] = useState(false);
   const [reason, setReason] = useState("");

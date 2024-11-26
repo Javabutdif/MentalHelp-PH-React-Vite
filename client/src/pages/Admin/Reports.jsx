@@ -132,12 +132,14 @@ const Reports = () => {
           { label: "Date", key: "date" },
         ];
 
-  const csvData = reportData.map((row) => ({
-    ...row,
-    firstname_lastname: `${row.firstname} ${row.lastname}`,
-    patient_name: `${row.patient_firstname} ${row.patient_lastname}`,
-    professional_name: `${row.professional_firstname} ${row.professional_lastname}`,
-  }));
+  const csvData = reportData
+    ? reportData.map((row) => ({
+        ...row,
+        firstname_lastname: `${row.firstname} ${row.lastname}`,
+        patient_name: `${row.patient_firstname} ${row.patient_lastname}`,
+        professional_name: `${row.professional_firstname} ${row.professional_lastname}`,
+      }))
+    : [];
 
   return (
     <div className="p-6 space-y-6 pt-28">
