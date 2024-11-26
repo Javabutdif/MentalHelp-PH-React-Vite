@@ -799,4 +799,21 @@ router.get("/get-session-report", (req, res) => {
   });
 });
 
+router.get("/get-professional-history/:id", (req, res) => {
+	const { id } = req.params;
+	console.log(id);
+	const query =
+		"SELECT patient.firstname, patient.lastname, patient.age, patient.gender, patient_details.mental_issues, schedule.schedule_date FROM patient INNER JOIN patient_details ON patient_details.patient_id = patient.patient_id INNER JOIN schedule ON schedule.patient_id = patient.patient_id WHERE schedule.professional_id = ? ";
+
+	db.query(query, [id], (error, result) => {
+		if (error) {
+			console.error(error);
+		}
+		console.log(result);
+		if (result.length > 0) {
+			res.status(200).json({ data: result });
+		}
+	});
+});
+
 module.exports = router;

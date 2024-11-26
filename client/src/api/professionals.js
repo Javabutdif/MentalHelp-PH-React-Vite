@@ -895,3 +895,32 @@ export const getSessionReport = async () => {
     return null;
   }
 };
+
+
+//get-professional-history
+
+export const getProfessionalHistory = async (id) => {
+	try {
+		const response = await axios.get(
+			`${Server_Connection()}/api/get-professional-history/${id}`,
+			{
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}
+		);
+		if (response.status === 200) {
+			console.log(response.data.data);
+			return response.data.data;
+		} else {
+			showToast("error", response.data.message);
+		}
+	} catch (error) {
+		console.error(
+			"Error:",
+			error.response?.data?.message || "An error occurred"
+		);
+		showToast("error", error.response?.data?.message || "An error occurred");
+		return null;
+	}
+};
