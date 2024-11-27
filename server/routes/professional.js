@@ -803,9 +803,9 @@ router.get("/get-professional-history/:id", (req, res) => {
 	const { id } = req.params;
 	console.log(id);
 	const query =
-		"SELECT patient.firstname, patient.lastname, patient.age, patient.gender, patient_details.mental_issues, schedule.schedule_date FROM patient INNER JOIN patient_details ON patient_details.patient_id = patient.patient_id INNER JOIN schedule ON schedule.patient_id = patient.patient_id WHERE schedule.professional_id = ? ";
+		"SELECT patient.firstname, patient.lastname, patient.age, patient.gender, patient_details.mental_issues, schedule.schedule_date FROM patient INNER JOIN patient_details ON patient_details.patient_id = patient.patient_id INNER JOIN schedule ON schedule.patient_id = patient.patient_id INNER JOIN matching on matching.professional_id = schedule.professional_id  WHERE schedule.professional_id = ? AND schedule.status = ? AND matching.match_status = ?";
 
-	db.query(query, [id], (error, result) => {
+	db.query(query, [id, "Complete", "Accept"], (error, result) => {
 		if (error) {
 			console.error(error);
 		}

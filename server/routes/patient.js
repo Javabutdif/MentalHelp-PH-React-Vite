@@ -360,7 +360,7 @@ router.post("/request-match", async (req, res) => {
   const { id, issues, age, professional_id, description } = req.body;
 
   const getMatchingDataQuery =
-    "SELECT match_id FROM matching WHERE professional_id = ? AND patient_id = ? AND match_status != ? ";
+		"SELECT match_id FROM matching WHERE professional_id = ? AND patient_id = ? AND match_status = ? ";
   const insertPatientDetailsQuery =
     "INSERT INTO patient_details (patient_id, mental_issues, age , description) VALUES (?, ?, ?, ?)";
   const insertMatchingQuery =

@@ -38,7 +38,9 @@ const Dashboard = () => {
 	const [reason, setReason] = useState("");
 	const [schedId, setSchedId] = useState("");
 	const [declineModal, setDeclineModal] = useState(false);
-	const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState([]);
+	const [changeSched, setChangeSched] = useState(false);
+	const [changeSchedId, setChangeSchedId] = useState("");
 
 	const handleExperienceModal = () => {
 		setExperienceModal(true);
@@ -162,6 +164,10 @@ const Dashboard = () => {
 			handleHideDeclineModal();
 		}
 	};
+	const handleChangeSchedule = async (id) => {
+		setChangeSched(true);
+		setChangeSchedId(id);
+	};
 
 	return (
 		<div className="container mx-auto p-4 pt-28">
@@ -251,7 +257,7 @@ const Dashboard = () => {
 											<div className="flex gap-3">
 												<button
 													onClick={() =>
-														handleConfirmChange(scheduleMap.schedule_id)
+														handleChangeSchedule(scheduleMap.schedule_id)
 													}
 													className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
 													Change Schedule
@@ -403,6 +409,15 @@ const Dashboard = () => {
 						person="schedule"
 						onSubmit={() => declineRequestApi()}
 						onCancel={handleHideDeclineModal}
+					/>
+				</>
+			)}
+			{changeSched && (
+				<>
+					<AppointmentModal
+						schedule_id={changeSchedId}
+						isOpen={true}
+						closeModal={() => setChangeSched(false)}
 					/>
 				</>
 			)}
