@@ -215,7 +215,9 @@ function Professional() {
                 : "bg-yellow-200 text-yellow-800"
             }`}
           >
-            {row.professional_status}
+            {row.professional_status === "Delete"
+              ? "Deactivated"
+              : row.professional_status}
           </span>
         </div>
       ),
@@ -250,7 +252,7 @@ function Professional() {
               />
               <FormButton
                 type="button"
-                text="Delete"
+                text="Deactivate"
                 icon={<FaTrash />}
                 onClick={() => handleDeleteModal(row.professional_id)}
                 styles="flex items-center space-x-2 bg-gray-200 text-red-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-red-400"
@@ -308,7 +310,7 @@ function Professional() {
               />
               <FormButton
                 type="button"
-                text="Recover"
+                text="Reactivate"
                 onClick={() => handleRecoverModal(row.professional_id)}
                 icon={<FaBriefcase />}
                 styles="flex items-center space-x-2 bg-gray-200 text-green-800 rounded-md px-3 py-1.5 transition duration-150 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
@@ -381,7 +383,7 @@ function Professional() {
             )}
             {deleteModal && (
               <ConfirmationModal
-                type="Delete"
+                type="Deactivate"
                 person="Professional"
                 onCancel={handleHideDeleteModal}
                 onSubmit={handleDeleteProfessionals}
@@ -389,7 +391,7 @@ function Professional() {
             )}
             {recoverModal && (
               <ConfirmationModal
-                type="Recover"
+                type="Reactivate"
                 person="Professional"
                 onCancel={handleHideRecoverModal}
                 onSubmit={handleRecoverProfessional}

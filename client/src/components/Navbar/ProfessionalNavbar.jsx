@@ -9,7 +9,7 @@ import {
   FaBars,
   FaPowerOff,
 } from "react-icons/fa";
-import { FaPeopleGroup } from "react-icons/fa6";
+import { FaHistory } from "react-icons/fa";
 import { IoPersonSharp } from "react-icons/io5";
 import { IoMdSettings } from "react-icons/io";
 
@@ -57,6 +57,11 @@ function ProfessionalNavbar() {
         } lg:flex space-x-8 pr-20 font-bold`}
       >
         <ul className="flex space-x-8 items-center">
+          <li>
+            <Link to="/professional/history">
+              <FaHistory className="text-2xl" />
+            </Link>
+          </li>
           <li>
             <Link
               to="/professional/messages"

@@ -3,7 +3,7 @@ import { confirmationType, confirmationWords } from "./enums";
 
 function ConfirmationModal({ type, person, onSubmit, onCancel }) {
   const confirmButtonColor =
-    type === confirmationType.RECOVER
+    type === confirmationType.REACTIVATE
       ? "bg-green-500 hover:bg-green-800"
       : type === confirmationType.ACCEPT || type === confirmationType.REQUEST
       ? "bg-blue-500 hover:bg-blue-800"

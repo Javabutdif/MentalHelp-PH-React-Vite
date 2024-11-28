@@ -614,6 +614,52 @@ router.get("/get-appointments-active-professional/:id", (req, res) => {
   });
 });
 
+//get-appointments-history-professional
+
+router.get("/get-appointments-history-professional/:id", (req, res) => {
+  const { id } = req.params;
+  const query =
+    "SELECT * FROM schedule WHERE professional_id = ? AND status = ? ORDER BY schedule_date ASC";
+
+  db.query(query, [id, "Complete"], (error, results) => {
+    if (error)
+      return res.status(400).json({ message: "Error getting the schedule" });
+    if (results.length === 0)
+      return res
+        .status(404)
+        .json({ message: "No schedule found for this patient" });
+
+    const patientId = [...new Set(results.map((item) => item.patient_id))];
+    const patientQuery = `SELECT patient_id, firstname, lastname FROM patient WHERE patient_id IN (?)`;
+
+    db.query(patientQuery, [patientId], (error, patients) => {
+      if (error)
+        return res
+          .status(500)
+          .json({ message: "Error getting professional names" });
+
+      const patientMap = {};
+      patients.forEach((patient) => {
+        patientMap[
+          patient.patient_id
+        ] = `${patient.firstname} ${patient.lastname}`;
+      });
+
+      const scheduleData = results.map((schedule) => ({
+        schedule_id: schedule.schedule_id,
+        patient_id: schedule.patient_id,
+        professional_id: schedule.professional_id,
+        schedule_date: schedule.schedule_date,
+        schedule_time: schedule.schedule_time,
+        status: schedule.status,
+        patient_name: patientMap[schedule.patient_id] || "Unknown",
+      }));
+      console.log(scheduleData);
+      res.status(200).json({ data: scheduleData });
+    });
+  });
+});
+
 //set-rating-professionals
 
 router.post("/set-rating-professionals/:id", (req, res) => {
@@ -736,7 +782,6 @@ router.put("/end-session/:id", (req, res) => {
   const query =
     "UPDATE session SET session_end = ? , status = ? WHERE schedule_id = ?  ";
   const scheduleQuery = "UPDATE schedule SET status = ? WHERE schedule_id = ?";
-  
 
   db.query(query, [currentDate, "Completed", id], (error, result) => {
     if (error) {
@@ -800,20 +845,20 @@ router.get("/get-session-report", (req, res) => {
 });
 
 router.get("/get-professional-history/:id", (req, res) => {
-	const { id } = req.params;
-	console.log(id);
-	const query =
-		"SELECT patient.firstname, patient.lastname, patient.age, patient.gender, patient_details.mental_issues, schedule.schedule_date FROM patient INNER JOIN patient_details ON patient_details.patient_id = patient.patient_id INNER JOIN schedule ON schedule.patient_id = patient.patient_id INNER JOIN matching on matching.professional_id = schedule.professional_id  WHERE schedule.professional_id = ? AND schedule.status = ? AND matching.match_status = ?";
+  const { id } = req.params;
+  console.log(id);
+  const query =
+    "SELECT patient.firstname, patient.lastname, patient.age, patient.gender, patient_details.mental_issues, schedule.schedule_date FROM patient INNER JOIN patient_details ON patient_details.patient_id = patient.patient_id INNER JOIN schedule ON schedule.patient_id = patient.patient_id INNER JOIN matching on matching.professional_id = schedule.professional_id  WHERE schedule.professional_id = ? AND schedule.status = ? AND matching.match_status = ?";
 
-	db.query(query, [id, "Complete", "Accept"], (error, result) => {
-		if (error) {
-			console.error(error);
-		}
-		console.log(result);
-		if (result.length > 0) {
-			res.status(200).json({ data: result });
-		}
-	});
+  db.query(query, [id, "Complete", "Accept"], (error, result) => {
+    if (error) {
+      console.error(error);
+    }
+    console.log(result);
+    if (result.length > 0) {
+      res.status(200).json({ data: result });
+    }
+  });
 });
 
 module.exports = router;

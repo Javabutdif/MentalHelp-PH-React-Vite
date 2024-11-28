@@ -620,6 +620,32 @@ export const retrieveScheduleActive = async (id) => {
   }
 };
 
+
+export const retrieveScheduleHistory = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-appointments-history-professional/${id}"`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      return response.data.data;
+    } else {
+      console.log("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+
+    return null;
+  }
+};
+
+
 export const handleSetRating = async (rating, id) => {
   try {
     const response = await axios.post(

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getInformationData } from "../../authentication/authentication";
 import { fetchMessage, sendMessage } from "../../api/patients";
 import {
-  retrieveScheduleActive,
+  retrieveScheduleHistory,
   handleStartSession,
   fetchSession,
   handleEndSession,
@@ -12,7 +12,7 @@ import { IoArrowBackCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { IoIosSend } from "react-icons/io";
 
-const Message = () => {
+const History = () => {
   const user = getInformationData();
   const [scheduleData, setScheduleData] = useState([]);
   const [selectedPerson, setSelectedPerson] = useState("");
@@ -22,12 +22,13 @@ const Message = () => {
   const [chatId, setChatId] = useState("");
   const [patientId, setPatientId] = useState("");
   const [professionalId, setProfessionalId] = useState("");
+  const [scheduleDate, setScheduleDate] = useState("");
   const [session, setSession] = useState(false);
   const regex = /(https:\/\/meet\.google\.com\/[a-zA-Z0-9\-]+)/;
   const [endSessionTrigger, setEndSessionTrigger] = useState(false);
 
   const fetchSchedule = async () => {
-    const result = await retrieveScheduleActive(user.id);
+    const result = await retrieveScheduleHistory(user.id);
     setScheduleData(result ? result : []);
   };
 
@@ -54,11 +55,12 @@ const Message = () => {
     }
   };
 
-  const handlePersonClick = (person, id, patientid, professionalid) => {
+  const handlePersonClick = (person, id, patientid, professionalid, date) => {
     setSelectedPerson(person);
     setChatId(id);
     setPatientId(patientid);
     setProfessionalId(professionalid);
+    setScheduleDate(date);
     fetchConversation();
   };
 
@@ -231,11 +233,15 @@ const Message = () => {
                   person.patient_name,
                   person.schedule_id,
                   person.patient_id,
-                  person.professional_id
+                  person.professional_id,
+                  person.schedule_date
                 )
               }
             >
-              {person.patient_name}
+              {person.patient_name +
+                " (" +
+                new Date(person.schedule_date).toLocaleDateString() +
+                ")"}
             </li>
           ))}
         </ul>
@@ -245,7 +251,7 @@ const Message = () => {
         {selectedPerson ? (
           <div>
             <h2 className="font-bold text-xl mb-4">
-              Chat with {selectedPerson}
+              Chat History with {selectedPerson}
             </h2>
             <div></div>
 
@@ -315,69 +321,6 @@ const Message = () => {
                 ))
               )}
             </div>
-            {file && (
-              <div className="mb-4">
-                <img src={file} alt="Preview" className="max-h-16 rounded-lg" />
-              </div>
-            )}
-            <div className="flex flex-row items-center pb-2 gap-2">
-              {!session ? (
-                <>
-                  <button
-                    onClick={() => handleSession()}
-                    className="bg-green-600 text-white p-2 rounded-sm"
-                  >
-                    Start Session
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => handleEndSessionApi()}
-                    className="bg-red-600 text-white p-2 rounded-sm disabled:bg-red-300 disabled:cursor-not-allowed"
-                    disabled={!endSessionTrigger}
-                  >
-                    End Session
-                  </button>
-                </>
-              )}
-
-              <button
-                onClick={() => handleSendPayment()}
-                className="bg-blue-600 text-white p-2 rounded-sm"
-              >
-                Send QR Code
-              </button>
-            </div>
-            <div className="flex items-center space-x-2 mb-4">
-              <input
-                type="file"
-                id="fileInput"
-                onChange={handleFileChange}
-                style={{ display: "none" }}
-              />
-
-              <button
-                onClick={handleAttachmentClick}
-                className="text-gray-500 hover:text-blue-500"
-              >
-                <FaPaperclip size={20} />
-              </button>
-              <textarea
-                className="w-full p-2 border border-gray-300 rounded"
-                value={message}
-                onChange={handleMessageChange}
-                rows="3"
-                placeholder="Type your message here..."
-              />
-              <button
-                onClick={() => handleSendMessage()}
-                type="submit"
-                className="bg-green-500 text-white py-2 px-4 rounded"
-              >
-                <IoIosSend className="text-3xl" />
-              </button>
-            </div>
           </div>
         ) : (
           <p className="text-center text-gray-500">
@@ -389,4 +332,4 @@ const Message = () => {
   );
 };
 
-export default Message;
+export default History;

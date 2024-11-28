@@ -277,6 +277,21 @@ function ProfessionalRegister({ onCancel, type, id }) {
             </select>
           </div>
           <div>
+            <label htmlFor="profession" className="block text-sm font-medium">
+              Specialization
+            </label>
+            <select
+              id="profession"
+              name="profession"
+              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
+              value={formData.profession}
+              onChange={handleChange}
+            >
+              <option value="Psychologist">Psychologist</option>
+              <option value="Psychiatrist">Psychiatrist</option>
+            </select>
+          </div>
+          <div>
             <label htmlFor="experience" className="block text-sm font-medium">
               Years of Experience
             </label>

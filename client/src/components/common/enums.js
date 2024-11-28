@@ -6,6 +6,8 @@ export const confirmationType = Object.freeze({
   REQUEST: "Request",
   CANCEL: "Cancel",
   CHANGE: "Change",
+  DEACTIVATE: "Deactivate",
+  REACTIVATE: "Reactivate",
 });
 
 export const confirmationWords = Object.freeze({
@@ -16,4 +18,6 @@ export const confirmationWords = Object.freeze({
   Request: "request",
   Cancel: "cancel",
   Change: "change",
+  Deactivate: "deactivate",
+  Reactivate: "reactivate",
 });
