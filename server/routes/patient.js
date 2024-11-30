@@ -854,7 +854,9 @@ router.get("/get-history/:id", (req, res) => {
 
   const query = `
     SELECT session.session_id, session.session_start, session.session_end,
-           patient.firstname AS patient_firstname , patient.lastname AS patient_lastname, 
+          patient.patient_id,
+           patient.firstname AS patient_firstname , patient.lastname AS patient_lastname,
+           mental_health_professionals.professional_id,
            mental_health_professionals.firstname AS professional_firstname,
                 mental_health_professionals.lastname AS professional_lastname, 
            mental_health_professionals.type,
