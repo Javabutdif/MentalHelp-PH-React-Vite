@@ -10,6 +10,7 @@ import { FaPaperclip } from "react-icons/fa";
 import { IoArrowBackCircle } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { IoIosSend } from "react-icons/io";
+import { MdDownload } from "react-icons/md";
 
 const Message = () => {
   const user = getInformationData();
@@ -199,11 +200,23 @@ const Message = () => {
                               {msg.message_content.match(regexGoogleMeet)[0]}
                             </a>
                           ) : msg.message_content.match(regexImage) ? (
-                            <img
-                              src={msg.message_content}
-                              alt="Message Content"
-                              className="max-w-full h-auto"
-                            />
+                            <a
+                              href={msg.message_content}
+                              download="downloaded_image.jpg" // This will save the file as 'downloaded_image.jpg'
+                              className="flex flex-col items-center"
+                            >
+                              {/* Image */}
+                              <img
+                                src={msg.message_content}
+                                alt="Message Content"
+                                className="max-w-full h-auto"
+                              />
+
+                              {/* Download Icon */}
+                              <span className="mt-2 text-blue-500 hover:text-blue-700">
+                                <MdDownload size={24} />
+                              </span>
+                            </a>
                           ) : /\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i.test(
                               msg.message_content
                             ) ? (
