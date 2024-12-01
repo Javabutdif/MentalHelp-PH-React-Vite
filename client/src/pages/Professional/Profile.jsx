@@ -72,6 +72,9 @@ const Profile = () => {
             <p className="text-gray-700">Email: {data.email}</p>
             <p className="text-gray-700">Phone: {data.contact_number}</p>
             <p className="text-gray-700">Profession: {data.type}</p>
+            <p className="text-gray-700">
+              Specialization: {data.specialization}
+            </p>
             <button onClick={handleEditModal} className="mt-4 border px-4 py-2">
               Edit Information
             </button>

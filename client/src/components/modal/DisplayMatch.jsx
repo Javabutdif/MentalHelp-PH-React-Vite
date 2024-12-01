@@ -24,7 +24,7 @@ const DisplayMatch = ({ onRequestMatch, onSearch, data, onClose }) => {
     <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
         <div className="text-center">
-          <p className="text-xl font-bold">YOU ARE MATCHED WITH</p>
+          <p className="text-xl font-bold">YOU ARE MATCHED WITH </p>
           <div className="flex justify-center my-4">
             <img
               src={!data.photo ? "https://via.placeholder.com/100" : data.photo}
@@ -35,6 +35,7 @@ const DisplayMatch = ({ onRequestMatch, onSearch, data, onClose }) => {
           <p className="text-xl font-semibold">
             Dr. {data.firstname + " " + data.lastname}
           </p>
+          <p>{data.type}</p>
           <a
             onClick={handleViewBackground} // Call the function directly
             className="text-blue-500 hover:underline"

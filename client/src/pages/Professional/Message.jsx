@@ -139,7 +139,7 @@ const Message = () => {
     formData.append("professional_id", professionalId);
     formData.append(
       "message",
-      "The total cost will be ₱" + (user.service_fee + 60)
+      "The total cost will be ₱" + (user.service_fee + 100)
     );
     formData.append("sender", user.id);
 

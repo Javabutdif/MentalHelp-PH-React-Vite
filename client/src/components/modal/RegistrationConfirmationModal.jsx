@@ -209,6 +209,17 @@ function RegistrationConfirmationModal({ formData, onSubmit, onCancel, type }) {
                   {formData.profession}
                 </span>
               </div>
+              <div className="flex items-center justify-between gap-15">
+                <div className="flex items-center space-x-3">
+                  <CgProfile className="text-xl text-gray-600" size={19} />
+                  <span className="pt-1 font-medium font-secondary text-lg text-gray-600">
+                    Specialization:
+                  </span>
+                </div>
+                <span className="pt-1 text-gray-900 font-secondary text-lg">
+                  {formData.specialization}
+                </span>
+              </div>
 
               <div className="flex items-center justify-between gap-10">
                 <div className="flex items-center space-x-3">

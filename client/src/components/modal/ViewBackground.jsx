@@ -21,6 +21,10 @@ const ViewBackground = ({ data, onClose }) => {
           )}
           <h1 className="text-xl font-semibold">{`${data.firstname} ${data.lastname}`}</h1>
           <p className="text-gray-500">{data.type}</p>
+          <p className="text-gray-500">
+            <strong>Specialization: </strong>
+            {data.specialization}
+          </p>
         </div>
         <div className="mb-4">
           <h2 className="text-lg font-medium">Contact Information</h2>

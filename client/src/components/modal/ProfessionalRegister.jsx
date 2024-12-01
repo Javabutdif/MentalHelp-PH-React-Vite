@@ -7,6 +7,7 @@ import {
   editProfessional,
 } from "../../api/professionals";
 import Otp from "./Otp";
+import { showToast } from "../utils/alertHelper";
 
 function ProfessionalRegister({ onCancel, type, id }) {
   const [showModal, setShowModal] = useState(false);
@@ -20,6 +21,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
     password: "",
     confirmPassword: "",
     profession: "Psychologist",
+    specialization: "",
     experience: "",
     license: "",
     documents: [],
@@ -33,6 +35,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
       ...formData,
       [name]: files ? files[0] : value,
     });
+    console.log(formData);
   };
 
   useEffect(() => {
@@ -49,6 +52,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
             license: response[0].license,
             experience: response[0].experience,
             profession: response[0].type,
+            specialization: response[0].specialization,
             contact: response[0].contact_number,
             bio: response[0].bio,
             address: response[0].address,
@@ -79,6 +83,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
       password: "",
       confirmPassword: "",
       profession: "",
+      specialization: "",
       experience: "",
       license: "",
       documents: [],
@@ -276,21 +281,48 @@ function ProfessionalRegister({ onCancel, type, id }) {
               <option value="Psychiatrist">Psychiatrist</option>
             </select>
           </div>
-          <div>
-            <label htmlFor="profession" className="block text-sm font-medium">
-              Specialization
-            </label>
-            <select
-              id="profession"
-              name="profession"
-              className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
-              value={formData.profession}
-              onChange={handleChange}
-            >
-              <option value="Psychologist">Psychologist</option>
-              <option value="Psychiatrist">Psychiatrist</option>
-            </select>
-          </div>
+          {formData.profession === "Psychologist" ? (
+            <>
+              <div>
+                <label htmlFor="special" className="block text-sm font-medium">
+                  Specialization
+                </label>
+                <select
+                  id="specialization"
+                  name="specialization"
+                  className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
+                  value={formData.specialization}
+                  onChange={handleChange}
+                >
+                  <option value="Counseling">Counseling</option>
+                  <option value="Social">Social</option>
+                  <option value="Health">Health</option>
+                </select>
+              </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <label htmlFor="special" className="block text-sm font-medium">
+                  Specialization
+                </label>
+                <select
+                  id="specialization"
+                  name="specialization"
+                  className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
+                  value={formData.specialization}
+                  onChange={handleChange}
+                >
+                  <option value="Geriatric">Geriatric</option>
+                  <option value="Child and adolescent">
+                    Child and adolescent
+                  </option>
+                  <option value="Community">Community</option>
+                </select>
+              </div>
+            </>
+          )}
+
           <div>
             <label htmlFor="experience" className="block text-sm font-medium">
               Years of Experience
@@ -341,7 +373,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
                   htmlFor="documents"
                   className="block text-sm font-medium"
                 >
-                  Upload 1 Valid PRC ID
+                  Upload Valid PRC ID or Valid Certificates
                 </label>
                 <input
                   type="file"
@@ -349,6 +381,7 @@ function ProfessionalRegister({ onCancel, type, id }) {
                   name="documents"
                   className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none"
                   onChange={handleChange}
+                  multiple
                 />
               </div>
             </>
