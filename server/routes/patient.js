@@ -360,7 +360,7 @@ router.post("/request-match", async (req, res) => {
   const { id, issues, age, professional_id, description } = req.body;
 
   const getMatchingDataQuery =
-		"SELECT match_id FROM matching WHERE professional_id = ? AND patient_id = ? AND match_status = ? ";
+    "SELECT match_id FROM matching WHERE professional_id = ? AND patient_id = ? AND match_status = ? ";
   const insertPatientDetailsQuery =
     "INSERT INTO patient_details (patient_id, mental_issues, age , description) VALUES (?, ?, ?, ?)";
   const insertMatchingQuery =
@@ -880,6 +880,25 @@ router.get("/get-history/:id", (req, res) => {
     console.log(result);
     res.status(200).json({ data: result });
   });
+});
+
+router.post("/report-professional", (req, res) => {
+  const { patient_id, professional_id, session_id, reason } = req.body;
+  const currentDate = new Date();
+  const query =
+    "INSERT INTO report (patient_id , professional_id, session_id, reason, date, status) VALUES(?,?,?,?,?,?)";
+  db.query(
+    query,
+    [patient_id, professional_id, session_id, reason, currentDate, "Pending"],
+    (error, result) => {
+      if (error) {
+        console.error(error);
+      }
+      if (result.affectedRows > 0) {
+        res.status(200).json({ message: "Successfully submitted report" });
+      }
+    }
+  );
 });
 
 module.exports = router;

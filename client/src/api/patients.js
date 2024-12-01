@@ -558,3 +558,28 @@ export const getHistory = async (id) => {
     return null;
   }
 };
+
+
+export const handleReport = async (data) => {
+  try {
+    const response = await axios.post(
+      `${Server_Connection()}/api/report-professional`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
