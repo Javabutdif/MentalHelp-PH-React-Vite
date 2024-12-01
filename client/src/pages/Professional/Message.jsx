@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
 import { getInformationData } from "../../authentication/authentication";
-import { fetchMessage, sendMessage } from "../../api/patients";
+import { fetchMessage, sendMessage, fetchDiagnosis } from "../../api/patients";
 import {
   retrieveScheduleActive,
   handleStartSession,
   fetchSession,
   handleEndSession,
   handleUploadPrescription,
+  handleDiagnosis,
 } from "../../api/professionals";
 import { FaPaperclip } from "react-icons/fa";
 import { IoArrowBackCircle } from "react-icons/io5";
@@ -28,11 +29,16 @@ const Message = () => {
     /http:\/\/localhost:3000\/[\w\-/]+(?:\.(jpg|jpeg|png|gif|bmp|svg|webp))/i;
   const regexGoogleMeet = /https:\/\/meet\.google\.com\/[a-zA-Z0-9-]+/i;
   const [endSessionTrigger, setEndSessionTrigger] = useState(false);
-  const [diagnosis, setDiagnosis] = useState("");
+  const [diagnosis, setDiagnosis] = useState([]);
+  const [newDiagnosis, setNewDiagnosis] = useState("");
 
   const fetchSchedule = async () => {
     const result = await retrieveScheduleActive(user.id);
     setScheduleData(result ? result : []);
+  };
+  const getDiagnosis = async () => {
+    const result = await fetchDiagnosis(chatId);
+    setDiagnosis(result ? result : []);
   };
 
   const fetchConversation = async () => {
@@ -48,6 +54,7 @@ const Message = () => {
     fetchSchedule();
     if (chatId) {
       fetchConversation();
+      getDiagnosis();
     }
     console.log(scheduleData);
   }, [chatId]);
@@ -214,23 +221,22 @@ const Message = () => {
   };
 
   const handleSaveDiagnosis = async () => {
-    if (!diagnosis.trim()) {
+    if (!newDiagnosis.trim()) {
       alert("Please enter a diagnosis.");
       return;
     }
+    const formData = new FormData();
+    formData.append("patient_id", patientId);
+    formData.append("professional_id", professionalId);
+    formData.append("schedule_id", chatId);
+    formData.append("description", newDiagnosis);
 
     try {
-      // Assuming `saveDiagnosisToDatabase` is a function passed via props to handle backend communication
-      //await saveDiagnosisToDatabase({
-      //personId: selectedPerson.id, // Example: Replace with the actual ID field
-      // diagnosis,
-      //  });
-      alert("Diagnosis saved successfully!");
-      setDiagnosis(""); // Clear textarea after saving
+      await handleDiagnosis(formData);
     } catch (error) {
-      console.error("Error saving diagnosis:", error);
-      alert("Failed to save diagnosis. Please try again.");
+      console.error("Error sending message:", error);
     }
+    getDiagnosis();
   };
 
   const fileInputRef = useRef(null);
@@ -437,13 +443,36 @@ const Message = () => {
       <div className="w-1/4 p-4 bg-gray-200 rounded-lg shadow-md">
         <h2 className="font-bold text-xl mb-4">Diagnosis</h2>
         {selectedPerson ? (
-          <div>
-            <textarea
-              placeholder="Enter diagnosis here..."
-              className="w-full h-40 border border-gray-300 rounded-lg p-2"
-              value={diagnosis}
-              onChange={(e) => setDiagnosis(e.target.value)}
-            />
+          <div className="">
+            {/* Check if diagnosis is an array and map through it */}
+            <div className="text-gray-700 overflow-y-auto max-h-40">
+              {Array.isArray(diagnosis) && diagnosis.length > 0 ? (
+                diagnosis.map((item, index) => (
+                  <div key={index} className="mb-2">
+                    <p>
+                      <strong>Diagnosis:</strong> {item.description}
+                    </p>
+                    <p className="text-sm">
+                      {new Date(item.date).toLocaleDateString()}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p>No diagnosis</p>
+              )}
+            </div>
+            <div>
+              {/* Only allow a single diagnosis input */}
+              <textarea
+                placeholder="Enter diagnosis here..."
+                className="w-full h-40 border border-gray-300 rounded-lg p-2"
+                value={newDiagnosis}
+                for
+                the
+                input
+                onChange={(e) => setNewDiagnosis(e.target.value)}
+              />
+            </div>
             <button
               className="bg-green-500 text-white px-4 py-2 rounded-lg mt-2"
               onClick={handleSaveDiagnosis}

@@ -582,3 +582,30 @@ export const handleReport = async (data) => {
     return null;
   }
 };
+
+
+export const fetchDiagnosis = async (id) => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-diagnosis/${id}`,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log(response.data.data);
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
+};
+

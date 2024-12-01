@@ -903,4 +903,36 @@ router.post(
   }
 );
 
+router.post("/save-diagnosis", (req, res) => {
+  const { patient_id, professional_id, schedule_id, description } = req.body;
+  const currentDate = new Date();
+  const query =
+    "INSERT INTO diagnosis (patient_id, professional_id, schedule_id, description, date) VALUES (?,?,?,?,?)";
+
+  db.query(
+    query,
+    [patient_id, professional_id, schedule_id, description, currentDate],
+    (error, result) => {
+      if (error) {
+        console.error(error);
+      }
+      if (result.affectedRows > 0) {
+        res.status(200).json({ message: "Diagnosis Saved!" });
+      }
+    }
+  );
+});
+router.get("/get-diagnosis/:id", (req, res) => {
+  const { id } = req.params;
+  const query = "SELECT * FROM diagnosis WHERE schedule_id = ? ";
+  db.query(query, [id], (error, result) => {
+    if (error) {
+      console.error(error);
+    }
+    if (result.length > 0) {
+      res.status(200).json({ data: result });
+    }
+  });
+});
+
 module.exports = router;

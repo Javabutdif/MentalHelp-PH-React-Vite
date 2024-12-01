@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useDebugValue, useEffect, useState } from "react";
 import { getInformationData } from "../../authentication/authentication";
 import {
   retrieveScheduleActive,
   sendMessage,
   fetchMessage,
+  fetchDiagnosis,
 } from "../../api/patients";
 import { FaPaperclip } from "react-icons/fa";
 import { IoArrowBackCircle } from "react-icons/io5";
@@ -23,10 +24,15 @@ const Message = () => {
   const regexImage =
     /http:\/\/localhost:3000\/[\w\-/]+(?:\.(jpg|jpeg|png|gif|bmp|svg|webp))/i;
   const regexGoogleMeet = /https:\/\/meet\.google\.com\/[a-zA-Z0-9-]+/i;
+  const [diagnosis, setDiagnosis] = useState([]);
 
   const fetchSchedule = async () => {
     const result = await retrieveScheduleActive(user.id);
     setScheduleData(result);
+  };
+  const getDiagnosis = async () => {
+    const result = await fetchDiagnosis(chatId);
+    setDiagnosis(result ? result : []);
   };
 
   const fetchConversation = async () => {
@@ -41,6 +47,7 @@ const Message = () => {
     fetchSchedule();
     if (chatId) {
       fetchConversation();
+      getDiagnosis();
     }
     console.log(scheduleData);
   }, [chatId]);
@@ -88,6 +95,26 @@ const Message = () => {
       } catch (error) {
         console.error("Error sending message:", error);
       }
+    }
+  };
+
+  const handleSaveDiagnosis = async () => {
+    if (!diagnosis.trim()) {
+      alert("Please enter a diagnosis.");
+      return;
+    }
+
+    try {
+      // Assuming `saveDiagnosisToDatabase` is a function passed via props to handle backend communication
+      //await saveDiagnosisToDatabase({
+      //personId: selectedPerson.id, // Example: Replace with the actual ID field
+      // diagnosis,
+      //  });
+      alert("Diagnosis saved successfully!");
+      setDiagnosis(""); // Clear textarea after saving
+    } catch (error) {
+      console.error("Error saving diagnosis:", error);
+      alert("Failed to save diagnosis. Please try again.");
     }
   };
 
@@ -240,6 +267,39 @@ const Message = () => {
           <p className="text-center text-gray-500">
             Select a person to start chatting
           </p>
+        )}
+      </div>
+      {/* Diagnosis Section */}
+      <div className="w-1/4 p-4 bg-gray-200 rounded-lg shadow-md">
+        <h2 className="font-bold text-xl mb-4">Diagnosis</h2>
+        {selectedPerson ? (
+          <div className="overflow-y-auto max-h-40">
+            {/* Check if diagnosis is an array and map through it */}
+            <div className="text-gray-700">
+              {Array.isArray(diagnosis) && diagnosis.length > 0 ? (
+                diagnosis.map((item, index) => (
+                  <p key={index} className="mb-2">
+                    <p>
+                      <strong>Diagnosis:</strong> {item.description}
+                    </p>
+                    <p className="text-sm">
+                      {new Date(item.date).toLocaleDateString()}
+                    </p>
+                  </p>
+                ))
+              ) : (
+                <p>
+                  {diagnosis.length === 0
+                    ? "No diagnosis available."
+                    : "Loading diagnosis..."}
+                </p>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center text-gray-500">
+            Select a doctor to see your diagnosis.
+          </div>
         )}
       </div>
     </div>
