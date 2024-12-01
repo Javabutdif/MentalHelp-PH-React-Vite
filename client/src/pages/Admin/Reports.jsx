@@ -4,6 +4,7 @@ import {
   getProfessionalActivity,
   fetchFeedbackProfessionals,
   getSessionReport,
+  getReportAdmin,
 } from "../../api/professionals";
 import { fetchFeedbackPatients } from "../../api/patients";
 import DataTable from "react-data-table-component";
@@ -31,6 +32,9 @@ const Reports = () => {
           setReportData(data);
         } else if (selectedReport === "Session") {
           const data = await getSessionReport();
+          setReportData(data);
+        } else if (selectedReport === "Reported") {
+          const data = await getReportAdmin();
           setReportData(data);
         } else {
           setReportData([]);
@@ -60,7 +64,30 @@ const Reports = () => {
       sortable: true,
     },
   ];
-
+  const columnsReported = [
+    { name: "Report Id", selector: (row) => row.report_id, sortable: true },
+    {
+      name: "Patient Name",
+      selector: (row) => row.patient_firstname + " " + row.patient_lastname,
+      sortable: true,
+    },
+    {
+      name: "Professional Name",
+      selector: (row) =>
+        row.professional_firstname + " " + row.professional_lastname,
+      sortable: true,
+    },
+    {
+      name: "Reason",
+      selector: (row) => row.reason,
+      sortable: true,
+    },
+    {
+      name: "Date",
+      selector: (row) => new Date(row.date).toLocaleDateString(),
+      sortable: true,
+    },
+  ];
   const columnsFeedback = [
     { name: "ID", selector: (row) => row.experience_id, sortable: true },
     {
@@ -125,6 +152,13 @@ const Reports = () => {
           { label: "Session End", key: "session_end" },
           { label: "Status", key: "status" },
         ]
+      : selectedReport === "Reported"
+      ? [
+          { label: "Report Id", key: "report_id" },
+          { label: "Patient Name", key: "firstname_lastname" },
+          { label: "Reason", key: "reason" },
+          { label: "Date", key: "date" },
+        ]
       : [
           { label: "Activity ID", key: "activity_id" },
           { label: "Name", key: "firstname_lastname" },
@@ -158,6 +192,7 @@ const Reports = () => {
           <option value="Professional Activity">Professional Activity</option>
           <option value="Feedback Patients">Feedback Patients</option>
           <option value="Feedback Professionals">Feedback Professionals</option>
+          <option value="Reported">Reported Professionals</option>
         </select>
         <CSVLink
           data={csvData}
@@ -177,6 +212,8 @@ const Reports = () => {
               ? columnsFeedback
               : selectedReport === "Session"
               ? columnsSession
+              : selectedReport === "Reported"
+              ? columnsReported
               : columns
           }
           data={reportData}

@@ -975,7 +975,6 @@ export const handleUploadPrescription = async (file) => {
 };
 
 export const handleDiagnosis = async (data) => {
- 
   try {
     const response = await axios.post(
       `${Server_Connection()}/api/save-diagnosis`,
@@ -995,6 +994,60 @@ export const handleDiagnosis = async (data) => {
   } catch (error) {
     console.error("Error:", error.response.data.message);
     showToast("error", error.response.data.message);
+    return null;
+  }
+};
+
+export const getReportCount = async () => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-professional-report`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log("This is report: " + response.data.data);
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+  } catch (error) {
+    console.error(
+      "Error:",
+      error.response?.data?.message || "An error occurred"
+    );
+    showToast("error", error.response?.data?.message || "An error occurred");
+    return null;
+  }
+};
+
+
+
+export const getReportAdmin = async () => {
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-professional-report-admin`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log("This is report: " + response.data.data);
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+  } catch (error) {
+    console.error(
+      "Error:",
+      error.response?.data?.message || "An error occurred"
+    );
+    showToast("error", error.response?.data?.message || "An error occurred");
     return null;
   }
 };

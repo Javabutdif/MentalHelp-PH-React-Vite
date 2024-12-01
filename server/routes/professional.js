@@ -861,6 +861,41 @@ router.get("/get-professional-history/:id", (req, res) => {
     }
   });
 });
+
+router.get("/get-professional-report-admin", (req, res) => {
+  const query = `
+    SELECT
+    report.report_id,
+      patient.firstname AS patient_firstname, 
+      patient.lastname AS patient_lastname, 
+      mental_health_professionals.firstname AS professional_firstname, 
+      mental_health_professionals.lastname AS professional_lastname, 
+      report.reason, 
+      report.date
+    FROM 
+      report
+    JOIN 
+      patient ON report.patient_id = patient.patient_id
+    JOIN 
+      mental_health_professionals ON report.professional_id = mental_health_professionals.professional_id
+  `;
+
+  db.query(query, (error, result) => {
+    if (error) {
+      console.error(error);
+      return res
+        .status(500)
+        .json({ message: "Internal server error", error: error.message });
+    }
+    if (result.length > 0) {
+      console.log(result);
+      res.status(200).json({ data: result });
+    } else {
+      res.status(404).json({ message: "No reports found" });
+    }
+  });
+});
+
 const prescriptionDir = path.join(__dirname, "prescription");
 if (!fs.existsSync(prescriptionDir)) {
   fs.mkdirSync(prescriptionDir, { recursive: true });

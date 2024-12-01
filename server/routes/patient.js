@@ -958,4 +958,29 @@ router.post("/report-professional", (req, res) => {
   );
 });
 
+router.get("/get-professional-report", (req, res) => {
+  const query = `
+    SELECT 
+      CONCAT(mhp.firstname, ' ', mhp.lastname) AS professional_name, 
+      COUNT(r.professional_id) AS professional_count
+    FROM 
+      report r
+    JOIN 
+      mental_health_professionals mhp ON r.professional_id = mhp.professional_id
+    GROUP BY 
+      mhp.firstname, mhp.lastname
+    ORDER BY 
+      professional_count DESC;
+  `;
+
+  db.query(query, (error, result) => {
+    if (error) {
+      console.error(error);
+    }
+    if (result.length > 0) {
+      res.status(200).json({ data: result });
+    }
+  });
+});
+
 module.exports = router;
