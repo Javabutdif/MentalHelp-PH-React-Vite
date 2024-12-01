@@ -10,6 +10,7 @@ const {
   notification,
   notification_professional,
 } = require("../middleware/notification");
+const fs = require("fs");
 
 //Upload File
 const storage = multer.diskStorage({
@@ -860,5 +861,46 @@ router.get("/get-professional-history/:id", (req, res) => {
     }
   });
 });
+const prescriptionDir = path.join(__dirname, "prescription");
+if (!fs.existsSync(prescriptionDir)) {
+  fs.mkdirSync(prescriptionDir, { recursive: true });
+}
+
+const storagePrescription = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, prescriptionDir); // Use the absolute path to save files
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `${uniqueSuffix}-${file.originalname}`); // Save with a unique filename
+  },
+});
+
+const uploadPrescription = multer({ storage: storagePrescription });
+
+router.post(
+  "/upload-prescription",
+  uploadPrescription.single("file"),
+  (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded." });
+      }
+
+      // Access the file
+      const filePath = req.file.path; // Full path of the uploaded file
+      console.log("Uploaded file path:", filePath);
+
+      // Send a success response
+      res.status(200).json({
+        message: "File uploaded successfully.",
+        filePath, // Optional: Send the file path in the response
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ message: "File upload failed." });
+    }
+  }
+);
 
 module.exports = router;

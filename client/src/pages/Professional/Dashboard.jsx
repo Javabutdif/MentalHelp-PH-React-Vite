@@ -93,7 +93,7 @@ const Dashboard = () => {
     fetchSchedule();
     fetchHistory();
     schedule ? updateAppointmentStatus() : [];
-  }, [schedule]);
+  }, []);
 
   const handleCancelRequest = (id) => {
     setMatchId(id);
@@ -211,24 +211,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="flex space-x-4">
-          {/* Statistic Cards */}
-          <div className="bg-white shadow-md rounded-md p-4">
-            <h2 className="text-lg font-semibold">Successful Consultation</h2>
-            <p className="text-2xl font-bold">85</p>
-            <p className="text-sm text-gray-500">by 5 months</p>
-          </div>
-          <div className="bg-white shadow-md rounded-md p-4">
-            <h2 className="text-lg font-semibold">Earnings</h2>
-            <p className="text-2xl font-bold">140K</p>
-            <p className="text-sm text-gray-500">by 5 months</p>
-          </div>
-          <div className="bg-white shadow-md rounded-md p-4">
-            <h2 className="text-lg font-semibold">Total Consultation</h2>
-            <p className="text-2xl font-bold">116</p>
-            <p className="text-sm text-gray-500">by 5 months</p>
-          </div>
-        </div>
+        {/* Statistic Cards */}
       </div>
 
       {/* Main Content */}
@@ -344,34 +327,36 @@ const Dashboard = () => {
         {/* Patient History Section */}
         <div className="col-span-1 md:col-span-2">
           <h3 className="font-semibold mb-2">Patient History</h3>
-          <table className="min-w-full bg-white shadow-md rounded-md">
-            <thead>
-              <tr className="text-left border-b">
-                <th className="py-2 px-4">Name</th>
-                <th className="py-2 px-4">Age</th>
-                <th className="py-2 px-4">Gender</th>
-                <th className="py-2 px-4">Condition</th>
-                <th className="py-2 px-4">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history
-                ? history.map((entry, index) => (
-                    <tr key={index}>
-                      <td className="border-b p-2">
-                        {entry.firstname + " " + entry.lastname}
-                      </td>
-                      <td className="border-b p-2">{entry.age}</td>
-                      <td className="border-b p-2">{entry.gender} </td>
-                      <td className="border-b p-2">{entry.mental_issues}</td>
-                      <td className="border-b p-2">
-                        {new Date(entry.schedule_date).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))
-                : []}
-            </tbody>
-          </table>
+          <div className="overflow-x-auto max-h-96">
+            <table className="min-w-full bg-white shadow-md rounded-md">
+              <thead>
+                <tr className="text-left border-b">
+                  <th className="py-2 px-4">Name</th>
+                  <th className="py-2 px-4">Age</th>
+                  <th className="py-2 px-4">Gender</th>
+                  <th className="py-2 px-4">Condition</th>
+                  <th className="py-2 px-4">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history
+                  ? history.map((entry, index) => (
+                      <tr key={index}>
+                        <td className="border-b p-2">
+                          {entry.firstname + " " + entry.lastname}
+                        </td>
+                        <td className="border-b p-2">{entry.age}</td>
+                        <td className="border-b p-2">{entry.gender}</td>
+                        <td className="border-b p-2">{entry.mental_issues}</td>
+                        <td className="border-b p-2">
+                          {new Date(entry.schedule_date).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))
+                  : []}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <footer className="pt-2">

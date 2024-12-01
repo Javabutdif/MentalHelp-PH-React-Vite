@@ -21,7 +21,6 @@ const Notification = () => {
 
     fetchNotifications();
   }, []);
-
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-6 pt-28">
       <div className="w-full max-w-3xl bg-white shadow-md rounded-lg p-4">
@@ -32,7 +31,7 @@ const Notification = () => {
         ) : error ? (
           <div className="text-red-500">{error}</div>
         ) : notifications ? (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-gray-200 max-h-96 overflow-y-auto">
             {notifications.map((notification) => (
               <li key={notification.notification_id} className="py-4">
                 <div className="text-lg font-medium text-gray-900">

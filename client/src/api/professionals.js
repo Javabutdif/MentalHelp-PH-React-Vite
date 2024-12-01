@@ -620,7 +620,6 @@ export const retrieveScheduleActive = async (id) => {
   }
 };
 
-
 export const retrieveScheduleHistory = async (id) => {
   try {
     const response = await axios.get(
@@ -644,7 +643,6 @@ export const retrieveScheduleHistory = async (id) => {
     return null;
   }
 };
-
 
 export const handleSetRating = async (rating, id) => {
   try {
@@ -922,31 +920,56 @@ export const getSessionReport = async () => {
   }
 };
 
-
 //get-professional-history
 
 export const getProfessionalHistory = async (id) => {
-	try {
-		const response = await axios.get(
-			`${Server_Connection()}/api/get-professional-history/${id}`,
-			{
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}
-		);
-		if (response.status === 200) {
-			console.log(response.data.data);
-			return response.data.data;
-		} else {
-			showToast("error", response.data.message);
-		}
-	} catch (error) {
-		console.error(
-			"Error:",
-			error.response?.data?.message || "An error occurred"
-		);
-		showToast("error", error.response?.data?.message || "An error occurred");
-		return null;
-	}
+  try {
+    const response = await axios.get(
+      `${Server_Connection()}/api/get-professional-history/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.status === 200) {
+      console.log(response.data.data);
+      return response.data.data;
+    } else {
+      showToast("error", response.data.message);
+    }
+  } catch (error) {
+    console.error(
+      "Error:",
+      error.response?.data?.message || "An error occurred"
+    );
+    showToast("error", error.response?.data?.message || "An error occurred");
+    return null;
+  }
+};
+
+export const handleUploadPrescription = async (file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  try {
+    const response = await axios.post(
+      `${Server_Connection()}/api/upload-prescription`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    if (response.status === 200) {
+      showToast("success", response.data.message);
+    } else {
+      showToast("error", response.data.message);
+    }
+    console.log(response.data.message);
+  } catch (error) {
+    console.error("Error:", error.response.data.message);
+    showToast("error", error.response.data.message);
+    return null;
+  }
 };

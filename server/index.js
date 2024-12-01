@@ -14,6 +14,10 @@ const community = require("./routes/community");
 const path = require("path");
 
 app.use("/profile", express.static(path.join(__dirname, "profile")));
+app.use(
+  "/prescription",
+  express.static(path.join(__dirname, "routes", "prescription"))
+);
 app.use(express.json());
 app.use(express.static("public"));
 app.use(bodyParser.json());

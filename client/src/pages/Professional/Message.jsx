@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getInformationData } from "../../authentication/authentication";
 import { fetchMessage, sendMessage } from "../../api/patients";
 import {
@@ -6,6 +6,7 @@ import {
   handleStartSession,
   fetchSession,
   handleEndSession,
+  handleUploadPrescription,
 } from "../../api/professionals";
 import { FaPaperclip } from "react-icons/fa";
 import { IoArrowBackCircle } from "react-icons/io5";
@@ -23,8 +24,11 @@ const Message = () => {
   const [patientId, setPatientId] = useState("");
   const [professionalId, setProfessionalId] = useState("");
   const [session, setSession] = useState(false);
-  const regex = /(https:\/\/meet\.google\.com\/[a-zA-Z0-9\-]+)/;
+  const regexImage =
+    /http:\/\/localhost:3000\/[\w\-/]+(?:\.(jpg|jpeg|png|gif|bmp|svg|webp))/i;
+  const regexGoogleMeet = /https:\/\/meet\.google\.com\/[a-zA-Z0-9-]+/i;
   const [endSessionTrigger, setEndSessionTrigger] = useState(false);
+  const [diagnosis, setDiagnosis] = useState("");
 
   const fetchSchedule = async () => {
     const result = await retrieveScheduleActive(user.id);
@@ -70,7 +74,7 @@ const Message = () => {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFile(URL.createObjectURL(selectedFile));
+      setFile(selectedFile);
     }
   };
 
@@ -84,21 +88,19 @@ const Message = () => {
       formData.append("professional_id", professionalId);
       formData.append("message", message);
       formData.append("sender", user.id);
+
       if (file) {
         formData.append("file", file);
       }
 
       try {
-        await sendMessage(formData, chatId);
-        fetchConversation();
-        setMessage("");
-        setFile(null);
+        await sendMessage(formData, chatId); // Sending the form data with or without file
+        fetchConversation(); // Fetch the updated conversation
+        setMessage(""); // Clear message input
+        setFile(null); // Clear the file
       } catch (error) {
         console.error("Error sending message:", error);
       }
-      fetchConversation();
-      setMessage("");
-      setFile(null);
     }
   };
 
@@ -211,6 +213,40 @@ const Message = () => {
     }
   };
 
+  const handleSaveDiagnosis = async () => {
+    if (!diagnosis.trim()) {
+      alert("Please enter a diagnosis.");
+      return;
+    }
+
+    try {
+      // Assuming `saveDiagnosisToDatabase` is a function passed via props to handle backend communication
+      //await saveDiagnosisToDatabase({
+      //personId: selectedPerson.id, // Example: Replace with the actual ID field
+      // diagnosis,
+      //  });
+      alert("Diagnosis saved successfully!");
+      setDiagnosis(""); // Clear textarea after saving
+    } catch (error) {
+      console.error("Error saving diagnosis:", error);
+      alert("Failed to save diagnosis. Please try again.");
+    }
+  };
+
+  const fileInputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    fileInputRef.current.click(); // Programmatically open the file input
+  };
+
+  const handleFilesChange = async (event) => {
+    const file = event.target.files[0]; // Get the selected file
+    if (file) {
+      // console.log("Selected file:", file);
+      await handleUploadPrescription(file);
+    }
+  };
+
   return (
     <div className="flex pt-24 container p-2 space-x-4">
       {/* Left side: List of people */}
@@ -278,16 +314,24 @@ const Message = () => {
                     >
                       <div>
                         <p>
-                          {msg.message_content.match(regex) ? (
-                            // Link detection
+                          {msg.message_content.match(regexGoogleMeet) ? (
+                            // Google Meet Link
                             <a
-                              href={msg.message_content.match(regex)[0]}
+                              href={
+                                msg.message_content.match(regexGoogleMeet)[0]
+                              }
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-white-500 underline"
+                              className="text-white underline"
                             >
-                              {msg.message_content.match(regex)[0]}
+                              {msg.message_content.match(regexGoogleMeet)[0]}
                             </a>
+                          ) : msg.message_content.match(regexImage) ? (
+                            <img
+                              src={msg.message_content}
+                              alt="Message Content"
+                              className="max-w-full h-auto"
+                            />
                           ) : /\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i.test(
                               msg.message_content
                             ) ? (
@@ -297,11 +341,7 @@ const Message = () => {
                               className="max-w-full h-auto"
                             />
                           ) : msg.message_content === "Session Started!" ? (
-                            // Plain text fallback
-                            <>
-                              {" "}
-                              <span>{msg.message_content}</span>
-                            </>
+                            <span>{msg.message_content}</span>
                           ) : (
                             <span>{msg.message_content}</span>
                           )}
@@ -348,6 +388,13 @@ const Message = () => {
               >
                 Send QR Code
               </button>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFilesChange}
+                className="hidden" // Hide the input field
+              />
             </div>
             <div className="flex items-center space-x-2 mb-4">
               <input
@@ -383,6 +430,31 @@ const Message = () => {
           <p className="text-center text-gray-500">
             Select a person to start chatting
           </p>
+        )}
+      </div>
+
+      {/* Diagnosis Section */}
+      <div className="w-1/4 p-4 bg-gray-200 rounded-lg shadow-md">
+        <h2 className="font-bold text-xl mb-4">Diagnosis</h2>
+        {selectedPerson ? (
+          <div>
+            <textarea
+              placeholder="Enter diagnosis here..."
+              className="w-full h-40 border border-gray-300 rounded-lg p-2"
+              value={diagnosis}
+              onChange={(e) => setDiagnosis(e.target.value)}
+            />
+            <button
+              className="bg-green-500 text-white px-4 py-2 rounded-lg mt-2"
+              onClick={handleSaveDiagnosis}
+            >
+              Save Diagnosis
+            </button>
+          </div>
+        ) : (
+          <div className="text-center text-gray-500">
+            Select a patient to add a diagnosis.
+          </div>
         )}
       </div>
     </div>

@@ -10,6 +10,7 @@ const {
   notification,
   notification_professional,
 } = require("../middleware/notification");
+const fs = require("fs");
 
 const profileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -693,13 +694,38 @@ router.put("/set-appointments-status/:id", (req, res) => {
   });
 });
 
+const prescriptionDir = path.join(__dirname, "prescription");
+if (!fs.existsSync(prescriptionDir)) {
+  fs.mkdirSync(prescriptionDir, { recursive: true });
+}
+
+const storagePrescription = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, prescriptionDir); // Use the absolute path to save files
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `${uniqueSuffix}-${file.originalname}`); // Save with a unique filename
+  },
+});
+
+const uploadPrescription = multer({ storage: storagePrescription });
 router.post(
   "/send-message-patient/:id",
-  fileStore.single("file"),
+  uploadPrescription.single("file"),
   (req, res) => {
     const { id: schedule_id } = req.params;
     const { patient_id, professional_id, message, sender } = req.body;
     const currentDate = new Date();
+
+    // Initialize filePath as null
+    let filePath = null;
+
+    // If a file is uploaded, construct the full URL for the file
+    if (req.file) {
+      // Assuming the file is stored in 'public/uploads' and we serve it via '/uploads'
+      filePath = `http://localhost:3000/prescription/${req.file.filename}`;
+    }
 
     // Determine if the sender is the patient or the professional
     const isPatientSender = sender === patient_id;
@@ -728,29 +754,28 @@ router.post(
 
         // Prepare SQL query and values based on whether a file is included
         let query, values;
-        if (req.file) {
-          const filePath = req.file.path;
+        if (filePath) {
           query = `
-          INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
-          VALUES (?, ?, ?, ?, ?, ?)
-        `;
+            INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
+            VALUES (?, ?, ?, ?, ?, ?)
+          `;
           values = [
             patient_id,
             professional_id,
-            filePath,
+            filePath, // Store the file URL instead of the file path
             schedule_id,
             currentDate,
             sender,
           ];
         } else {
           query = `
-          INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
-          VALUES (?, ?, ?, ?, ?, ?)
-        `;
+            INSERT INTO messaging (patient_id, professional_id, message_content, schedule_id, message_date, sender) 
+            VALUES (?, ?, ?, ?, ?, ?)
+          `;
           values = [
             patient_id,
             professional_id,
-            message,
+            message || "", // Default to an empty string if message is not provided
             schedule_id,
             currentDate,
             sender,
@@ -806,7 +831,7 @@ router.get("/get-message/:id", (req, res) => {
         .status(404)
         .json({ message: "No messages found for the provided schedule ID." });
     }
-    console.log(result);
+
     res.status(200).json({ data: result });
   });
 });
@@ -885,17 +910,49 @@ router.get("/get-history/:id", (req, res) => {
 router.post("/report-professional", (req, res) => {
   const { patient_id, professional_id, session_id, reason } = req.body;
   const currentDate = new Date();
-  const query =
-    "INSERT INTO report (patient_id , professional_id, session_id, reason, date, status) VALUES(?,?,?,?,?,?)";
+
+  const checkReport =
+    "SELECT * FROM report WHERE patient_id = ? AND professional_id = ? AND session_id = ? AND status = ?";
   db.query(
-    query,
-    [patient_id, professional_id, session_id, reason, currentDate, "Pending"],
+    checkReport,
+    [patient_id, professional_id, session_id, "Pending"],
     (error, result) => {
       if (error) {
         console.error(error);
       }
-      if (result.affectedRows > 0) {
-        res.status(200).json({ message: "Successfully submitted report" });
+      if (result.length > 0) {
+        res
+          .status(400)
+          .json({ message: "You've already reported this professional" });
+      } else {
+        const query =
+          "INSERT INTO report (patient_id , professional_id, session_id, reason, date, status) VALUES(?,?,?,?,?,?)";
+        db.query(
+          query,
+          [
+            patient_id,
+            professional_id,
+            session_id,
+            reason,
+            currentDate,
+            "Pending",
+          ],
+          (error, result) => {
+            if (error) {
+              console.error(error);
+            }
+            if (result.affectedRows > 0) {
+              notification(
+                "Report Professional",
+                patient_id,
+                "Successfully reported the professional"
+              );
+              res
+                .status(200)
+                .json({ message: "Successfully submitted report" });
+            }
+          }
+        );
       }
     }
   );

@@ -407,6 +407,7 @@ export const setAppointmentStatus = async (id) => {
 //sendMessage
 
 export const sendMessage = async (data, id) => {
+  console.log(data);
   try {
     const response = await axios.post(
       `${Server_Connection()}/api/send-message-patient/${id}`,
@@ -414,7 +415,6 @@ export const sendMessage = async (data, id) => {
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          "Content-Type": "application/json",
         },
       }
     );
@@ -558,7 +558,6 @@ export const getHistory = async (id) => {
     return null;
   }
 };
-
 
 export const handleReport = async (data) => {
   try {

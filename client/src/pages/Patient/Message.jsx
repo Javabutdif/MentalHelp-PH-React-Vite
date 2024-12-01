@@ -20,7 +20,9 @@ const Message = () => {
   const [chatId, setChatId] = useState("");
   const [patientId, setPatientId] = useState("");
   const [professionalId, setProfessionalId] = useState("");
-  const regex = /(https:\/\/meet\.google\.com\/[a-zA-Z0-9\-]+)/;
+  const regexImage =
+    /http:\/\/localhost:3000\/[\w\-/]+(?:\.(jpg|jpeg|png|gif|bmp|svg|webp))/i;
+  const regexGoogleMeet = /https:\/\/meet\.google\.com\/[a-zA-Z0-9-]+/i;
 
   const fetchSchedule = async () => {
     const result = await retrieveScheduleActive(user.id);
@@ -59,7 +61,7 @@ const Message = () => {
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFile(URL.createObjectURL(selectedFile));
+      setFile(selectedFile);
     }
   };
 
@@ -73,21 +75,19 @@ const Message = () => {
       formData.append("professional_id", professionalId);
       formData.append("message", message);
       formData.append("sender", user.id);
+
       if (file) {
         formData.append("file", file);
       }
 
       try {
-        await sendMessage(formData, chatId);
-        fetchConversation();
-        setMessage("");
-        setFile(null);
+        await sendMessage(formData, chatId); // Sending the form data with or without file
+        fetchConversation(); // Fetch the updated conversation
+        setMessage(""); // Clear message input
+        setFile(null); // Clear the file
       } catch (error) {
         console.error("Error sending message:", error);
       }
-      fetchConversation();
-      setMessage("");
-      setFile(null);
     }
   };
 
@@ -146,10 +146,10 @@ const Message = () => {
                   >
                     <div
                       className={`max-w-xs px-4 py-2 rounded-lg ${
-                        msg.sender !== user.id &&
+                        msg.sender === user.id &&
                         msg.message_content === "Session Started!"
                           ? "bg-green-500 text-white"
-                          : msg.sender !== user.id &&
+                          : msg.sender === user.id &&
                             msg.message_content === "Session Ended!"
                           ? "bg-red-500 text-white"
                           : msg.sender === user.id
@@ -159,33 +159,34 @@ const Message = () => {
                     >
                       <div>
                         <p>
-                          {msg.message_content.match(regex) ? (
-                            // Link detection
+                          {msg.message_content.match(regexGoogleMeet) ? (
+                            // Google Meet Link
                             <a
-                              href={msg.message_content.match(regex)[0]}
+                              href={
+                                msg.message_content.match(regexGoogleMeet)[0]
+                              }
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-white-500 underline"
+                              className="text-blue-600 underline"
                             >
-                              {msg.message_content.match(regex)[0]}
+                              {msg.message_content.match(regexGoogleMeet)[0]}
                             </a>
+                          ) : msg.message_content.match(regexImage) ? (
+                            <img
+                              src={msg.message_content}
+                              alt="Message Content"
+                              className="max-w-full h-auto"
+                            />
                           ) : /\.(jpg|jpeg|png|gif|bmp|svg|webp)$/i.test(
                               msg.message_content
                             ) ? (
-                            // Image detection
                             <img
                               src={msg.message_content}
                               alt="Message Content"
                               className="max-w-full h-auto"
                             />
                           ) : msg.message_content === "Session Started!" ? (
-                            // Plain text fallback
-                            <>
-                              {" "}
-                              <span className="bg-green-500">
-                                {msg.message_content}
-                              </span>
-                            </>
+                            <span>{msg.message_content}</span>
                           ) : (
                             <span>{msg.message_content}</span>
                           )}
